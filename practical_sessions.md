@@ -1,4 +1,4 @@
-# Practice Sessions
+# Practical Sessions
 
 ### Tirgul 1 - C++ Intro
 [Introduction to Linux](./class_material/PracticalSession01.Linux.md)
