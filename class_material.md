@@ -31,7 +31,7 @@
 ### Communication
 [Socket Programming](./class_material/communication-overview.md)
 
-[Read more about networks](./class_material/networks.md)
+[More about Networks](./class_material/networks.md)
 
 [Application Level Protocol Design](./class_material/application-level-proto.md)
 
@@ -40,4 +40,4 @@
 ### Persistence
 [Persistence Services and Database Management Systems](./class_material/persistence.md)
 
-[Python & Persistence patterns and best practices](./class_material/sql-python.md)
+[Python & Persistence Patterns - Best Practices](./class_material/sql-python.md)
