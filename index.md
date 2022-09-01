@@ -2,6 +2,6 @@
 
 ## Menu
 
-* [Class Material](./class_material.html)
-* [Practice Sessions](./practice_sessions.html)
-* [Useful Links](./useful_links.html)
+* [Class Material](./class_material.md)
+* [Practicle Sessions](./practical_sessions.md)
+* [Useful Links](./useful_links.md)
