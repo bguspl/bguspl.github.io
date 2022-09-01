@@ -37,8 +37,6 @@
 
 [The Reactor Design Pattern](./class_material/reactor.md)
 
-[The Reactor Design Pattern](./class_material/reactor.md)
-
 ### Persistence
 [Persistence Services and Database Management Systems](./class_material/persistence.md)
 
