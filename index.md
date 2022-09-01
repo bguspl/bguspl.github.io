@@ -1,4 +1,4 @@
-# Welcome to System Programming course
+# Welcome to the BGU Systems Programming Course
 
 ## Menu
 
