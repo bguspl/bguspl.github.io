@@ -2,8 +2,11 @@
 
 ### Tirgul 1 - C++ Intro
 [Introduction to Linux](./class_material/PracticalSession01.Linux.md)
+
 [Introduction to C++](./class_material/PracticalSession01.HelloWorld.md)
+
 [Compilation and Makefile](./class_material/PracticalSession01.Makefile.md)
+
 [Introduction to C++ Types](./class_material/PracticalSession01.CPPTypes.md)
 
 ### Tirgul 2 - Pointers and memory management
