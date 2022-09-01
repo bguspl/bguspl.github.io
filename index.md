@@ -4,4 +4,4 @@
 
 * [Class Material](./class_material.md)
 
-* [Practicle Sessions](./practical_sessions.md)
+* [Practical Sessions](./practical_sessions.md)
