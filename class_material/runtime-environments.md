@@ -34,7 +34,7 @@ The operating system (OS) manages the sharing of the resources of a computer amo
 
 Block diagram of Operating System modules
 
-![image](../images/user-kernel-diagram.png)
+![image](user-kernel-diagram.png)
 
 
 ### **Process Definition**
@@ -97,7 +97,7 @@ The interface between a program and the OS is defined as a set of system calls, 
 
 The following Figure summarizes the main elements involved when an OS RTE creates a process.
 
-![image](../images/rte-create-process.PNG)
+![image](rte-create-process.PNG)
 
 ### **CPU Time Sharing**
 
@@ -112,6 +112,8 @@ Processes may be in several *states*. A process may either be running, if it is 
 * waiting for Input-Output to complete (this is because an Input/Output operation is much slower than a CPU operation)
 
 * waiting for an event (because the process is waiting for another process to reach a certain state before it can continue)
+
+[^]virtualmachine]: Increasingly, computers can run a basic OS and embedded virtual machines. A virtual machine is a completely isolated guest OS that runs within a normal OS. [more](http://en.wikipedia.org/wiki/Virtual_machine)
 
 ### **Summary**
 
@@ -135,9 +137,7 @@ One of the advantages counted for binary code (non-interpreted) is speed. Binary
 
 ## **The Java Virtual Machine (JVM)**
 
-The Java virtual machine[^virtualmachine] is an RTE. It executes Java classes.
-
-[^virtualmachine]: Increasingly, computers can run a basic OS and embedded virtual machines. A virtual machine is a completely isolated guest OS that runs within a normal OS. [more](http://en.wikipedia.org/wiki/Virtual_machine)
+The Java virtual machine is an RTE. It executes Java classes.
 
 The JVM simulates a complete machine, on which Java programs are executed. When we compile a Java source file, we create a file which contains instructions specific for the JVM, called *byte code*. This is equivalent to the process of compiling a regular C/C++ program into regular machine code.
 
@@ -147,7 +147,7 @@ The JVM is itself a process inside some RTE (in general an OS RTE), and acts as 
 
 The interface between the JVM and Java programs (that is, the abilities given to the program by the JVM) is described in the Java language. For example, consider the object ```System.out```, which you use to print strings to the screen. It is an object that represents the JVM support for printing. Similarly, the JVM supports security models, communications, distributed objects and more.
 
-![image](../images/os-vs-jvm.png "The OS RTE running a general process and a JVM RTE which runs a Java class")
+![image](os-vs-jvm.png "The OS RTE running a general process and a JVM RTE which runs a Java class")
 
 ### **A Java Program Lifecycle**
 
@@ -170,7 +170,7 @@ We will see in the next lectures that a single JVM process can execute more than
 
 The following figure summarizes the main elements involved when the JVM creates a process inside an OS RTE:
 
-![image](../images/jvm-rte-interop.png "Elements involved when a Java program executes in the JVM RTE itself executed in the OS RTE")
+![image](jvm-rte-interop.png "Elements involved when a Java program executes in the JVM RTE itself executed in the OS RTE")
 
 ## **Examples of other RTEs**
 
