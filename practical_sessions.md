@@ -8,14 +8,6 @@
 [Compilation and Makefile](./practical_sessions/PracticalSession01.Makefile.md)
 
 [Introduction to C++ Types](./practical_sessions/PracticalSession01.CPPTypes.md)
-[Introduction to Linux](./class_material/PracticalSession01.Linux.md)
-
-[Introduction to C++](./class_material/PracticalSession01.HelloWorld.md)
-
-[Compilation and Makefile](./class_material/PracticalSession01.Makefile.md)
-
-[Introduction to C++ Types](./class_material/PracticalSession01.CPPTypes.md)
->>>>>>> 83d5c7aaf3b807f2404587d550d913d08e9ece36
 
 ### Tirgul 2 - Pointers and memory management
 [Session 2 Material](./practical_sessions/PracticalSession02.md)
