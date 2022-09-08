@@ -20,17 +20,17 @@
 
 ### Tirgul 5 - Generics, Lambdas, Reflection and DbC
 [Session 5 Material](./practical_sessions/PracticalSession05.md)
+
 [Dbc & JUnit Tutorial](./practical_sessions/DbcJUnit.md) [practice at home]
+
 [Java Packages](./practical_sessions/java-packages.md) [read at home]
 
 ### Tirgul 6 - Threads and Concurrency / Safety
 [Session 6 Material](./practical_sessions/PracticalSession06.md)
+
 [JMM - Java Memory Model](http://www.cs.umd.edu/~pugh/java/memoryModel/jsr-133-faq.html) [read at home]
+
 [Threads using c++11](./practical_sessions/threads-c11.md) [practical extra]
-
-[JMM - Java Memory Model](http://www.cs.umd.edu/~pugh/java/memoryModel/jsr-133-faq.html) [read at home]
-
-[Threads using C++11](./practical_sessions/Threads_Using_C11)
 
 ### Tirgul 7 - Liveness
 [Session 7 Material](./practical_sessions/PracticalSession07.md)
