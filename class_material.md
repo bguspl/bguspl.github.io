@@ -3,7 +3,7 @@
 ### Introduction
 [Course Overview](./class_material/course-overview.md)
 
-[Runtime Environments](./class_material/runtime_environments.md)
+[Runtime Environments](./class_material/runtime-environments.md)
 
 ### Memory Management
 [Introduction to Memory Management](./class_material/stack-heap-gc.md)
