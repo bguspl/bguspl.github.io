@@ -170,7 +170,7 @@ We will see in the next lectures that a single JVM process can execute more than
 
 The following figure summarizes the main elements involved when the JVM creates a process inside an OS RTE:
 
-![alt](jvm-rte-interop.png "Elements involved when a Java program executes in the JVM RTE itself executed in the OS RTE")
+![image](jvm-rte-interop.png "Elements involved when a Java program executes in the JVM RTE itself executed in the OS RTE")
 
 ## **Examples of other RTEs**
 
