@@ -19,7 +19,7 @@ class A {
 
 will appear in memory as follows:
 
-![image](../images/memory-layout-1.pngmemory-layout-1.png)
+![image](../images/memory-layout-1.png)
 
 Each primitive type is encoded in a fixed amount of memory. For example, an int value is generally encoded in 4 bytes, a char in 1 byte, a double in 8 bytes etc. The sizeof operator of the compiler can be used to find out what is the size used by a given type. sizeof is computed at compile-time (it is not a function, it is a compiler operator). sizeof can also return the size allocated for object data-types. For example, sizeof(A) will return 20 (5 words of 4 bytes).
 
@@ -205,7 +205,7 @@ To understand this, note that:
 
 When a class extends another class, how is the vtable managed? Consider the following example: class ```bar``` extends class ```foo```. ```bar``` overrides the method ```m```, and introduces 2 new methods ```s``` and ```t```.
 
-![image](vtable2.pngvtable2.png)
+![image](../images/vtable2.pngvtable2.png)
 
 The compiler generates a new distinct vtable for class bar. The vtable elements point to the same addresses as those of the parent class when the method is not overridden (methods ```k```, ```l``` and ```n``` in the example), but to the new overridden method or to the new methods otherwise (methods ```m````, ```s``` and ```t``` in the example).
 
