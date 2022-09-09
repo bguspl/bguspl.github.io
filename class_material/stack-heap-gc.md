@@ -252,7 +252,7 @@ The stack in C++ is managed in the same way the stack in Java is managed, with o
 
 We later discuss three important methods of objects in C++: The destructor, copy constructor and assignment operator.
 
-##### **Stack allocation in c++**
+##### **Stack allocation in C++**
 
 Depending on your perspective, syntax choices for object allocation and initialization in C++ embody either an embarrassment of riches or a confusing mess. 
 The following are examples of stack allocations and initializations:
