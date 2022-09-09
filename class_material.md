@@ -10,7 +10,7 @@
 
 [Pointers and References](./class_material/cpp-pointers.md)
 
-[Pointers and References](./class_material/cpp-resources.md)
+[Resource Allocation and Ownership](./class_material/cpp-resources.md)
 
 [Object Oriented C++](./class_material/cpp-oop.md)
 
