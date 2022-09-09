@@ -67,7 +67,7 @@ public:
 ```
 The memory layout of objects of class B looks as follows:
 
-![image](../images/memory-layout-2.pngmemory-layout-2.png)
+![image](../images/memory-layout-2.png)
 
 Note that the first 20 bytes of this block have exactly the same structure as a block of type A. This makes it easy to "look at a B value" as if it were an "A value": we just take the first part of B and "cut it short" to sizeof(A).
 
@@ -180,7 +180,7 @@ What we are describing is the way an object decides which code to invoke when it
 
 Consider the class foo in the following diagram:
 
-![image](../images/vtable1.pngvtable1.png)
+![image](../images/vtable1.png)
 
 The vtable for class ```foo``` contains the address of each of the methods of class ```foo``` (```k,l,m,n```). The block of memory of a value of type foo starts with a pointer to the vtable of class ```foo``` - followed by the state of the object.
 
@@ -205,7 +205,7 @@ To understand this, note that:
 
 When a class extends another class, how is the vtable managed? Consider the following example: class ```bar``` extends class ```foo```. ```bar``` overrides the method ```m```, and introduces 2 new methods ```s``` and ```t```.
 
-![image](../images/vtable2.pngvtable2.png)
+![image](../images/vtable2.png)
 
 The compiler generates a new distinct vtable for class bar. The vtable elements point to the same addresses as those of the parent class when the method is not overridden (methods ```k```, ```l``` and ```n``` in the example), but to the new overridden method or to the new methods otherwise (methods ```m````, ```s``` and ```t``` in the example).
 
@@ -215,7 +215,7 @@ Note that the vtable of the inherited class is an extension of the vtable of the
 
 C++ supports multiple inheritance: a class can extend more than one base class. Consider the following example:
 
-![image](../images/vtable3.pngvtable3.png)
+![image](../images/vtable3.png)
 
 Class ```student``` inherits both from class ```person``` and from class ```gp_list_node``` (a class used to store the grades of the student). The vtable layout becomes more complex in such a situation. An object of type student has in its state 3 types of fields:
 * Fields that are inherited from person
