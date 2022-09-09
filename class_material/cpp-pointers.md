@@ -340,7 +340,7 @@ Here is what I got when I tried different level of compiler optimizations:
 
 ## **C++ Arrays**
 
-[^arrays]:When do we need arrays?: Arrays are mainly needed when you have to call some legacy C code, which works with plain old arrays. However, even in these cases, it is possible to convert a Vector to an array before calling the C code.
+[^arrays]:When do we need arrays? Arrays are mainly needed when you have to call some legacy C code, which works with plain old arrays. However, even in these cases, it is possible to convert a Vector to an array before calling the C code.
 
 Let us start with a word of caution: unless you really need to, do not use arrays in C++. They are dangerous. Use Vectors instead. We will see some reasons why later[^arrays].
 
