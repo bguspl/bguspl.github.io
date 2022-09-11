@@ -939,7 +939,7 @@ TDD can be summarized by the following points:
 
 [Test Driven Development](http://en.wikipedia.org/wiki/Test-driven_development) Wikipedia.
 
-[Design by Contract] (http://en.wikipedia.org/wiki/Design_by_contract) Wikipedia.
+[Design by Contract](http://en.wikipedia.org/wiki/Design_by_contract) Wikipedia.
 
 [Extreme Test-Driven Development with UNA (Java)](http://www.vimeo.com/1653402), a 30 min video demo of a Stack development using TDD.
 
