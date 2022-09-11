@@ -532,7 +532,7 @@ We are introduced here to two new functions that are part of the Java API: notif
 
 The Java RTE offers the programmer a simple mechanism to facilitate guarded suspension and suspension in multi-threaded context in general, the ```wait``` and ```notify``` constructs. Recall the figure which was used to describe a monitor:
 
-![image](../images/Screenshot from 2016-12-04 10-26-26.png)
+![image](../images/Screenshot%20from%202016-12-04%2010-26-26.png)
 
 We can use this figure again in order to understand how ```wait``` and ```notify``` works. When a thread enter the house (monitor) it allowed to do the following:
 
