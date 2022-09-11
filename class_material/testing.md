@@ -908,7 +908,7 @@ In our example, we can state one important class invariant:
 
 What we specified here is that the container cannot contain a "negative number of items". We should verify that the contract of the commands that affect ```count()``` cannot break this invariant. In our interface, the only candidate that could do this is ```remove()``` (since it decreases ```count()```). We verify that the pre-condition prevents ```count()``` from changing from ```0``` to ```-1```. Hence, the invariant remains enforced.
 
-**Principle 6: Specify class invariants that impose constraints that must remain always true on the basic queries**
+**Principle 6: Specify class invariants that impose constraints that must remain always true on the basic queries.**
 
 ### **Summary**
 
