@@ -579,8 +579,7 @@ When we see that our tests must verify complex post-conditions - it is time to t
 
 We will use the following general rule to help us sort out methods that have a side-effect on the object and functions that only get information out of the object without modifying it. For example, push() only has a side-effect and isEmpty() only gets information, without changing the object.
 
-**Principle 1**
-**Separate commands and queries** - *Queries* return a value and do not change the visible state of the object. *Commands* change the internal state of the object and do not return values.
+**Principle 1: Separate commands and queries** - *Queries* return a value and do not change the visible state of the object. *Commands* change the internal state of the object and do not return values.
 
 If we apply this principle, we realize that ```pop()``` does not stand by this rule: it is neither a command nor a query.
 
@@ -750,11 +749,9 @@ By introducing ```count()```, we have introduced a redundancy: ```isEmpty()``` i
 
 When we find such a case - we will say that ```isEmpty()`` is a *derived query* and ```count()``` is a *primitive query*. To document derived queries, we annotate their post-condition as being computed on the basis of a primitive query (see the ```isEmpty()``` post-condition).
 
-**Principle 2**
-**Separate basic queries and derived queries** - Derived queries can be specified in terms of basic queries.
+**Principle 2: Separate basic queries and derived queries** - Derived queries can be specified in terms of basic queries.
 
-**Principle 3**
-**Define derived queries in terms of basic queries** - Define the post-conditions of derived queries in terms of basic queries only.
+**Principle 3: Define derived queries in terms of basic queries** - Define the post-conditions of derived queries in terms of basic queries only.
 
 #### **Specify how Commands affect Basic Queries**
 
@@ -780,8 +777,7 @@ In fact, it is a general principle: a command by definition modifies the state o
 
 If none of the basic queries is affected by the command, we have a problem: our public interface is not detailed enough to allow us to test the object. In this case, the object interface must be extended or revised.
 
-**Principle 4**
-For each basic command, write post-conditions that specify the value of every basic queries.
+**Principle 4: For each basic command, write post-conditions that specify the value of every basic queries.**
 
 Let us consider again the test for the remove() command.
 
@@ -898,8 +894,7 @@ The introduction of ```itemAt()``` did not change the protection level given to 
 
 Now that we have established the basic queries and verified that they are sufficient to capture the post-conditions of all the basic commands, we can revise the pre-conditions. Pre-conditions as well should be specified in terms of basic queries.
 
-**Principle 5**
-For each basic command and basic query, express the pre-conditions in terms of basic queries.
+**Principle 5: For each basic command and basic query, express the pre-conditions in terms of basic queries.**
 
 #### **Specify Class Invariants**
 
@@ -913,8 +908,7 @@ In our example, we can state one important class invariant:
 
 What we specified here is that the container cannot contain a "negative number of items". We should verify that the contract of the commands that affect ```count()``` cannot break this invariant. In our interface, the only candidate that could do this is ```remove()``` (since it decreases ```count()```). We verify that the pre-condition prevents ```count()``` from changing from ```0``` to ```-1```. Hence, the invariant remains enforced.
 
-**Principle 6**
-Specify class invariants that impose constraints that must remain always true on the basic queries.
+**Principle 6: Specify class invariants that impose constraints that must remain always true on the basic queries**
 
 ### **Summary**
 
