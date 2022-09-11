@@ -1,13 +1,15 @@
-Practical Session #3 C++ Classesshow_sections_edit()){?>name,"edit","action=edit§ion=9")?>
-Goalshow_sections_edit()){?>name,"edit","action=edit§ion=9")?>The main goal for this practical session is learning Object Oriented programming in C++ with emphasis on classes that hold resources, specifically classes with pointer members. We will learn basic syntax definitions and explore the differences between C++ conventions and Java conventions.
-Parameter passingshow_sections_edit()){?>name,"edit","action=edit§ion=9")?>
+Practical Session #3 C++ Classes
+
+The main goal for this practical session is learning Object Oriented programming in C++ with emphasis on classes that hold resources, specifically classes with pointer members. We will learn basic syntax definitions and explore the differences between C++ conventions and Java conventions.
+
+Parameter passing
 Correct parameter passing can help reduce the number of bugs and generate more efficient code. Passing parameters can be done in 3 distinct methods:
 Passing by value
 Passing by pointer
 Passing by reference
 The following examples will refer to passing a parameter into a function. the same principles apply to the return value.
 
-Passing by value - exampleshow_sections_edit()){?>name,"edit","action=edit§ion=9")?>
+Passing by value - example
 int power(int i) 
 {
   i = i*i;
@@ -19,7 +21,7 @@ int main (int argc, char **argv)
   power(number);
 }
 In this example the primitive integer value is passed to the power function by value. This means that the value of number is being copied to the argument list of the called function. Passing by value is usually done for primitive variables. Passing by value also works with objects, it will cause the compiler to add a call to the copy constructor making it a slow option. In general, unless a new copy of the object is needed, we will never pass an object by value.
-Passing by pointer - exampleshow_sections_edit()){?>name,"edit","action=edit§ion=9")?>
+Passing by pointer - example
 void emphasize(std::string *word) 
 {
   if (word == nullptr)
@@ -34,7 +36,7 @@ int main (int argc, char **argv)
 In this code the function emphasize is used to add 3 exclamation marks to the end of a string. we notice, that the function must work on the same string that was sent to it, if we used passing by value the change would not impact the string that was sent from the main function. Notice that when passing by pointer we can also pass pointers to NULL (which is 0). Having the possibility of an uninitialized object is one of the reasons to use this method.
 Passing by pointer is not actually real. A pointer is just a numerical value, similar to int, that holds the address of a parameter. When using such a method of parameter passing we are actually passing the address by value.
 
-Passing by reference - exampleshow_sections_edit()){?>name,"edit","action=edit§ion=9")?>
+Passing by reference - example
 void emphasize(std::string &word) 
 {
   word.append(3,'!');
@@ -47,8 +49,8 @@ int main (int argc, char **argv)
 We use the same scenario as above, only now we pass by reference. notice that while passing by reference, except for the "&" that declares word as a reference, the syntax is the same as passing by value. Passing by reference allows us to send a link to the original object without using pointers, this means that any change in the object word will also apply on mySentence. This is usually a much safer method since pointers might suggest responsibility for the memory allocation and release and might confuse when attempting to search for bugs. References must be initialized at start, this means that they cannot have a NULL value.
 Behind the scenes, the compiler actually looks at references as constant pointers (cannot have their addresses changed). the compiler passes the address by value, similarly to passing by pointer, but it does not allow the programmer access to the address nor does it allow the user to change it. This method should be used in most instances of object parameter passing.
 
-Classesshow_sections_edit()){?>name,"edit","action=edit§ion=9")?>We shall start with a simple class example and move on later to classes that hold a resource.
-C++ simple class exampleshow_sections_edit()){?>name,"edit","action=edit§ion=9")?>The class syntax in C++ is somewhat different than in Java. Here is an example of a Point class:
+ClassesWe shall start with a simple class example and move on later to classes that hold a resource.
+C++ simple class exampleThe class syntax in C++ is somewhat different than in Java. Here is an example of a Point class:
 // THIS IS THE DECLARATION FILE OF THE CLASS POINT (Point.h) 
   class Point 
   {
@@ -83,7 +85,7 @@ double Point::getY() const
 {  
   return y_;
 }
-C++ class syntax vs Java class syntaxshow_sections_edit()){?>name,"edit","action=edit§ion=9")?>
+C++ class syntax vs Java class syntax
 Declarations and implementation are separated - The class definition only contains the declarations of the methods. The actual implementation are listed separately, where each method name is prefixed by the class name. The :: operator separates class name and method name. Note that the separation of declaration and implementation is usually done in cases where you want to export or share the class with another class, and is not required for inner, local private or helper classes.
 Semicolon at the end of the class - There is a semicolon at the end of the class declaration. Not placing it will lead to unclear compilation error.
 Public and private section - In C++, there are public and private sections, started by the keywords public and private. In Java, each individual item must be tagged with public or private.
@@ -95,11 +97,17 @@ const Point p(0,0);
 p.getY();         //this is O.K since getY is declared const
 p.move(1,1);      //compilation error since move is not declared const
 ...
-Member Initialization Listshow_sections_edit()){?>name,"edit","action=edit§ion=12")?>In C++, we use a member initialization list to initialize class members. The initial value can be any expression. The member initialization list is executed before the body of the function. It is possible to initialize data members inside the constructor body but not advised for the following two reasons:
+
+Member Initialization List
+
+In C++, we use a member initialization list to initialize class members. The initial value can be any expression. The member initialization list is executed before the body of the function. It is possible to initialize data members inside the constructor body but not advised for the following two reasons:
 Implicit call to default constructor - when a data member is itself a class object, not initializing it via the initialization list means implicitly calling its default constructor! If you do initialize it in the body of the constructor you are actually initializing it twice. If your data member is a class with no default constructor, meaning you supplied some constructor that has parameters, you will not be able to pass compilation - think why.
 Const members - Const members of a class can only be initialized via member initialization list.
 The order the initialization happens is according to the order the member vars are declared (not the order in the member initialization list). It is hence a convention to keep the order of the list as the order of the declaration.
-Project Handling and Division into Filesshow_sections_edit()){?>name,"edit","action=edit§ion=12")?>As mentioned above, the declarations and the implementation are defined separately in C++. We place the class declaration file in a header file (e.g X.h) and the class implementation in file X.cpp.
+
+Project Handling and Division into Files
+
+As mentioned above, the declarations and the implementation are defined separately in C++. We place the class declaration file in a header file (e.g X.h) and the class implementation in file X.cpp.
 To avoid including a Header twice, we check whether a pre-compiler unique variable is defined. If not we define it and include the header. A convention is to use as a variable the name of the header class. for example:
 
 //Header file of Point class
@@ -113,7 +121,10 @@ To compile a project you need to compile each class separately to an object file
 In this course, we do not allow writing any implementation in the H file. It is possible but requires some care which we leave to experienced C++ programmers.
 
 Here is an example of a project with 3 cpp files + 2 H file + makefile.
-Objectsshow_sections_edit()){?>name,"edit","action=edit§ion=12")?>In C++, object variables hold values, not object references. You simply supply the construction parameters after the variable name.
+
+Objects
+
+In C++, object variables hold values, not object references. You simply supply the construction parameters after the variable name.
 Example: Point p(1, 2); /* construct p */
 
 If you do not supply construction parameters, then the object is constructed with the default constructor. Time now; /* construct now with Time::Time() */
@@ -130,14 +141,18 @@ When modifying an object in a function, you must remember to use call by referen
 Two object variables cannot jointly access one object. If you need this effect in C++, then you need to use references
 An object variable can only hold values of a particular type. If you want a variable to hold objects from different subclasses, you need to use pointers
 If you want a variable to point to either null or to an actual object, then you need to use pointers in C++
-The "this" Pointershow_sections_edit()){?>name,"edit","action=edit§ion=20")?>
+
+The "this" Pointer
+
 Note that, as in Java, this is a pointer to the active object. So for example, when L1 = L2 is executed, L1's member function copy assignment operator is called, so this is a pointer to L1.
 We also make use of this for the returned value in the copy assignment operator; the type to be returned is List& so we dereference this, a.k.a return *this.
 We would like to establish a way to distinguish between parameters and class variables.This can be done by the this pointer. It is used as a pointer to the class object instance by the member functions.
 this pointer stores the address of the object instance, to enable pointer access of the object.
 this pointers are not accessible for static member functions.
 this pointers are not modifiable.
-Operator -> and Operator .show_sections_edit()){?>name,"edit","action=edit§ion=20")?>The pointer-to-member operators, .* and –>*, return the value of a specific class member for the object specified on the left side of the expression. The right side must specify a member of the class. The following example shows how to use these operators:
+Operator -> and Operator .
+
+The pointer-to-member operators, .* and –>*, return the value of a specific class member for the object specified on the left side of the expression. The right side must specify a member of the class. The following example shows how to use these operators:
 class Point{.....
 }
 int main( ){
@@ -148,7 +163,8 @@ int main( ){
     p2.getX();
     (&p2)->getX();
 }
-The Rule of 3 (Classes that Hold Pointers)show_sections_edit()){?>name,"edit","action=edit§ion=20")?>
+The Rule of 3 (Classes that Hold Pointers)
+
 A thumb rule in C++ (prior to C++11) for classes that own a resource (such as allocated memory on the heap and files). This rule requires such class to define and implement the following functions:
 A destructor
 A copy constructor
@@ -334,7 +350,9 @@ List & List::operator=(const List &aList)
 int main() {
   return 0;
 }
-Destructor show_sections_edit()){?>name,"edit","action=edit§ion=20")?>An object's destructor function is called when that object is about to "go away"; i.e., when:
+
+Destructor 
+An object's destructor function is called when that object is about to "go away"; i.e., when:
 A class instance (a value parameter or a local variable) goes out of scope, or
 The dynamically allocated storage pointed to by the pointer is freed by the programmer using the delete operator
 
@@ -389,7 +407,9 @@ void List::clear()
   }
 }
 If you don't write a destructor function for a class that includes pointers to dynamically allocated storage, your code will still work, but you will probably have some storage leaks.
-Copy Constructor show_sections_edit()){?>name,"edit","action=edit§ion=20")?>An object's copy constructor is called (automatically, not by the programmer) when it is created, and needs to be initialized to be a copy of an existing object. This happens when an object is:
+
+Copy Constructor 
+An object's copy constructor is called (automatically, not by the programmer) when it is created, and needs to be initialized to be a copy of an existing object. This happens when an object is:
 passed as a value parameter to a function,
 ....
 Point q(2,2);
@@ -463,7 +483,8 @@ Link * List::copy() const
     return head;
   }
 }
-Copy assignment operatorshow_sections_edit()){?>name,"edit","action=edit§ion=20")?>Consider this example:
+Copy assignment operator
+Consider this example:
 List list1, list2;
 ...
 list1 = list2;  // this assignment is OK
@@ -505,7 +526,10 @@ List & List::operator=(const List &aList)
   // return this List
   return *this;
 }
-Exception safety in copy assignment operatorshow_sections_edit()){?>name,"edit","action=edit§ion=20")?>Suppose the aList.copy() expression yields an exception (either because there is insufficient memory for the allocation or because Link's copy constructor throws one), the List will end up holding a pointer to a deleted Link. Such pointers are toxic. You can't safely delete them. You can't even safely read them. About the only safe thing you can do with them is spend lots of debugging energy figuring out where they came from.
+
+Exception safety in copy assignment operator
+
+Suppose the aList.copy() expression yields an exception (either because there is insufficient memory for the allocation or because Link's copy constructor throws one), the List will end up holding a pointer to a deleted Link. Such pointers are toxic. You can't safely delete them. You can't even safely read them. About the only safe thing you can do with them is spend lots of debugging energy figuring out where they came from.
 Happily, making copy assignment operator exception-safe typically renders it self-assignment-safe, too. In many cases, a careful ordering of statements can yield exception-safe (and self-assignment-safe) code. Here, for example, we just have to be careful not to delete the List pointed by head_ until l.copy() completed successfully.
 
 /**
@@ -528,7 +552,7 @@ Now, if aList.copy() throws an exception, head_ remains unchanged. Even without 
 
 If you're concerned about efficiency, you could put the identity test back at the top of the function. Before doing that, however, ask yourself how often you expect self-assignments to occur, because the test isn't free. It makes the code (both source and object) a bit bigger, and it introduces a branch into the flow of control, both of which can decrease runtime speed. The effectiveness of instruction prefetching, caching, and pipelining can be reduced, for example.
 
-Additional links:show_sections_edit()){?>name,"edit","action=edit§ion=20")?>
+Additional links:
 examples1
 examples2
 Pointers and Functions
