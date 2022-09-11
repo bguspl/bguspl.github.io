@@ -239,6 +239,7 @@ The deadlock of this code is illustrated in the following diagram.
 ### **The Dining Philosophers Problem**
 
 The [dining philosophers](http://en.wikipedia.org/wiki/Dining_philosophers) problem captures many aspects of liveness in concurrent environments in a vivid metaphor. Consider the following image:
+
 ![image](../images/An_illustration_of_the_dining_philosophers_problem.png)
 
 We have N philosophers, each with a plate of spaghetti in front of him. There are also N forks, such that between any two philosophers there is exactly one fork. Now, as philosophers go, they like to ponder the meaning of life, the universe and everything (if you wonder, the answer is 42). However, once in a while, a philosopher might become really hungry (pondering is hard work, after all). To eat, a philosopher must grab both forks to his left and right. He then eats his full, cleans the forks, returns them to the table and resumes pondering. Assuming our philosophers are active objects (threads) in Java, consider the following implementation of a philosopher:
