@@ -1,15 +1,19 @@
-The Command Invocation Protocol
-In the previous sections we learnt about a very simple echo protocol. In this section we are going to create a new generic protocol that will allow clients to execute remote commands on the server. Many complex applications can be described using this generic protocol and we will see an example of a news feed server that allow clients to publish and read news in multiple channels.
-The Protocol
-download
+# **The Command Invocation Protocol**
+
+In the previous lectures we implemented a very simple echo protocol. In this section we are going to create a new generic protocol that will allow clients to execute remote commands on the server. Many complex applications can be described using this generic protocol and we will see an example of a news feed server that allow clients to publish and read news in multiple channels.
+
+## **The Protocol**
+
+```java
 public interface Command<T> extends Serializable {
  
     Serializable execute(T data);
 }
-A command is a generic interface with one method: execute. A command is sent by a client but executed by the server (on the server process). Depending on the server type, the server may pass a single argument to the command. This argument can hold different services that the command can interract with (as we will see in the later example). This process can be easily expressed by our MessagingProtocol
+```
 
-downloadtoggle
-18 lines ...
+```Command``` is a generic interface with one method: ```execute```. A command is sent by a client but executed by the server (on the server process). Depending on the server type, the server may pass a single argument to the command. This argument can hold different services that the command can interract with (as we will see in the later example). This process can be easily expressed by our ```MessagingProtocol```:
+
+```java
 public class RemoteCommandInvocationProtocol<T> implements MessagingProtocol<Serializable> {
     
     private T data;
@@ -29,23 +33,26 @@ public class RemoteCommandInvocationProtocol<T> implements MessagingProtocol<Ser
     }
  
 }
-Java-Serialization
+```
+
+### **Java-Serialization**
+
 Java provides a mechanism, called object serialization where an object can be represented as a sequence of bytes that includes the object's data as well as information about the object's type and the types of data stored in the object.
-A serialized object (i.e., a byte[]) can be deserialized back into a copy of the original object that is, the type information and bytes that represent the object and its data can be used to recreate the object in memory.
+A serialized object (i.e., a ```byte[]```) can be deserialized back into a copy of the original object that is, the type information and bytes that represent the object and its data can be used to recreate the object in memory.
 
 Most impressive is that the entire process is JVM independent, meaning an object can be serialized on one platform and deserialized on an entirely different platform.
 
-Classes ObjectInputStream and ObjectOutputStream are high-level streams that contain the methods for serializing and deserializing any object, they are able to deserialize any Serializable object. A class is Serializable if it:
+Classes ```ObjectInputStream``` and ```ObjectOutputStream``` are high-level streams that contain the methods for serializing and deserializing any object, they are able to deserialize any ```Serializable``` object. A class is ```Serializable``` if it:
 
-Implements the Serializable interface or it super class is Serializable
+Implements the ```Serializable``` interface or it super class is ```Serializable```
 Its first non-serializable super class has a no-args constructor
 All its non-transient fields must be serializable
 
-For the purpose of this lecture this information is sufficient, you can read more about the serialization mechanism in the following links: serializable javadoc, basic serialization tutorial and java object serialization.
+For the purpose of this lecture this information is sufficient, you can read more about the serialization mechanism in the following links: [serializable javadoc](http://docs.oracle.com/javase/7/docs/api/java/io/Serializable.html), [basic serialization tutorial](http://www.tutorialspoint.com/java/java_serialization.htm) and [java object serialization](https://docs.oracle.com/javase/8/docs/technotes/guides/serialization/index.html).
+
 With the above knowledge we can actually design a message encoder decoder that can handle arbitrary serializable objects and especially our commands:
 
-downloadtoggle
-85 lines ...
+```java
 public class ObjectEncoderDecoder<> implements MessageEncoderDecoder<Serializable> {
  
     private final byte[] lengthBytes = new byte[4];
@@ -132,12 +139,13 @@ public class ObjectEncoderDecoder<> implements MessageEncoderDecoder<Serializabl
     }
  
 }
-The ObjectEncoderDecoder is the first binary encoder decoder that you encountered in this course. It is actually much more simple than it looks like, the encoding of a message that contains the object O which can be serialized to a byte array b1,b2,b3,...,bN will be N,b1,b2,b3,...,bn (i.e., the message will start with the number of bytes that need to be read in order to deserialize an object). The number of bytes N is sent using a binary representation - note byteToInt and intToByte. Finally, when an object received, the decodeNextByte method first checks if it belongs to N or that we already started to read b1,b2,...,bN and fill the correct byte arrays.
+```
+
+The ```ObjectEncoderDecoder``` is the first binary encoder decoder that you encountered in this course. It is actually much more simple than it looks like, the encoding of a message that contains the object O which can be serialized to a byte array b1,b2,b3,...,bN will be N,b1,b2,b3,...,bn (i.e., the message will start with the number of bytes that need to be read in order to deserialize an object). The number of bytes N is sent using a binary representation - note byteToInt and intToByte. Finally, when an object received, the decodeNextByte method first checks if it belongs to N or that we already started to read b1,b2,...,bN and fill the correct byte arrays.
 
 We can now create a generic client for our generic protocol
 
-downloadtoggle
-39 lines ...
+```java
 public class RCIClient implements Closeable{
     
     private final ObjectEncoderDecoder encdec;
@@ -178,15 +186,19 @@ public class RCIClient implements Closeable{
     }
  
 }
-These 4 classes (the Command, RemoteCommandInvocationProtocol, ObjectEncoderDecoder and RCIClient ) can be serve as the basis for many advanced servers as we will see next.
+```
 
-NewsFeed Server
+These 4 classes (the ```Command```, ```RemoteCommandInvocationProtocol```, ```ObjectEncoderDecoder``` and ```RCIClient```) can be serve as the basis for many advanced servers as we will see next.
+
+### **NewsFeed Server**
+
 Lets utilize our generic command invocation protocol to create a NewsFeed server. This server will allow clients to execute two commands:
-Publish news to a category by its name
-Fetch all the news which were published to a specific category
+* Publish news to a category by its name
+* Fetch all the news which were published to a specific category
 
-The main object that is manipulated by the server is the NewsFeed
-download
+The main object that is manipulated by the server is the NewsFeed:
+
+```java
 public interface NewsFeed {
  
     void clear();
@@ -196,10 +208,11 @@ public interface NewsFeed {
     void publish(String category, String news);
     
 }
+```
+
 The client commands receives the NewsFeed and manipulate it
 
-downloadtoggle
-13 lines ...
+```java
 public class FetchNewsCommand implements Command<NewsFeed> {
  
     private String category;
@@ -214,8 +227,9 @@ public class FetchNewsCommand implements Command<NewsFeed> {
     }
  
 }
-downloadtoggle
-16 lines ...
+```
+
+```java
 public class PublishNewsCommand implements Command<NewsFeed> {
  
     private String category;
@@ -233,10 +247,11 @@ public class PublishNewsCommand implements Command<NewsFeed> {
     }
  
 }
+```
+
 Note that the client works with the interface of news feed while the server will have the actual implementation. Since the news feed can be manipulated by different connection handlers in the server on the same time (as they will respond to concurrent client requests) it must be implemented as a thread safe object.
 
-downloadtoggle
-24 lines ...
+```java
 public class NewsFeedImpl implements NewsFeed {
  
     private ConcurrentHashMap<String, ConcurrentLinkedQueue<String>> newsPerCategory = new ConcurrentHashMap<>();
@@ -262,10 +277,11 @@ public class NewsFeedImpl implements NewsFeed {
         newsPerCategory.clear();
     }
 }
+```
+
 This is actually all that is needed in order to implement our protocol, we can now start the server as follows:
 
-downloadtoggle
-11 lines ...
+```java
 public class NewsFeedServerMain {
  
     public static void main(String[] args) {
@@ -278,10 +294,11 @@ public class NewsFeedServerMain {
         ).serve();
     }
 }
+```
+
 And we can use the following code to test our server
 
-downloadtoggle
-51 lines ...
+```java
 public class NewsFeedClientMain {
  
     public static void main(String[] args) throws Exception {
@@ -334,7 +351,10 @@ public class NewsFeedClientMain {
         }
     }
 }
-which will print:
+```
 
+which will print:
+```
 second client received: [System Programmer, knowledge in C++, Java and Python required. call 0x134693F]
 third client received: [new SPL assignment is out soon!!, THE CAKE IS A LIE!]
+```
