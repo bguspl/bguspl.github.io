@@ -1,13 +1,19 @@
-Application Persistence Design Patterns
-Objectives
-In this lecture we will learn about persistence design patterns. i.e, how to construct an application that uses data persistence (usually via databases). We will demonstrate the patterns you will learn using the python programming language and the sqlite database.
-Since you will need to know a little python in order to complete this lesson here is a quick guide to python.
+# **Application Persistence Design Patterns**
+
+## **Objectives**
+
+In this lecture we will learn about persistence design patterns. i.e, how to construct an application that uses data persistence (usually via databases). We will demonstrate the patterns you will learn using the python programming language and the ```sqlite``` database.
+
+Since you will need to know a little Python in order to complete this lesson here is a quick guide to python.
 
 Some parts of this section are based on the python for java programmers book/tutorial you are encouraged to read it if you wish to learn more about python.
 
-The python language have many different implementation, in this lecture we are only referring to the standard one which is CPython V2.7.
-Python in ~1 hour
+Note: The python language have many different implementation, in this lecture we are only referring to the standard one which is CPython V2.7.
+
+## **Python in ~1 hour**
+
 Python is an open-source, general purpose programming language that is dynamic, strongly-typed, object-oriented, functional, and memory-managed. Python uses an interpreter to translate and run its code and that's why it's called a scripting language.
+
 A scripting language is a programming language that uses an Interpreter to translate its source code. The interpreter reads and executes each line of code one at a time, just like a SCRIPT for a play or an audition, hence the the term "scripting language".
 We know that Java is a statically typed language, i.e. the types are checked and enforced at compile time. In contrast, Python is dynamic which means that the types are checked only at runtime. But Python is also strongly typed, just like Java. You can only execute operations that are supported by the target type.
 
@@ -15,13 +21,17 @@ Another way to think about this is that while in Java, both variables and object
 
 For example, in Java, when we declare:
 
-download
+```java
 MyType obj = new MyType()
-The variable obj is declared of type MyType and then the newly instantiated object of type MyType is assigned to it. In contrast, in Python, the same declaration would read:
+```
 
-download
+The variable ```obj``` is declared of type ```MyType`` and then the newly instantiated object of type MyType is assigned to it. In contrast, in Python, the same declaration would read:
+
+```python
 obj = MyType()
-Ignoring the missing new keyword (which Python doesn’t have), obj is simply a name that is bound to the object on the right, which happens to be of type MyType. We can even reassign obj in the very next line – obj = MyOtherType() – and it wouldn’t be a problem. In Java, this re-assignment would fail to compile while in Python, the program will run and will only fail at runtime if we try to execute an operation via obj that is incompatible with the type assigned to it at that point in time.
+```
+
+Ignoring the missing new keyword (which Python doesn’t have), obj is simply a name that is bound to the object on the right, which happens to be of type MyType. We can even reassign obj in the very next line – ```obj = MyOtherType()``` – and it wouldn’t be a problem. In Java, this re-assignment would fail to compile while in Python, the program will run and will only fail at runtime if we try to execute an operation via obj that is incompatible with the type assigned to it at that point in time.
 
 Python is object oriented and supports all the standard OOP features that Java has like creation of types using classes, encapsulation of state, inheritance, polymorphism, etc. It even goes beyond Java and supports features such as multiple inheritance, operator overloading and meta-programming. Although these features were not added to java in purpose as most of the time they lead to unneeded complexity and confusing APIs.
 
@@ -31,10 +41,11 @@ Another similarity between the languages is in terms of manual memory management
 
 Finally, the dynamic and interpreted nature of python together with its object model (which mainly defines each object as a dictionary - which similar to Java's HashMap ) leads to very slow code execution (relative to java or C++). So why use Python? given this inherent inefficiency, why would we even think about using Python? Well, it comes down to this: Python is considered much easier to use than Java/C++. It's extremely flexible and forgiving, this flexibility leads to efficient use of development time, and on those occasions that you really need speedy code, Python offers hooks into compiled libraries. In other words, choose the right tool for the job. You can read more about the performance of python in Why Python is Slow: Looking Under the Hood.
 
-The python language
+### **The python language**
+
 Lets look on some code examples in python. This is by no means a complete set of examples for all python features, but only a short introduction to get you started.
-downloadtoggle
-85 lines ...
+
+```python
 # defining a variable and assigning a value
 x = 1 # int
 x = 'hello' # string
@@ -121,10 +132,13 @@ example.print_x() # no need to pass self
 #each object in python is actually a dictionary inside, we can get access to
 #the internal dictionary using the vars builtin function
 print vars(example) #{'_x': 'the best x'}
-Organizing Code
+```
+
+### **Organizing Code**
+
 The most basic unit of source code organization in Python is the module which is just a .py file with Python code in it. This code could be functions, classes, statements or any combination thereof. Several modules can be collected together into a package. Python packages are just like Java packages with one difference: the directory corresponding to a package must contain an initializer file named __init__.py. This file can either be empty or can optionally contain some bootstrap code that is executed when the package is first imported.
 Here is an example of a phonebook application code base:
-
+```
  .
  |-- phonebook_app.py
  +-- gui
@@ -135,16 +149,21 @@ Here is an example of a phonebook application code base:
  |   |-- __init__.py
  |   |-- phone.py
  |   |-- user.py
-The main method
+ ```
+
+#### **The main method**
+
 Now that we’ve organized our application’s source code into multiple files, you must be wondering, what defines the entry point for the application? As Java programmers, public static void main is forever burnt into our brains! What’s the equivalent in Python?
+
 There is no formal notion of an application entry point in Python. Instead, when Python executes a file, e.g., when you run python foo.py, execution begins at the start of the file and all statements defined at the top-level are executed in order till we reach the end of the file.
 
 Python on the other hand have the notation of the "main module". when invoking python in the following way:
 
-python -m phonebook_app.py arg1 arg2
-python will set a special variable called __name__ to "__main__" inside the phonebook_app.py which we can use in order to execute our main code as can be seen in the example phonebook_app.py
+```python -m phonebook_app.py arg1 arg2```
 
-download
+python will set a special variable called ```__name__``` to "```__main__```" inside the phonebook_app.py which we can use in order to execute our main code as can be seen in the example phonebook_app.py
+
+```python
 import sys
  
 def main(args):
@@ -152,12 +171,15 @@ def main(args):
  
 if __name__ == '__main__':
     main(sys.argv)
-SQL Lite
+```
+
+### **SQL Lite**
+
 SQLite is an embedded SQL database engine. Unlike most other SQL databases, SQLite does not have a separate server process. SQLite reads and writes directly to ordinary disk files. A complete SQL database with multiple tables, indices, triggers, and views, is contained in a single disk file.
+
 Python has a reach set of modules (some of which we will learn about in this class), one of these libraries is sqlite3. Here is what you need to know about the sqlite3 library (for this class)
 
-downloadtoggle
-29 lines ...
+```python
 # importing the sqlite3 library will result in a sqlite3 variable with all the functions and classes of sqlite3
 import sqlite3 
  
@@ -188,25 +210,30 @@ val = cur.fetchone()
 # connections must be closed when you done with them
 conn.commit() # commit any changes not yet written to the database
 conn.close() # close the connection
+```
+
 The code above contains most of the sqlite3 methods that you will need to know for this class.
 
-Application Persistence Patterns
+## **Application Persistence Patterns**
+
 There are many ways to construct an application that needs to store and retrieve data. In this section we will create a simple application that uses sqlite for data persistence. We will then examine this application and show different design patterns and best practices.
-'Vicious' - The Assignment Tester
+
+### **'Vicious' - The Assignment Tester**
+
 Lets assume that we want to create an assignment tester for python assignments in the SPL course. This application will include a method that will check assignments and store their grades in the database. We will assume the following:
-Students has a unique id
-Assignments are numbered (e.g., assignment 1, 2,..)
-Each submitted assignment contains only a single *.py file with a method run_assignment that accept no arguments and returns a string.
-The submitted file name will be of the form <submitter student id>.py
+* Students has a unique id
+* Assignments are numbered (e.g., assignment 1, 2,..)
+* Each submitted assignment contains only a single ```*.py``` file with a method ```run_assignment``` that accept no arguments and returns a string.
+* The submitted file name will be of the form ```<submitter student id>.py```
 
 Our program will use an sqlite database with the following tables:
 students which includes the id of the student and its name
 assignments which includes the number of the assignment and a string representing the expected output of the run_assignment method of the corresponding assignment
 grades which includes the grade of each student on a specific assignment
 
-Lets examine a simple python script that provides the behavior defined above
-downloadtoggle
-99 lines ...
+Lets examine a simple python script that provides the behavior defined above:
+
+```python
 #file: vicious.py
  
 import os
@@ -307,10 +334,11 @@ def print_grades():
     print 'grades:'
     for row in cur.fetchall():
         print 'grade of student {} on assignment {} is {}'.format(*row)
+```
+
 Assume that we have 3 students in our class: Alice, Bob and Chris, with the corresponding ids: 1111, 2222 and 3333. In addition, assume that they submitted the following files that we collected and put inside the 'assignments' library:
 
-downloadtoggle
-10 lines ...
+```python
 #1111.py
 def run_assignment():
   return 'spl'
@@ -322,8 +350,11 @@ def run_assignment():
 #3333.py
 def run_assignment():
   return 'spl'
+```
+
 We can now open the python interpreter in the directory that contains our script ('vicious.py') and execute our tester as follows:
 
+```python
 > python
 
 >>> from vicious import *
@@ -339,22 +370,26 @@ grades:
 grade of student Alice on assignment 1 is 100
 grade of student Bob on assignment 1 is 0
 grade of student Christ on assignment 1 is 100
+```
+
 This code works but the logic of the tester is coupled with the logic of the database, this coupling has the following drawbacks:
 
-If we will change some part of our database (e.g., some table name) we will have to modify our application logic in multiple functions (and maybe multiple files)
-If we will change our database type (e.g., from sqlite3 to sqlite4) we will have to go over all our code and adapt it
-If we add more modules that wants to use our database, they will have to import the 'vicious' module, even if they does not need to 'grade' assignments
-Database queries are a relatively long operation. Many times, we want to cache some of our queried so that we will not have to re-query the database if we need it again. In the way our application is designed now, our application logic will have to include cache related logic (everywhere) which will make our application code much more complicated.
+* If we will change some part of our database (e.g., some table name) we will have to modify our application logic in multiple functions (and maybe multiple files)
+* If we will change our database type (e.g., from sqlite3 to sqlite4) we will have to go over all our code and adapt it
+* If we add more modules that wants to use our database, they will have to import the 'vicious' module, even if they does not need to 'grade' assignments
+* Database queries are a relatively long operation. Many times, we want to cache some of our queried so that we will not have to re-query the database if we need it again. In the way our application is designed now, our application logic will have to include cache related logic (everywhere) which will make our application code much more complicated.
 
 These drawbacks will only get worse when our code will grow and more modules will be added. An obvious solution is to decouple the persistence related code from our application logic as we will see next.
-Data Persistence Layer
+
+### **Data Persistence Layer**
+
 The obvious way to solve the issues above is to divide our code into:
-Persistence Layer: a group of files which is used to communicate between the application and DB.
-The rest of the application logic - which will use the persistence layer to store and query data.
+* Persistence Layer: a group of files which is used to communicate between the application and DB.
+* The rest of the application logic - which will use the persistence layer to store and query data.
 
 The following is a rewrite of our 'Vicious' assignment checker with separated Persistence layer (in the persistence.py file)
-downloadtoggle
-44 lines ...
+
+```python
 #file persistence.py
  
 import sqlite3
@@ -400,10 +435,11 @@ class _PersistenceLayer(object):
 psl = _PersistenceLayer()
  
 atexit.register(psl._close)
+```
+
 Given the above persistence layer, our application code became much simpler:
 
-downloadtoggle
-24 lines ...
+```python
 #file: vicious.py
  
 from persistence import psl
@@ -429,20 +465,25 @@ def print_grades():
     print 'grades:'
     for grade in psl.get_all_grades():
         print 'grade of student {} on assignment {} is {}'.format(*grade)
-DAO, DTO and the Repository design patterns
+```
+
+### **DAO, DTO and the Repository design patterns**
+
 Lets re-examine our application code, in vicious.py we can spot two "problems"
-In the first line of the grade method we getting the expected_output of an assignment from the persistence layer. What if we add more fields to the assignment, should we create a new method to get each field? what if we want all the fields?
-Inside the function print_grades we can see that we assuming that get_all_grades returns a list of tuples such that for each tuple the student name is the first, the assignment number is second and the grade is third. If we add fields to the grades table this may break our assumption. What if we will write another method that need all the grades but does not need the student name, instead it needs the student id - should we create another method get_all_grades2?
+* In the first line of the grade method we getting the expected_output of an assignment from the persistence layer. What if we add more fields to the assignment, should we create a new method to get each field? what if we want all the fields?
+* Inside the function print_grades we can see that we assuming that get_all_grades returns a list of tuples such that for each tuple the student name is the first, the assignment number is second and the grade is third. If we add fields to the grades table this may break our assumption. What if we will write another method that need all the grades but does not need the student name, instead it needs the student id - should we create another method get_all_grades2?
 
 The problems above can be solved using the DTO (Data Transfer Objects) and DAO (Data Access Objects) design pattern. This pattern defines two types of objects
-DTOs: these are objects that are passed to and from the persistence layer. When passed from the persistence layer to the application logic, they contains the data retrieved from the database. When passed from the application logic to the persistence layer, they contains the data that should be written to the database. In most cases, these objects represents a single table. In our case, we need to construct classes for the following DTOs: Student, Grade and Assignment.
-DAOs: these objects contains methods for retrieving and storing DTOs, In most cases, each DAO is responsible for a single DTO. In our case we need 3 DAOs: one that knows how to handle students, one for assignments and one for grades.
 
-In many cases, DTO and DAOs are not sufficient, since each DAO only knows how to handle a specific DTO, where should we put our create_tables method? and what if we want to have queries that span multiple tables (using join)? which DAO should hold the methods for these queries?
+* DTOs: these are objects that are passed to and from the persistence layer. When passed from the persistence layer to the application logic, they contains the data retrieved from the database. When passed from the application logic to the persistence layer, they contains the data that should be written to the database. In most cases, these objects represents a single table. In our case, we need to construct classes for the following DTOs: ```Student```, ```Grade``` and ```Assignment```.
+
+* DAOs: these objects contains methods for retrieving and storing DTOs, In most cases, each DAO is responsible for a single DTO. In our case we need 3 DAOs: one that knows how to handle students, one for assignments and one for grades.
+
+In many cases, DTO and DAOs are not sufficient, since each DAO only knows how to handle a specific DTO, where should we put our ```create_tables``` method? and what if we want to have queries that span multiple tables (using join)? which DAO should hold the methods for these queries?
+
 The repository design pattern can help us with these questions. A "repository" is similar to a DAO but it manages group of related DTOs. In our case, we can rewrite our presentation layer as follows:
 
-downloadtoggle
-97 lines ...
+```python
 #file: persistence.py
  
 import sqlite3
@@ -541,10 +582,11 @@ class _Repository(object):
 # the repository singleton
 repo = _Repository()
 atexit.register(repo._close)
+```
+
 We can then make some small adaption to our main program logic as follows:
 
-downloadtoggle
-26 lines ...
+```python
 from persistence import repo
  
 import os
@@ -572,24 +614,28 @@ def print_grades():
  
         print 'grade of student {} on assignment {} is {}'\
             .format(student.name, grade.assignment_num, grade.grade)
-Automating things: ORMs and generic DAOs
+```
+
+### **Automating things: ORMs and generic DAOs**
+
 If we examine the persistence code that we saw above we may notice several repeating patterns in the different DAOs. The different insert methods look the same but operates on different tables, the same observation holds for the different find methods. As good programmers, if we spot a repeated code, we should think how to unify it.
+
 The work that is done by the different DAOs involves converting object to and from database records, the technical name for this process is called ORM - Object Relational Mapping. If we can create a generic ORM that knows how to convert data to any DTO than we can use it in order to create a generic DAO class. In order to create such generic ORM we need to make some assumptions about our DTO classes:
 
-Each DTO class represents a single table
-The different DTO classes are obeying a common naming conventions: A DTO class named Foo will represents a table named foos
-The different DTO classes has a constructor that accept all their fields, the name of the constructor arguments is the same as the name of the fields
-The name of the fields of each DTO class is the same as the column names in the database
+* Each DTO class represents a single table
+* The different DTO classes are obeying a common naming conventions: A DTO class named Foo will represents a table named foos
+* The different DTO classes has a constructor that accept all their fields, the name of the constructor arguments is the same as the name of the fields
+* The name of the fields of each DTO class is the same as the column names in the database
 
-If you examine these restrictions closely you will find out that by examining the code of a DTO class that follow these restrictions we can easily infer how the corresponding database table looks like. Since python is an interpreted language, it actually contains modules that help us query the interpreter about the structure of any class (including its methods, constructors etc.). One of this modules is called inspect and it contains the method getargspec that returns the names of the arguments of a function or a constructor.
-As our generic ORM need to convert from database data (that is retrieved by a cursor) to a DTO, we can use the getargspec method in order to get the name of the arguments in the constructor of the DTO that we want to convert our database data to. Recall that we assume that these arguments names are the same as the columns names of the data to convert.
+If you examine these restrictions closely you will find out that by examining the code of a DTO class that follow these restrictions we can easily infer how the corresponding database table looks like. Since python is an interpreted language, it actually contains modules that help us query the interpreter about the structure of any class (including its methods, constructors etc.). One of this modules is called ```inspect``` and it contains the method ```getargspec``` that returns the names of the arguments of a function or a constructor.
 
-But getting the structure of the DTO class is only half of the information our ORM needs, the other half is getting the structure of the data that it needs to convert from. Recall that this data came from a cursor object, luckily for us, the cursor object has a function named description which returns the column names of the last query. it returns a list which contains a 7-tuple for each column where the first item in this tuple is the column name.
+As our generic ORM need to convert from database data (that is retrieved by a cursor) to a DTO, we can use the ```getargspec``` method in order to get the name of the arguments in the constructor of the DTO that we want to convert our database data to. Recall that we assume that these arguments names are the same as the columns names of the data to convert.
 
-Using the information above, we can now create a generic ORM method, the method will receive a cursor and a DTO type, it will examine the constructor arguments of the DTO class and the column names inside the cursor. It can then create a mapping array col_mapping such that for each constructor argument in position i, col_mapping[i] is the index of the corresponding column inside the data stored in the cursor. Finally it will loop over the data inside the cursor and use the col_mapping in order to construct and return one DTO object per data row.
+But getting the structure of the DTO class is only half of the information our ORM needs, the other half is getting the structure of the data that it needs to convert from. Recall that this data came from a ```cursor``` object, luckily for us, the ```cursor``` object has a function named ```description``` which returns the column names of the last query. it returns a list which contains a 7-tuple for each column where the first item in this tuple is the column name.
 
-downloadtoggle
-51 lines ...
+Using the information above, we can now create a generic ORM method, the method will receive a cursor and a DTO type, it will examine the constructor arguments of the DTO class and the column names inside the cursor. It can then create a mapping array ```col_mapping``` such that for each constructor argument in position ```i```, ```col_mapping[i]``` is the index of the corresponding column inside the data stored in the cursor. Finally it will loop over the data inside the cursor and use the ```col_mapping``` in order to construct and return one DTO object per data row.
+
+```python
 #file dbtools.py
  
 import inspect
@@ -642,14 +688,17 @@ class Dao(object):
         c = self._conn.cursor()
         c.execute('SELECT * FROM {}'.format(self._table_name))
         return orm(c, self._dto_type)
-The code above used the join function of the type string. This method receive a sequence (e.g., list or tuple) and returns a string, which is the concatenation of the strings in the sequence. The separator between elements is the string providing this method. For example, 'x'.join(['a', 'b', 'c']) = 'axbxc'.
+```
+
+Note: The code above used the ```join``` function of the type string. This method receive a sequence (e.g., list or tuple) and returns a string, which is the concatenation of the strings in the sequence. The separator between elements is the string providing this method. For example, ```'x'.join(['a', 'b', 'c']) = 'axbxc'```.
+
 The code above contains both an implementation of a generic orm function and a generic Dao class that use it. The generic Dao class is not completed. It only supports getting all the items in the table. What if we want to get a specific item? (in our example application, we want to get an assignment with a specific num).
 
-We can support such queries by creating a find function that receives a dictionary with column/value entries. We can then construct a select statement that includes a WHERE clause which represents the conjunction of the keys in the dictionary. For example, if we want to get an assignment with num=7, we will be able to do so by calling find({'num':7}).
+We can support such queries by creating a find function that receives a dictionary with column/value entries. We can then construct a select statement that includes a WHERE clause which represents the conjunction of the keys in the dictionary. For example, if we want to get an assignment with ```num=7```, we will be able to do so by calling ```find({'num':7})```.
 
 Python actually has a special syntax for methods that receives dictionary like our find method using the ** operator.
 
-download
+```python
 def foo(dict):
   print dict
  
@@ -658,10 +707,11 @@ def cool_foo(**dict):
  
 foo({'a':1, 'b':2}) #prints {'a':1, 'b':2}
 cool_foo(a=1, b=2) #prints {'a':1, 'b':2}
+```
+
 With this knowledge, we can add the find method to our generic Dao class:
 
-downloadtoggle
-12 lines ...
+```python
 class Dao(object):
   #previous code ...
  
@@ -675,10 +725,11 @@ class Dao(object):
         c = self._conn.cursor()
         c.execute(stmt, params)
         return orm(c, self._dto_type)
+```
+
 This conclude our generic Dao class, we can now adapt our persistence layer as follows:
 
-downloadtoggle
-43 lines ...
+```python
 #file: persistence.py
  
 import sqlite3
@@ -723,10 +774,11 @@ class Repository(object):
 # singleton
 repo = Repository()
 atexit.register(repo._close)
+```
+
 And to so, our assignment checker has the following minor changes:
 
-downloadtoggle
-26 lines ...
+```python
 from persistence import *
  
 import os
@@ -754,3 +806,4 @@ def print_grades():
  
         print 'grade of student {} on assignment {} is {}'\
             .format(student.name, grade.assignment_num, grade.grade)
+```
