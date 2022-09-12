@@ -22,9 +22,9 @@
 ### Concurrency
 [Processes and Threads](./class_material/procs-threads-and-fibers.md)
 
-[Thread Safety: Definition and Immutable Objects](./class_material/thread-safty1.md)
+[Thread Safety: Definition and Immutable Objects](./class_material/thread-safety1.md)
 
-[Thread Safety: Synchronization](./class_material/thread-safty2.md)
+[Thread Safety: Synchronization](./class_material/thread-safety2.md)
 
 [Liveness and Performance](./class_material/liveliness-and-performance.md)
 
