@@ -48,7 +48,7 @@ The primitive operations that the processor uses with relation to memory are:
 * ```Write (Register), (Address)```: copy the content of the (Register) to the memory cell at (Address).
 
 For example, consider the following Java code:
-```
+```java
 int i = 10;
 int j = 20;
  
@@ -120,7 +120,7 @@ Procedural calls can be viewed in a stack-like manner; each procedure's activati
 * The return address - Where to return to when the procedure ends
 
 For example, consi der the following code:
-```
+```java
 public static void foo(int a, bool b){
         int var_a;
         int var_b;
@@ -146,7 +146,7 @@ Depending on the machine you are using, the way that the stack is manipulated in
 In C calling convention (also known as cdecl) parameters are loaded to the stack from right to left by the caller and the return value is commonly stored in the eax register (although on some cases ecx and edx are also used). Finally, the caller is also responsible for removing the pushed parameters from the stack after the invoked function returns.
 
 For example, Observe the following code:
-```
+```java
 int sum(int a, int b);{
     int result = a + b;
     return result;
@@ -193,7 +193,7 @@ Sometimes, programs need to store information which is relevant across function 
 Before we go into the details of how usually heaps are implemented by an RTE, let us see where we have made use of the heap in Java. In Java, there is a clear distinction between what is saved on the stack and what is stored on the heap. **In Java, all local variables of methods are stored on the stack and all Objects, are stored on the heap**.
 
 Consider the following code snippet:
-```
+```java
 int i = 5;
 Object o = new Object();
 ```
@@ -256,7 +256,7 @@ We later discuss three important methods of objects in C++: The destructor, copy
 
 Depending on your perspective, syntax choices for object allocation and initialization in C++ embody either an embarrassment of riches or a confusing mess. 
 The following are examples of stack allocations and initializations:
-```
+```c++
 int x(0); // initializer is in parentheses
 int y = 0; // initializer follows "="
 ObjectType o(10); // call ObjectType's ctor with argument 10
@@ -264,7 +264,7 @@ ObjectType o2; // call ObjectType's default constructor
 ```
 
 The following are examples of syntax that seem like a regular stack allocation but does not do what you expect
-```
+```c++
 // In modern C++, it behaves just like `ObjectType o3(10);`
 // but some old C++ compilers created a new ObjectType on the stack by calling ObjectType's ctor
 // with argument 10 then call the copy constructor to copy the new object into o3
@@ -283,7 +283,7 @@ ObjectType o2{}; // call ObjectType's default constructor
 
 Objects on the stack and pass by value
 Consider this example:
-```
+```c++
 class Counter {
   public: 
     int i;
@@ -340,7 +340,7 @@ destructor
 ##### **Heap**
 
 As everything in C++ can be allocated on the stack, so can everything be allocated on the heap. Even primitive types. For example, we can allocate an ```int``` or an object of class ```Foo``` on the stack:
-```
+```c++
 int *i = new int(8);
 Foo *foo = new Foo(42);
 ```
@@ -355,7 +355,7 @@ Please notice that the returned value of ```new a_type(vars)``` is always of typ
 The memory is initialized using the constructor we requested (which must exists, otherwise our code will not compile).
 
 In contrast to Java, memory allocated on the heap in C++ is never garbage collected, and it is the responsibility of the programmer to free the memory. For example, to free the memory we allocated earlier we will use the following code:
-```
+```c++
 delete i;
 delete foo;
 ```

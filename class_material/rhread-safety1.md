@@ -20,7 +20,7 @@ One major problem of acheiving Multi-Threaded Safety is that the compiler is una
 
 **Example: Consistency of a class state** Let us consider the following code example. We have a class called Even, which should contain a counter that is kept even at all times. We want to support incrementing the counter, but wish to keep it even. We start out with the following code:
 
-```
+```java
 /* A simple counter class, which keeps an even counter */
 class Even {
  
@@ -59,7 +59,7 @@ For example, in class ```Even```, the precondition of the ```add()``` method is 
 
 Let us write now the ```Even``` class using those new definitions. please notice the new notations used in the source:
 
-```
+```java
 /* A simple counter class, which keeps an even counter */
 class Even {
  
@@ -129,7 +129,7 @@ How can we reason about code correctness? We want to write code in such a way th
 
 When we run in the hybrid execution model described in the previous lecture, we have additional risks that can make code that looks correct run in an incorrect manner. Here is an example.
 
-```
+```java
 /* a simple class which has a reference to an Even object. */
 class Adder implements Runnable {
  
@@ -192,7 +192,7 @@ lines 5 to 6
 After the first thread finishes the first ```add()``` invocation, the value of ```counter_``` is ```2```. After the second thread finishes the first invocation, the value returned to the second thread is ```5```!.
 you might just say that we are to blame for this catastrophic event, since we incremented ```counter_``` twice. O.K, continuing this thought, let us change the relevant code:
 
-```
+```java
 Class Even {
  ...
   public int add() {
@@ -288,7 +288,7 @@ The rest of this lecture discusses Immutability.
 The most simple and elegant solution of ensuring thread safety for our objects is ensuring that no thread may change the internal state of the object. This must be done at the **design** stage. That means that you may not be able to make a class immutable after it was already used as non immutable without re-factoring large parts of your code. You should decide in advance which of your objects would be immutable.
 As an example, consider the following implementation of the class Even:
 
-```
+```java
 /* A simple counter class, which keeps an even counter */
 class Even {
  
@@ -348,7 +348,7 @@ This implementation of Even is *immutable*, meaning that once a new object of th
 
 Another kind of objects that may be immutable are helper classes, for example:
 
-```
+```java
 /* a helper for some Server class */
 class Relay{
  
@@ -388,7 +388,7 @@ In this example we give a degenerate implementation of the Observer design patte
 
 [^DesignPatterns]: Design patterns are general reusable solution to a commonly occurring problem in software design. A design pattern is not a finished design that can be transformed directly into code. It is a description or template for how to solve a problem that can be used in many different situations. During the course we will encounter some design patterns and you are encouraged to learn more about this topic.
 
-```
+```java
 public Interface EventListener 
 {
    public onEvent();
@@ -410,7 +410,7 @@ public class EventListenerImpl implements EventListener {
 In example 1, 'this' of EventListener escaped during construction of the class. This code is in danger of exposing an incompletely constructed EventListener object to other threads. Once registered, eventSource can call the onEvent method although the class has not yet been constructed.
 
 **Example 2**
-```
+```java
 public class EventListener2  {
  
 //inner class

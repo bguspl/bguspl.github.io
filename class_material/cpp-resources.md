@@ -47,7 +47,7 @@ In the following example, the IntArray holds an array of ints. The array is dyna
 
 The following code shows an implementation of the ```IntArray``` class. For brevity reasons, the class is both declared and implemented on the same file - note that usually it will not be the case (as will be described in the next lecture)
 
-```
+```c++
 #include <iostream>
  
 using namespace std;
@@ -97,7 +97,7 @@ The rule of 3 is is a rule of thumb in C++ (prior to C++11) that claims that eac
 
 Each time we will use an object of this class we will have a memory leak as the array owned by the class is never freed:
 
-```
+```c++
 void use_int_array() {
    IntArray array = IntArray(10);
     
@@ -119,7 +119,7 @@ int main(int argc, char** argv) {
 The resulting code will create a memory leak of 30 ints - make sure you understand why!
 
 Since the class owned the array resource it is responsible for releasing it. In order to do so we need to add an appropriate destructor to our ```IntArray``` class:
-```
+```c++
 class IntArray {
   //...
   public: 
@@ -141,7 +141,7 @@ Unless explicitly defined, C++ will automatically generate for each class a defa
 
 **Copy constructor** is a special type of constructor which receives a single argument of the same type of the class and copies the values from this argument into ```this```. The default copy constructor perform shallow copying i.e., in our class we will have implicitly the following constructor:
 
-```
+```c++
 class IntArray {
   //...
   public: 
@@ -155,7 +155,7 @@ class IntArray {
 
 **Copy Assignment Operator** is a method that tells c++ what to do when someone attempt to assign a new value to an already initialized value. Like in the case of copy constructor, C++ will automatically generate a default copy assignment operator for us that perform shallow copy:
 
-```
+```c++
 class IntArray {
   //...
   public: 
@@ -170,7 +170,7 @@ class IntArray {
 
 C++ uses the copy constructor and the copy assignment operator automatically:
 
-```
+```c++
 IntArray return_int_array() { ... }
 void accept_int_array(IntArray array) { ... }
  
@@ -190,7 +190,7 @@ This behavior can lead to the Memory Addresses Aliasing problem which is a memor
 
 This behavior can be solve by creating a custom copy constructor and copy assignment operator:
 
-```
+```c++
 class IntArray {
   //...
  
@@ -240,7 +240,7 @@ The additional required methods are the move constructor and the move assignment
 
 Consider the following example code:
 
-```
+```c++
 IntArray return_int_array() { ... }
 void accept_int_array(IntArray array) { ... }
  
@@ -261,7 +261,7 @@ Can we do better? Yes! using C++'s rvalue references.
 
 Since we know that the temporary variable that is sent to the copy constructor/assignment operator can never be referenced again we could have just "steal" or "move" its resources instead of fully copy them. In order to accomplish that C++11 introduce the concept of Move constructors and Move assignment operators. These methods typically "steal" the resources held by their argument rather than make copies of them, for example in order to make the code above more performant, we could have add the following methods to our class:
 
-```
+```c++
 class IntArray {
   //...
   void steal(IntArray& other) {
@@ -294,7 +294,7 @@ Templates are the foundation of generic programming in C++. You can think of a t
 
 Templates are defined using the template keyword, afterwhich are a list of compile time variables surrounded by angle brackets (e.g., ```template <typename A, typename B>``` defines a template with two compile time variables A and B both are name of types like int, long or Foo). Following the template declaration line you may write a class, struct or function which are the subject of this template.
 
-```
+```c++
 template <typename T>
 T argmax(T a, T b) {
   if (a > b) return a;
@@ -347,7 +347,7 @@ RAII can be summarized as follows:
 
 The following is an example of a simple RAII smart pointer template that uses reference counting:
 
-```
+```c++
 #include <iostream>
 using namespace std;
  
@@ -460,7 +460,7 @@ The ```shared_ptr``` type is a smart pointer in the C++ standard library that is
 
 Its usage have some similarities to the SmartPointer we saw above:
 
-```
+```c++
 void find_cat(shared_ptr<Dog> d) {...}
  
   shared_ptr<Dog> bingo_p(new Dog("Bingo"));
@@ -471,8 +471,8 @@ void find_cat(shared_ptr<Dog> d) {...}
 ## **Arrays and Objects**
 We have seen how to allocate arrays of primitive types in C++, and saw that each cell of the array is initialized using the default constructor. This holds also for objects. Consider the following code:
 
-```
-I shape_array[42];
+```c++
+Shape shape_array[42];
  
 for (int i=0; i<42; i++)
 {

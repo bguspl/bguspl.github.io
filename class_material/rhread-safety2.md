@@ -6,7 +6,7 @@ In the last lecture we discussed immutability as a way to guarantee the safety a
 
 The most basic mechanism Java offers the programmer to facilitate the safety of concurrent objects is called synchronization. Think of two threads which try to access the same object concurrently. To preserve the safety of the object, those two (or more) threads need to synchronize their access to the internal state of the object. For example, consider the (mutable) class ```Even``` from the previous lecture:
 
-```
+```java
 class Even {
  
    /* the internal state counter 
@@ -37,7 +37,7 @@ Java provides native support for the concept of monitors - but before we can und
 We will start by introducing the problem of Memory Visibility,
 Visibility determines when threads can see values (of all types, even references to objects) written to memory by other threads. Consider the following code:
 
-```
+```java
 class Work { 
   boolean done = false; 
  
@@ -68,7 +68,7 @@ It is important to understand that "compiler" in this context doesn't mean javac
 
 Let us now continue to show another problem - Instruction reordering: Reordering is what happens when the compiler and the RTE change our code behind our back, to better optimize it[^InlineExpansion]. For example, the compiler may decide to convert the following code:
 
-```
+```java
 int i=10;
 int b=11;
  
@@ -78,7 +78,7 @@ b++;
 
 into this code:
 
-```
+```java
 int i=10;
 int b=11;
 ....
@@ -91,7 +91,7 @@ The compiler must be able to re-order simple instructions to optimize our code. 
 
 If there was a "must-happen-before" constrain in our example then the compiler would not reorder it. For example:
 
-```
+```java
 int i=10;
 int b=11;
 ....
@@ -104,7 +104,7 @@ b++;
 [^InlineExpansion]: Inline expansion, or inlining, is a compiler optimization that replaces a function call site with the body of the callee. [More](http://en.wikipedia.org/wiki/Inline_expansion)
 
 In fact "must-happen-before" constrained would happen just because we call any other (non-inline) function in the middle since the compiler would not go recursively into that function to see what it is doing:
-```
+```java
 int i=10;
 int b=11;
 ....
@@ -119,7 +119,7 @@ The compiler only guarantees safe reordering in a non-concurrent execution envir
 
 Lets start with an example of using monitors in order to solve our problem and then we will attempt to understand what we actually did.
 Consider the following code:
-```
+```java
 class Even {
   private int counter = 0;
  
@@ -144,7 +144,7 @@ The figure above illustrates a synchronization on this, notice the "attic" part 
 
 It is common to synchronize whole instance methods on the this object (like the add and get methods we saw) and therefore there is a "shortcut" for this in java, i.e., the code above can be written like this:
 
-```
+```java
 class Even {
   private int counter = 0;
  
@@ -168,7 +168,7 @@ Monitors may be in one of two states; either in the possession of a thread or av
 
 When we declared the ```add()``` method as ```synchronized```, the compiler added something like the following pseudo code to the method:
 
-```
+```java
 public synchronized int add(){
     takeMonitorIfNotAlreadyPossessIt(this);  
     try {  
@@ -209,7 +209,7 @@ In case we identify disjoint groups of methods in a given class, which access di
 
 The class ```Point``` for example, which defines the coordination of a given point in a two-dimensional space, contains one group of methods - ```left```, ```right```, ```getX``` - which access the ```_x``` field, and another group of methods - ```up```, ```down```, ```getY``` - which access the ```_y``` field. Synchronizing each group on its own lock object will allow concurrent application of ```up/down/getY``` and ```left/right/getX```.
 
-```
+```java
 class Point {
  
    private long _x, _y;
@@ -253,7 +253,7 @@ class Point {
 
 Lets create a simple "thread safe" linked list
 
-```
+```java
 public class LinkedList<T> {
  
     private Link<T> head = null;
@@ -291,7 +291,7 @@ public class LinkedList<T> {
 
 Now let us consider the following code:
 
-```
+```java
 class Example {
  
   public void doSomething(LinkedList<Integer> l) {
@@ -309,7 +309,7 @@ The reason is that after calling the ```l.contains``` method some other thread m
 
 Is this solve the issue?
 
-```
+```java
 class Example {
  
   public synchronized void doSomething(LinkedList<Integer> l) {
@@ -328,7 +328,7 @@ There exist two design patterns which can help us solve this issue. Each one is 
 
 **Composition** (also named Containment) is about wrapping our ```LinkedList``` class in a new class while exposing all the original ```LinkedList``` methods and adding new ones that we need, e.g.,:
 
-```
+```java
 class BetterLinkedList<T> {
   private LinkedList<T> delegate = new LinkedList<T>();
  
@@ -349,7 +349,7 @@ As seen in the example, Composition (also named Containment) is about wrapping a
 
 **Client Side Locking**
 Sometimes we may know the identity of the object which is used for synchronization. For example, we may know that the LinkedList class uses its own monitor (lock) to achieve synchronization. We can then use the following implementation:
-```
+```java
 class Example {
  
   public void doSomething(LinkedList<Integer> l) {
@@ -371,7 +371,7 @@ In general, client-side locking is NOT a good idea: it gives the responsibility 
 
 Lets now say that we want to be able to iterate over our list so we modify it as follows:
 
-```
+```java
 public class LinkedList<T> implements Iterable<T> {
  
     private Link<T> head = null;
@@ -401,7 +401,7 @@ public class LinkedList<T> implements Iterable<T> {
 
 now we can use our code as follows:
 
-```
+```java
 public void printList(LinkedList<Integer> l) {
   for (Integer i : l) {
     System.out.println(i);
@@ -419,7 +419,7 @@ A better solution is a **fail-fast** iterators - which are iterators that detect
 
 So how we can change our iterator to fail-fast? we need a way to detect a change in the LinkedList. A nice design pattern that can help us with it is the version iterator - It is pretty self explanatory:
 
-```
+```java
 public class LinkedList<T> implements Iterable<T> {
  
     private Link<T> head = null;
@@ -470,7 +470,7 @@ The ```Lock``` interface in Java introduces a key functionality: the possibility
 
 Traditionally, in sequential programming - methods refuse to perform actions unless they can ensure that these actions will succeed, in part by first checking their preconditions. For example, let us add a ```removeFirst``` method to our ```LinkedList```:
 
-```
+```java
 public class LinkedList<T> {
  
     private Link<T> head = null;
@@ -504,7 +504,7 @@ Guards can be considered as a special form of conditionals. In sequential progra
 
 For example, in our ```LinkedList```'s ```removeFirst``` implementation, if we found that the linked list is empty we can choose to wait for it to get field instead of throwing an exception:
 
-```
+```java
 public class LinkedList<T> {
  
     private Link<T> head = null;
@@ -544,7 +544,7 @@ To be more formal, the "attic" is called the monitor "Waiting Set", a call to ``
 #### **Common pitfalls - guard atomically**
 
 In the LinkedList code we saw above we may notice that the wait function is called inside a loop, can we replace this loop with an if?
-```
+```java
 public class LinkedList<T> {
  
     private Link<T> head = null;
@@ -577,7 +577,7 @@ What if we are sure that there is only one consumer thread? can we replace the `
 
 In the previous sections we emphasis that if using synchronization you should synchronize the smallest possible code blocks - taking this into consideration, will the following code work?
 
-```
+```java
 public class LinkedList<T> {
  
     private Link<T> head = null;
@@ -629,7 +629,7 @@ A Semaphore is an abstraction of an object which controls a bounded number of pe
 
 For example, say that we want to have a code that is allowed to be executed by no more than 2 threads at once we can implement it as follows:
 
-```
+```java
 public class TwoAllwed {
  
     private Semaphore sem = new Semaphore(2);
@@ -649,7 +649,7 @@ You should read more about semaphores by looking at the [Semaphore API](https://
 
 You may consider the following (very simple) implementation (this code is only shown for explanatory purposes):
 
-```
+```java
 class Semaphore {
     private final int permits_;
     private int free_;
@@ -693,7 +693,7 @@ The mechanism of reader/writer is available in the java.concurrent package in th
 
 This is how ReadWriteLock is used:
 
-```
+```java
 ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
  
 readWriteLock.readLock().lock();
@@ -713,7 +713,7 @@ try {
 
 In the following implementation, several readers can access the resource together (to read it), but only one writer can access the resource at any given time. So for example, Readers will wait if any writer is pending (new data is about to be added, so wait for it first). Only one writer at a time can access the shared resource, and only if no readers are currently reading from it.
 
-```
+```java
 public abstract class RW {
   protected int activeReaders_ = 0;  // threads executing read_
   protected int activeWriters_ = 0;  // always zero or one
@@ -778,7 +778,7 @@ Note this code handles only the locking while the actual access to the resource 
 Most CPU operations (like add, mov etc.) are atomic - i.e., the instruction result can be seen as if it "happened at once". We only need to use synchronization if we want several such instructions to be atomic.
 Most CPUs today offers a set of atomic instructions that designed for multi-threading - an important one is compare-and-set or CAS. CAS is an instruction that behaves as follows:
 
-```
+```java
 boolean cas(int target, int oldValue, int newValue) {
   if (target == oldValue) {
     target = newValue;
@@ -793,7 +793,7 @@ The ```cas``` instruction is atomic which means that threads sees its result as 
 
 Although it does not look like one, the ```cas``` instruction is extremely useful and powerful. Java has several classes (all beginning with Atomic* that allow us to use ```cas```). To understand its power, lets rewrite the ```Even``` counter class using ```AtomicInteger```:
 
-```
+```java
 class Even {
   private AtomicInteger counter = new AtomicInteger(0);
  
@@ -822,7 +822,7 @@ This kind of implementation is called lock-free. Basically, if threads cannot no
 
 Can we create a lock-free implementation for data structures that require operations that are more complex than adding two numbers? YES, in many cases the basic idea stays the same, copy the cas target to a local variable, change this variable locally, try to commit your change using cas, if failed, retry - this is it!. Lets see another example and implement our linked list lock-free:
 
-```
+```java
 public class LinkedList<T> {
  
     private AtomicReference<Link<T>> head = new AtomicReference(null);
@@ -853,7 +853,7 @@ In other words, in programming - there is no silver bullet - you need to master 
 
 The implementation of lock-free data structures can be tricky to implement. One approach that may seem generic and easy is the following:
 
-```
+```java
 public class MyClass {
 private AtomicBoolean lock = new AtomicBoolean(false);
  
@@ -870,7 +870,7 @@ private AtomicBoolean lock = new AtomicBoolean(false);
 
 And in the case of class Even, we may use
 
-```
+```java
 class Even {
    private volatile int val;
    private final AtomicBoolean lock;

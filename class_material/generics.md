@@ -5,7 +5,7 @@ Java is a statically typed language, meaning that the type of each variable is k
 
 Type safety[^UntypedLanguages]S is about making sure the Object referenced by a variable is indeed of a type compatible with the type of the variable, i.e., it is of the same class, of a sub-class or the type is an interface and the object implements it. In general, the compiler verifies type safety for us. If we try to assign a string value to an integer variable, the compiler will flag this as an error. There are, however, language constructs which allow the programmer to bend the rules of type safety a little bit. These constructs are necessary to enable the programmer to write more generic code. You have encountered such constructs in the past, whenever you wrote code like this:
 
-```
+```java
 SomeObject so = getAnObject();
 if (so instanceof SomeClass){
    SomeClass sc = (SomeClass) so;
@@ -15,7 +15,7 @@ if (so instanceof SomeClass){
 
 Another example you have encountered is when using standard Java containers, such as ```ArrrayList```. Consider an ```ArrayList``` of integers:
 
-```
+```java
 List l = new ArrayList();
 l.add(2); //auto boxing primitive int to Integer
 l.add(false); //auto boxing primitive boolean to Boolean
@@ -28,7 +28,7 @@ Now, since both the ```get()``` and ```add()``` methods of the class ```List``` 
 Starting from java 1.5, generics were introduced. The idea of generics is similar to C++ templates but much simpler and less powerful. Traditionally java takes ideas from C++ and simplifies them - providing a less powerful but much more easy to use alternatives, one additional example is the fact that while java supports inheritance, it only support single direct ancestor which is easier to use but less powerful than the multiple inheritance mechanism of C++. Like in C++ Java's generics can be defined on methods, classes and interfaces.
 Lets first examine a simple example of a generic pair class
 
-```
+```java
 public class Pair<X,Y> {
   private X x;
   private Y y;
@@ -61,7 +61,7 @@ Some notes about the above code:
 
 And now lets see how one can define a generic method
 
-```
+```java
 public class Example {
     public static <T extends Comparable<T>> T argmax(T... array) { //variadic function - T... is the same as T[]
       if (array == null || array.length == 0) {
@@ -101,7 +101,7 @@ Some notes about the above code:
 
 In addition to not being able to work on primitive types, Generics are "erased" at runtime which means that while at complie time the compiler knows that ```List<Integer>``` is not a ```List<String>``` at run time, both of them looks like ```List<Object>```. This limitation can be seen in the following code:
 
-```
+```java
 public class Example<X,Y> {
     void take(X x) {...}
     void take(Y y) {...}
@@ -109,11 +109,11 @@ public class Example<X,Y> {
 ```
 The above code will not compile as the compiler knows that at runtime the defined methods has the same signature. Another limitation is that arrays of generic types cannot be instantiated directly i.e., the following will not compile:
 
-```
+```java
 Pair<Integer, Integer>[] pairs = new Pair<>[10];
 ```
 Instead you can work around this limitation using the following code:
-```
+```java
 Pair<Integer, Integer>[] pairs = (Pair<Integer, Integer>) new Pair<?,?>[10];
 ```
 which essentially means that pairs is an array of Pair without any additional generic type information. You will learn more about wildcards (the ```?``` in ```Pair<?,?>```) at the practical sessions.
@@ -125,7 +125,7 @@ For more info on generics, and how to write your own generic class, see this [Ja
 A default method is a method which implemented directly in an interface, it provides default implementation for the implementations of that interface.
 To understand why this is needed lets look at the following ```Stack``` interface:
 
-```
+```java
 interface Stack<E> {
     void push(E something);
     E pop();
@@ -136,7 +136,7 @@ interface Stack<E> {
 
 A straight forward implementation of the isEmpty method can be:
 
-```
+```java
 public class SomeStackImplementaion<E> implements Stack<E> {
   ... //implementations of pop, push and size
  
@@ -148,7 +148,7 @@ public class SomeStackImplementaion<E> implements Stack<E> {
 
 this implementation should suite for most of the implementations for ```Stack```, in addition, this implementation only requires calling methods that was already defined in the Stack interface. Most Stack implementation will just duplicate that code. in order to avoid that we can provide a default implementation directly on the interface:
 
-```
+```java
 interface Stack<E> {
     void push(E something);
     E pop();
@@ -172,7 +172,7 @@ In the previous example we saw an implementation of argmax that receives a Compa
 
 We can therefore, change our ```argmax``` to the following method
 
-```
+```java
 public class Example {
     public static <T> T argmax(T[] array, Comparator<T> cmp) { 
       if (array == null || array.length == 0) {
@@ -193,7 +193,7 @@ public class Example {
 
 we can now define many different comparators for String for example and use them as follows:
 
-```
+```java
 public class Example {
     //argmax code here... 
  
@@ -216,7 +216,7 @@ public class Example {
 
 The following has the same output but uses anonymous classes instead.
 
-```
+```java
 public class Example2 {
   public static void main(String[] args) {  
       String[] strings = new String[]{"the", "cake", "is", "a", "lie"};
@@ -235,7 +235,7 @@ One issue with anonymous classes is that if the implementation of your anonymous
 
 The following is a version of the previous example which uses lambdas instead of anonymous classes.
 
-```
+```java
 public class Example2 {
   public static void main(String[] args) {  
       String[] strings = new String[]{"the", "cake", "is", "a", "lie"};
@@ -267,7 +267,7 @@ In Java, there is a special class called Class. Instances of the class ```Class`
 
 The Class object has several interesting methods. For example, it has a ```getName()``` method which returns the corresponding class name. One important method of the class ```Class``` is the ```isAssignableFrom(Class)``` method. This method returns true whenever the calling Class represents a superclass or superinterface of the class represented by the given Class object. For example:
 
-```
+```java
 class A {}
 class B extends A {}
 class C extends B {}
@@ -295,7 +295,7 @@ public class Main {
 
 Other ```Class``` methods includes getting all the interfaces that the class implements, all the methods and fields it defines, etc. For example, the following method prints a simple string representation of any given object
 
-```
+```java
 class A {
   private int aInt;
   private String aString;

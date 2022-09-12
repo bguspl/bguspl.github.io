@@ -61,7 +61,7 @@ Now, if the video is very small, say a few Megabytes, we have no problem. We can
 
 Consider the following solution: read some of the video data (from disk or the network), decompress it, decode it and display on the screen. Repeat until the video ends. Let us call this the "Interleaving" solution. Lets look at an example java code for the interleaving solution:
 
-```
+```java
 public Class VideoPlayer {
   private Screen screen; //an assumed class representing the screen
   private ByteBuffer bytes; 
@@ -144,7 +144,7 @@ To conclude our example problem of the video player, we can now design a single 
 
 Java (in fact, the JVM) has a first class support for threads. Until now, you have been using only sequential execution; consider the following class, ```MessagePrinter```, which has a simple method ```run()```. When this method is invoked, the object prints a message which it received in its constructor.
 
-```
+```java
 /* this class abstracts a an objects which receives a message and prints it.
    The Runnable interface requires a single void method, run() - which also makes it a functional interface (i.e., a candidate for lambda)*/
 class MessagePrinter implements Runnable {
@@ -166,7 +166,7 @@ class MessagePrinter implements Runnable {
 
 You can use this class in the following fashion:
 
-```
+```java
 class SequentialPrinter {
  
   public static void main(String[] args) {
@@ -185,7 +185,7 @@ The result is two words printed to the screen, one after the other. First, "Hell
 
 Lets now consider a Multithreaded version, using a different thread for each of our MessagePrinters:
 
-```
+```java
 class ConcurrentPrinter {
  
   public static void main(String[] args) {
@@ -222,7 +222,7 @@ Lets examine other important methods.
 
 When ever a thread wants to wait to another thread to complete it can use the join method of that thread:
 
-```
+```java
 public static void main(String[] args) {
     System.out.println("Threads are legend... ");
     Thread barney = new Thread(() -> {
@@ -243,7 +243,7 @@ public static void main(String[] args) {
 
 Consider the following simple code, which does almost nothing, does it bad, and, in addition, never ends:
 
-```
+```java
 public static void main(String [] args) { 
   Thread stopper = new Thread(() -> {
     long time = System.currentTimeMillis();
@@ -265,7 +265,7 @@ The first option you might think about is somehow killing (a.k.a., stopping) the
 
 Another option that seems much more reasonable is to have the thread constantly check for a stop condition and exit the loop once it met:
 
-```
+```java
 public static void main(String [] args) { 
   AtomicBoolean stop = new AtomicBoolean(false); //a wrapper to a boolean that is sutable to 
                                                  //be written to and read from different threads
@@ -288,7 +288,7 @@ public static void main(String [] args) {
 
 While this option solves the problem we had in the previous one it still has some problems. Lets for example revisit our stopper code, it seems very inefficient to have the stopper constantly spin inside the while loop, we can improve this code a little by sleeping for a while before rerunning the loop. (Note though that like the previous solution - this too far from perfect):
 
-```
+```java
 public static void main(String [] args) { 
   AtomicBoolean stop = new AtomicBoolean(false); 
  
@@ -318,7 +318,7 @@ An interrupt is an indication to a thread that it should stop what it is doing a
 
 Lets go back to the previous case, where the stopper constantly checks for the stop condition and change it to use interrupts:
 
-```
+```java
 public static void main(String [] args) { 
  
   Thread stopper = new Thread(() -> {
@@ -343,7 +343,7 @@ Using interrupts we remove the need for the stop variable, but what about the la
 
 In java, many of the method that blocks a thread execution (like sleep) throws an interrupted exception, this exception is thrown by the method if the thread was interrupted while it is blocked, therefore we can solve the "sleep" problem as follows:
 
-```
+```java
 public static void main(String [] args) { 
  
   Thread stopper = new Thread(() -> {
@@ -379,7 +379,7 @@ The second reason is that on some occasions using threads will actually make our
 
 A sequential version for this function can be:
 
-```
+```java
 double[] seqRowSum(double[][] matrix) {
   double[] vector = new double[matrix.length];
   for (int i=0; i<matrix.length; i++) {
@@ -394,7 +394,7 @@ double[] seqRowSum(double[][] matrix) {
 
 This version is fairly straight forward to follow, debug and maintain. One option for a parallel version of this function is to create a thread for each row and make it calculate the sum of this row, this way we hope to have all the rows calculated in parallel:
 
-```
+```java
 static double[] paraRowSum(double[][] matrix) throws InterruptedException {
   double[] vector = new double[matrix.length];
   Thread[] threads = new Thread[matrix.length]; //thread for each row
@@ -435,7 +435,7 @@ The java library contains a ready-made threadpool implementation called Executio
 
 In the following example we use an executor service which has a fixed number of threads:
 
-```
+```java
 static double[] paraRowSum2(double[][] matrix) throws InterruptedException {
   double[] vector = new double[matrix.length];
   ExecutorService threadPool = Executors.newFixedThreadPool(4); //4 threads only
@@ -467,6 +467,6 @@ We should notice right ahead that for small matrices - the sequential execution 
 
 Knowing what you know now, you can do any of the following in order to improve the performance of this code:
 
-1. Create a new method mixedRowSum which first check the matrix size and then decide if calling the sequential or the parallel version
+1. Create a new method ```mixedRowSum``` which first check the matrix size and then decide if calling the sequential or the parallel version
 2. In the parallel version - you can first check the matrix size and then set the size of the thread pool based on that size.
 3. In the parallel version - in cases where the row size is small, you can compose tasks that sums more than one row each

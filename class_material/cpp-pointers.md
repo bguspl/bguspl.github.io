@@ -11,7 +11,7 @@ Pointers are primitive types in themselves. They hold the memory address of a pr
 ### **Some Examples**
 
 Consider the following code:
-```
+```c++
 #include <iostream>
  
 int main()
@@ -36,7 +36,7 @@ The memory of the process will look something like this:
 We have also introduced a new operator in C++, operator ```*```, whose value is the content of the memory to which the pointer points.
 
 Let's try something a bit more complicated:
-```
+```c++
 class Cow {
 private:
         int _id;
@@ -74,7 +74,7 @@ In addition, to the usage of member initialization list you should also note tha
 * We have also introduced a new operator in C++, operator ```->```, which is used to access the members and methods of objects via a pointer to the object. Accessing members / methods of an object not through a pointer is done using the ```.``` (dot) operator, as in Java.
 
 So, we have our ```Cow``` class, let us instantiate some cows (and have some milk?):
-```
+```c++
 int main()
 {
         Cow bety(482528404);
@@ -100,21 +100,21 @@ After drinking some coffee (with cream, of course), we can draw the following me
 ### **Dereferencing a Pointer and the "Address Of" operator**
 
 We have already seen how to dereference a pointer, using the ```*``` operator. For example, the following code is valid:
-```
+```c++
 (*ula).moooo();
 ```
 It is valid, since ```(*ula)``` is of type Cow, and can be accessed using the ```.``` (dot) operator.
 
 Now, we sometimes would like to take the address of something and store it for later use. To this end there is another operator, the "address of" operator, ```&```. For example,
 
-```
+```c++
 int i = 10;
 int *i_ptr = &i;
 ```
 
 ```i_ptr``` holds the address in which ```i``` is stored on the stack. We can use this to pass pointer arguments to functions:
 
-```
+```c++
 void inc(int *i_ptr)
 {
    (*i_ptr)++;
@@ -141,7 +141,7 @@ C++ supports the concept of References. There are two types of references in C++
 
 Every C++ expression is either an lvalue or an rvalue. An lvalue refers to an object that persists beyond a single expression. You can think of an lvalue as an object that has a name. All variables, including nonmodifiable (const[^const-pointers]) variables, are lvalues. An rvalue is a temporary value that does not persist beyond the expression that uses it. To better understand the difference between lvalues and rvalues, consider the following example:
 
-```
+```c++
 int main()
 {
    int x = 3 + 4;
@@ -156,7 +156,7 @@ In this example, ```x``` is an lvalue because it persists beyond the expression 
 In this lecture we will learn about lvalue-references, rvalue references will be learnt on the next lecture.
 An lvalue reference (or just a reference) can be seen like a const pointer to an lvalue (without using any pointer notations). A reference may only be assigned once, when it is declared (which is called the initialization of the reference), and may not be altered to reference something else later. Due to this behavior references are commonly defined as 'aliases for variables'. For example, consider the following code:
 
-```
+```c++
 int i=0;
 int &i_ref = i;
  
@@ -171,7 +171,7 @@ We can have a reference to any type by adding the ```&``` keyword after the type
 
 Since lvalue references can only accept lvalues, the following holds:
 
-```
+```c++
 int foo() { return 42; }
  
 ...
@@ -204,7 +204,7 @@ The available forms are:
 ### **By Value**
 Passing arguments to functions by value does not require any special handling by the programmer. For example, consider the following function which takes and ```int``` and a ```Cow```:
 
-```
+```c++
 void byVal(int i, Cow mooo){
         mooo.setId(i);
 }
@@ -212,7 +212,7 @@ void byVal(int i, Cow mooo){
 
 And the following code:
 
-```
+```c++
 Cow hemda(20);
 byVal(30, hemda);
 std::cout << hemda.getId() << std::endl;
@@ -224,7 +224,7 @@ which, surprisingly, outputs the value ```20```. When we call **byVal**, both ``
 
 If we want to change the original parameter passed to the function we can use pointers. For example, we may change the code in the following way:
 
-```
+```c++
 void byPointer(int i, Cow *mooo){
         mooo->setId(i);
 }
@@ -232,7 +232,7 @@ void byPointer(int i, Cow *mooo){
 
 And the following code:
 
-```
+```c++
 Cow hemda(20);
 byPointer(30, &hemda);
 std::cout << hemda.getId() << std::endl;
@@ -246,13 +246,13 @@ Pointers are also used to pass large sized parameters (Objects) which we do not 
 
 When we wish to refrain from using pointers, which are inherently unsafe (type-wise, as they can be easily cast to other types), we may use references.
 
-```
+```c++
 void byReference(int i, Cow &mooo){
         mooo.setId(i);
 }
 ```
 
-```
+```c++
 Cow hemda(20);
 byReference(30, hemda);
 std::cout << hemda.getId() << std::endl;
@@ -286,7 +286,7 @@ When receiving a pointer check pointer for nullity. (A reference cannot be null.
 
 ### **Returning Values From Functions**
 As in parameter passing, values can be returned either by value (copy), reference or pointer. However, when returning something by reference or pointer care should be taken not to return a reference or a pointer to the soon to be demolished activation frame. Consider the following BAD example:
-```
+```c++
 Cow& f(int x) {
        Cow c(x);
        return c;  // THIS IS A TRAGIC MISTAKE
@@ -297,7 +297,7 @@ Cow& f(int x) {
 
 The worst can happen as in the following example:
 
-```
+```c++
 #include <iostream>
 int *f()
 {
@@ -355,7 +355,7 @@ Accessing individual cells of the array is done by dereferencing a pointer to th
 ### **Arrays on the Heap**
 
 Arrays (like everything in C++) may be allocated on the Stack or on the Heap. Allocating an array on the heap is achieved using the ```new []``` operator, and deallocating an array by the ```delete []``` operator. Consider the following code:
-```
+```c++
 int *arr = new int[100];
  
 std::cout << arr[2] << std::endl;
@@ -367,7 +367,7 @@ The output of this code will always be ```0```, since the ```new []``` operator 
 
 What exactly happens when we call delete ```[]```? Consider this code, which allocates an array of Cow pointers (hence, its type is ```Cow **```):
 
-```
+```c++
 Cow **cow_arr = new Cow*[100];
  
 for (int i=0; i<100; i++)
@@ -384,13 +384,13 @@ We initialize a new Cow object on the heap, and store a pointer to it in a cell 
 ### **Arrays on the Stack**
 To allocate an array on the Stack, the array's size must be known in advance. For example, to allocate an array of 5 Cows on the Stack we use the following code:
 
-```
+```c++
 Cow cow_arr[5];
 ```
 
 Similar to the case above, each Cow will be initialized using its default constructor. However, we may also tell the compiler how to initialize individual Cows:
 
-```
+```c++
 Cow cow_arr[5] = {Cow(1), Cow(21), Cow(454), Cow(8), Cow(88)};
 ```
 

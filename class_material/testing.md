@@ -151,7 +151,7 @@ In our attempt to formalize our understanding, we turn the verbal description in
 
 [^link]: This is a Javadoc annotation that refers to Java source code. For example: {@link spl.utils.Stack}.
 
-```
+```java
 package spl.utils;
  
  /**
@@ -169,7 +169,7 @@ package spl.utils;
 
 **Generics** - It is a "code smell", to let a container receive any object. The reason is that Object is way too general… If we use Object, it means we haven't thought enough about what specific objects we are interested in. We should consider using [Generics](https://github.com/bguspl/bguspl.github.io/blob/main/class_material/generics.md):
 
-```
+```java
 package spl.util;
  
  /**
@@ -185,7 +185,7 @@ package spl.util;
 
 We now fill the interface with more data. We use the DBC terminology to force us to think about "what it means to use a Stack": Methods, Preconditions, Postconditions. To indicate clearly what we mean, we use the @pre, @post and @inv annotations inside our comments to refer to pre-condition, post-condition and class invariant. This is just a convention, nothing else depends on it.
 
-```
+```java
 package spl.util;
  
 /**
@@ -238,7 +238,7 @@ We will see below that we will change our design decisions to make this class te
 
 We will write a test class manually. When you work in Eclipse, you can use the Eclipse JUnit support to assist you in the creation of test cases. We first create a test-class skeleton for the interface.
 
-```
+```java
 package spl.util;
  
 /**
@@ -297,7 +297,7 @@ We then fill in the tests behavior. Note that we think of all these tests BEFORE
 
 When we write our tests, we must define the type T. We could define ```Stack<Object>``` and do ```testPushIntegerPushString```. But, we will keep it simple and first define ```Stack<Integer>```. In all the test methods, we will assume "this.stack" is already instantiated. To reflect this, we add a @Before method that actually creates the stack to be tested.
 
-```
+```java
 public class StackTest {
     /** Object under test. Note that we refer to the OUT through its interface */
     private Stack<Integer> stack;
@@ -364,7 +364,7 @@ public class StackTest {
 ```
 We add a bit more complex test scenarios.
 
-```
+```java
 package spl.util;
  
 import static org.junit.Assert.*;
@@ -508,7 +508,7 @@ The ```setup()``` method will run before every test method when the test case is
 
 We now create a skeleton class, ```StackImpl```, implementing the ```Stack``` interface:
 
-```
+```java
 package spl.util;
  
 /**
@@ -535,7 +535,7 @@ We now look at our tests with a critical eye. Some of our tests are not very spe
 
 Consider first the positive test for the ```push``` method:
 
-```
+```java
 /**
      * Test method for {@link spl.util.Stack#push(java.lang.Object)}. 
      * 
@@ -557,7 +557,7 @@ A more serious concern might be that the only way we have to test the state of t
 
 Another concern appears when we look at the test of ```pop()```:
 
-```
+```java
 /**
      * Test method for {@link spl.util.Stack#pop()}. Positive test.
      */
@@ -590,7 +590,7 @@ It seems quite radical to remove the ```pop()``` method from a stack interface. 
 
 Our Stack interface should now look as follows:
 
-```
+```java
 package spl.util;
  
  /**
@@ -606,7 +606,7 @@ package spl.util;
 
 We now fill the interface with more data. We use the DBC terminology to force us to think about "what it means to use a Stack": Methods, Preconditions, Postconditions. To indicate clearly what we mean, we use the @pre, @post and @inv annotations inside our comments to refer to pre-condition, post-condition and class invariant. This is just a convention, nothing else depends on it.
 
-```
+```java
 package spl.util;
  
 /**
@@ -665,7 +665,7 @@ Note that commands always have post-conditions and queries have no post-conditio
 
 Let us now consider the test for push(): using the new top() query, we can write a test that has no side-effect.
 
-```
+```java
 /**
      * Test method for {@link spl.util.Stack#push(java.lang.Object)}. 
      * 
@@ -687,7 +687,7 @@ If we look at further tests, we'll see that a test like ```testStackLIFO()``` in
 
 One way out of this predicament, is to add a new query to our stack that indicates how many elements are currently stored in the Stack. Let us call this query count().
 
-```
+```java
 package spl.util;
  
 /**
@@ -757,7 +757,7 @@ When we find such a case - we will say that ```isEmpty()`` is a *derived query* 
 
 We are now equipped with the basic query count(). Let us consider again the test for ```push()```:
 
-```
+```java
 /**
      * Will add the object at the top of the stack. (This is a command.)
      * 
@@ -781,7 +781,7 @@ If none of the basic queries is affected by the command, we have a problem: our 
 
 Let us consider again the test for the remove() command.
 
-```
+```java
 /**
      * remove the top object from the stack. (This is a command.)
      * 
@@ -796,7 +796,7 @@ The contract as encoded in the pre and post-conditions specifies that remove() r
 
 How can we make this contract more specific? There is no other way than to introduce another basic query that will let us observe the contents of the container.
 
-```
+```java
 /**
      * Item at logical position i in the stack (This is a query.)
      * The oldest item is at position 1.
@@ -810,7 +810,7 @@ How can we make this contract more specific? There is no other way than to intro
 
 Let us now redefine the whole Stack interface using this new basic query:
 
-```
+```java
 package spl.util;
  
 /**
@@ -883,7 +883,7 @@ To make our Stack interface testable, we introduced a basic query ```itemAt()```
 
 In fact, it does not. The simple proof is that, a client that has access to only ```isEmpty()```, ```push()``` and ```pop()``` can already know the value of all the elements in the stack(). It just needs to iterate:
 
-```
+```java
 while (! s.isEmpty()) {
   System.out.println(s.pop());
 }
@@ -902,7 +902,7 @@ When we focus on each method (command or query), we think in terms of the change
 
 In our example, we can state one important class invariant:
 
-```
+```java
 // @inv count() >= 0
 ```
 

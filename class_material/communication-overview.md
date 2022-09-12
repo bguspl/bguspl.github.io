@@ -88,7 +88,7 @@ To send a UDP message from a A (the client) to B (the server), the following mus
 
 Following is an example of a UDP line printer, which accepts UTF-8 encoded string from other hosts, and prints them to its standard output.
 
-```
+```java
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -162,7 +162,7 @@ As we discussed, the essence of using communication is to be able to send messag
 **Line Printer Client in Java**
 The code of the UDP client in Java is quite similar to that of the UDP server in Java. We use the same classes of DatagramSocket and DatagramPacket. Note that the order of operations is inverse in the client: we first call send (the client takes the initiative), then we call receive (to wait for an answer).
 
-```
+```java
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -214,7 +214,7 @@ Note the following:
 Following is an implementation of a line printer client in C++. Recall using communication means asking services from the RTE. Also recall that the OS RTE API is not object oriented but functional. It is also designed to give its caller full access to its functionality which means in turn a lot of technical code.
 To avoid this overhead we will use a package written on top of the OS API. It is named: Poco. Another package we will use is boost. This time it is to avoid the need to work directly with C++ arrays. The ```boost::scoped_array``` class is a wrapper around a C++ array allocated on the heap (obtained through new). It ensures that the array will eventually be freed when the scoped_array variable leaves its scope.
 
-```
+```c++
 #include <iostream>
 #include <Poco/Net/SocketAddress.h>
 #include <Poco/Net/DatagramSocket.h>
@@ -282,7 +282,7 @@ Note that the server can service several clients concurrently, but in a very ine
 
 **A TCP Line Printer client in Java**
 
-```
+```java
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -333,7 +333,7 @@ Similarly to the UDP server, whenever we send or receive from a stream, the call
 **A TCP Line Printer Server in Java**
 The following code shows a Java version of a TCP server. The server runs a next thread each time a client connects to it. In the thread, the server reads incoming data from the client using an ```InputStreamReader```.
 
-```
+```java
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -410,7 +410,7 @@ Note that reads and writes to a socket, using regular input and output streams, 
 **A TCP Line Printer client in C++**
 We now see an example of a TCP client written in C++. This client uses the POCO library abstraction over the OS sockets. POCO deliberately attempted to make its C++ objects similar to those of Java. Still, because this is C++, there are many differences.
 
-```
+```c++
 #include <iostream>
 #include <ostream>
 #include <istream>

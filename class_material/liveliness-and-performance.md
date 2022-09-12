@@ -34,7 +34,7 @@ In the context of computer programs, livelock issues may be caused by two thread
 
 Consider the following abstract example:
 
-```
+```java
 public class LiveLock{
  
         public static boolean state1 = false;
@@ -87,7 +87,7 @@ We say that a deadlock occurs when several active objects are waiting for each o
 
 A and B are very simple minded, and each works according to his own algorithm: A first tries to grab the board. If he succeeds, he then tries to grab the eraser. B does the same, but in the opposite order. Consider the following code, in which "grab" is translated to locking the appropriate object:
 
-```
+```java
 public class Lecturer implements Runnable{
  
     protected final Board board_;
@@ -135,7 +135,7 @@ public class Lecturer implements Runnable{
 
 The problem arises when A grabs the board, B grabs the eraser, and now we have a circular wait! Before discussing the standard technique to prevent deadlocks, take a look at the next example:
 
-```
+```java
 class BadCell {                                    // Do not use
         private long value_;
  
@@ -179,7 +179,7 @@ Consider the following turn of events:
 | block waiting for lock of b on entering v = other.getValue() | block waiting for lock of a on entering v = other.getValue()|
 
 Both of our threads are now blocked, and we have a circular wait. No thread will ever break out of it. We can deal with the problem by making sure both of the threads try to lock the Cell objects in the same order. This is called resource ordering. If all the locks in our system are grabbed (and released) in the same order, we can avoid deadlocks. Consider the following improved version, in which the Cell objects themselves enforce resource ordering:
-```
+```java
 class Cell {
         private long value_;
  
@@ -210,7 +210,7 @@ class Cell {
 
 A deadlock can be caused by any type of "lock" used in circular dependency. We have seen above deadlocks caused by "synchronized" monitors (the BadCell example). Consider the following example, where the deadlock is caused by the wait() construct.
 
-```
+```java
 class WaitLock {
     public static void main(String [] args){
         SimpleQueue<Integer> q1 = new SimpleQueue<Integer>(5);
@@ -244,7 +244,7 @@ The [dining philosophers](http://en.wikipedia.org/wiki/Dining_philosophers) prob
 
 We have N philosophers, each with a plate of spaghetti in front of him. There are also N forks, such that between any two philosophers there is exactly one fork. Now, as philosophers go, they like to ponder the meaning of life, the universe and everything (if you wonder, the answer is 42). However, once in a while, a philosopher might become really hungry (pondering is hard work, after all). To eat, a philosopher must grab both forks to his left and right. He then eats his full, cleans the forks, returns them to the table and resumes pondering. Assuming our philosophers are active objects (threads) in Java, consider the following implementation of a philosopher:
 
-```
+```java
 /* The forks philosophers use. */
 class Fork { }
  
@@ -277,7 +277,7 @@ public abstract class Philosopher implements Runnable {
 
 Also consider the following implementation of [Confucius](http://en.wikipedia.org/wiki/Confucius). Take in mind that Confucius is a bit old, hence he needs to rest after taking a fork…
 
-```
+```java
 public class Confucius extends Philosopher {
     private static final int MAX_SLEEP = 1000;
     private int id_;
@@ -351,7 +351,7 @@ Many solutions to prevent deadlocks exist (most of them are out of the scope of 
 This solution is not recommended in general as it requires another lock, managed by the programmer (rather than released by the scope) and requires book-keeping, or careful implementation.
 
 **Resource Ordering**
-```
+```java
 protected void eat() {
                 Fork f1 = left_;
                 Fork f2 = right_;
@@ -383,7 +383,7 @@ One solution to the starvation problem is to use synchronization primitives whic
 
 In contrast, the ```Semaphore``` class does support ordering. This property of the semaphore is called fairness. Consider the following solution for the dining philosophers problem, which solves the starvation problem:
 
-```
+```java
 import java.util.concurrent.Semaphore;
  
 class Fork {
@@ -463,7 +463,7 @@ public class Confucius extends Philosopher{
 
 An implementation of the fair semaphore may be as following:
 
-```
+```java
 class FairSemaphore { 
    private final int _permits; 
    private int _free; 

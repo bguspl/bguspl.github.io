@@ -7,7 +7,7 @@ In C++, an object is implemented at runtime as a region of storage (a contiguous
 ## **How Objects are Stored in Memory**
 
 We distinguish between object values and object references. The simplest way to implement object references is as a pointer to an object value. Object values are implemented as a contiguous block of memory, where each field (data member) is stored in sequence. For example, the memory layout of the object defined as:
-```
+```c++
 class A {
   int a;
   float f;
@@ -36,7 +36,7 @@ c2: offset 12
 d: offset 16
 ```
 When the compiler translates a reference to a field, it uses the offset of the field within the object to access the specific field. For example, in the following code:
-```
+```c++
 {
   A a1;
   cout << a1.c2;
@@ -59,7 +59,7 @@ When a class C extends a class P, all the fields defined in P exist in C and in 
 
 For example, class B extends class A and adds a new field in its state:
 
-```
+```c++
 class B : public A {
 public:
   double g;
@@ -87,7 +87,7 @@ An object is characterized by the following elements:
 As a first approximation, we can use the address of the object data in memory as its identity (we will see below that this is not always exactly true when we discuss casting and inheritance). The state of the object is encoded in the memory block associated to the object (which encodes the value of each of its fields). The interface of the object is known by the compiler, based on the type of the object: each class defines the set of methods to which the objects that belong to the class can react.
 
 For example, the following class has as an interface for the methods C::C() (constructor), C::f() and C::g(), and also for default functions like C::~C() (destructor), copy constructor, and assignment operator:
-```
+```c++
 class C {
   private:
     int i;
@@ -103,7 +103,7 @@ The code for these functions is stored in the code region of the memory allocate
 
 For example:
 
-```
+```c++
 {
   C c1;
   int x = c1.f(2);
@@ -137,7 +137,7 @@ Note that static methods do not have access to the this parameter - they do not 
 
 *Late binding* is an essential property of object-oriented polymorphism: it refers to the possibility to decide which method to invoke at runtime and not at compile time. Consider this example:
 
-```
+```c++
 // Abstract class shape
 class Shape {
 public:
@@ -190,7 +190,7 @@ Suppose d is of type ```foo *```. A call to an object reference such as ```d->m(
 
 In the case of single inheritance, if the vpointer is always the first element in ```d``` (as it is with many compilers), this reduces to the following simple call (using the ```*``` notation as in C++):
 
-```
+```c++
 *((*d)[2])(d);
 ```
 
@@ -243,7 +243,7 @@ There are many more complex issues involved in dealing with multiple inheritance
 
 A consequence of the pointer fixup mechanism described above to keep in mind is that when we cast an object to a different class, we may end up with a different address in memory.
 
-```
+```c++
 class P1 {
 public:
   virtual m();
@@ -295,7 +295,7 @@ Interfaces are, in fact, a restricted method of multiple inheritance. To underst
 * All of its methods are abstract (or "pure virtual" marked in C++ as ```virtual m() = 0;```)
 
 For example:
-```
+```c++
 // A C++ interface
 class serializable {
 public:
@@ -318,7 +318,7 @@ We have explained above that polymorphism is a way to dispatch a message to the 
 
 For example, whenever you find yourself in a situation where you type code such as:
 
-```
+```c++
 // This calls for polymorphism!
 if (getType() == type1) {
   // process type1 case
@@ -331,7 +331,7 @@ When you see such cases in your code, it is time to refactor it, and to introduc
 
 Such usage of polymorphism is detected while coding each time a structure such as case of if-else-if appears repeatedly.
 
-```
+```c++
 #include <iostream>
  
 //forward declarations 
