@@ -35,6 +35,8 @@
 
 [The Reactor Design Pattern](./class_material/reactor.md)
 
+[Command Invocation Server](./class_material/cis.md)
+
 ### Persistence
 [Persistence Services and Database Management Systems](./class_material/persistence.md)
 
