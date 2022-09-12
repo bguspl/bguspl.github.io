@@ -29,9 +29,7 @@
 [Liveness and Performance](./class_material/liveliness-and-performance.md)
 
 ### Communication
-[Socket Programming](./class_material/communication-overview.md)
-
-[More about Networks](./class_material/networks.md)
+[Socket Programming](./class_material/communication-overview.md) ([More about Networks](./class_material/networks.md))
 
 [Application Level Protocol Design](./class_material/application-level-proto.md)
 
