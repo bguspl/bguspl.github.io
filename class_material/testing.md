@@ -167,7 +167,7 @@ package spl.utils;
  }
  ```
 
-**Generics** - It is a "code smell", to let a container receive any object. The reason is that Object is way too general… If we use Object, it means we haven't thought enough about what specific objects we are interested in. We should consider using [Generics](https://github.com/bguspl/bguspl.github.io/blob/main/class_material/generics.md):
+**Generics** - It is a "code smell", to let a container receive any object. The reason is that Object is way too general… If we use Object, it means we haven't thought enough about what specific objects we are interested in. We should consider using [Generics](https://bguspl.github.io/class_material/generics.html):
 
 ```java
 package spl.util;

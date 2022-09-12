@@ -118,7 +118,7 @@ Pair<Integer, Integer>[] pairs = (Pair<Integer, Integer>) new Pair<?,?>[10];
 ```
 which essentially means that pairs is an array of Pair without any additional generic type information. You will learn more about wildcards (the ```?``` in ```Pair<?,?>```) at the practical sessions.
 
-For more info on generics, and how to write your own generic class, see this [Java Technical Article on Generics](http://java.sun.com/developer/technicalArticles/J2SE/generics/) and this [Generics tutorial](http://www.cs.bgu.ac.il/~spl081/Generics).
+For more info on generics, and how to write your own generic class, see this [Java Technical Article on Generics](http://java.sun.com/developer/technicalArticles/J2SE/generics/).
 
 ## **Default Methods In Interfaces**
 
