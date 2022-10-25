@@ -113,7 +113,7 @@ Processes may be in several *states*. A process may either be running, if it is 
 
 * waiting for an event (because the process is waiting for another process to reach a certain state before it can continue)
 
-[^]virtualmachine]: Increasingly, computers can run a basic OS and embedded virtual machines. A virtual machine is a completely isolated guest OS that runs within a normal OS. [more](http://en.wikipedia.org/wiki/Virtual_machine)
+[^virtualmachine]: Increasingly, computers can run a basic OS and embedded virtual machines. A virtual machine is a completely isolated guest OS that runs within a normal OS. [more](http://en.wikipedia.org/wiki/Virtual_machine)
 
 ### **Summary**
 
