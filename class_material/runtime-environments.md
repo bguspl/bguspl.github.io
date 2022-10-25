@@ -137,7 +137,8 @@ One of the advantages counted for binary code (non-interpreted) is speed. Binary
 
 ## **The Java Virtual Machine (JVM)**
 
-The Java virtual machine is an RTE. It executes Java classes.
+The Java virtual machine is an RTE
+[^virtualmachine]. It executes Java classes.
 
 The JVM simulates a complete machine, on which Java programs are executed. When we compile a Java source file, we create a file which contains instructions specific for the JVM, called *byte code*. This is equivalent to the process of compiling a regular C/C++ program into regular machine code.
 
