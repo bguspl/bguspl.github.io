@@ -34,7 +34,7 @@ The operating system (OS) manages the sharing of the resources of a computer amo
 
 Block diagram of Operating System modules
 
-![image](user-kernel-diagram.png)
+![image](../images/user-kernel-diagram.png)
 
 
 ### **Process Definition**
