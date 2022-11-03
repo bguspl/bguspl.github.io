@@ -67,18 +67,19 @@ int main()
 
 Produces this output:
 
-> a.c1 size: 1, address: , offset: 0
-> a.l size: 4, address: 00BFFE68, offset: 4
-> a.c2 size: 1, address: , offset: 8
-> a.s size: 2, address: 00BFFE6E, offset: 10
-> a.c3 size: 1, address: , offset: 12
-> a.n size: 4, address: 00BFFE74, offset: 16
-> a.c4 size: 1, address: , offset: 20
-> a.c5 size: 1, address: , offset: 21
-> a.c6 size: 1, address: , offset: 22
-> a.f size: 4, address: 00BFFE7C, offset: 24
-> a.cstr size: 4, address: 00BFFE80, offset: 28
-
+```
+a.c1 size: 1, address: , offset: 0
+a.l size: 4, address: 00BFFE68, offset: 4
+a.c2 size: 1, address: , offset: 8
+a.s size: 2, address: 00BFFE6E, offset: 10
+a.c3 size: 1, address: , offset: 12
+a.n size: 4, address: 00BFFE74, offset: 16
+a.c4 size: 1, address: , offset: 20
+a.c5 size: 1, address: , offset: 21
+a.c6 size: 1, address: , offset: 22
+a.f size: 4, address: 00BFFE7C, offset: 24
+a.cstr size: 4, address: 00BFFE80, offset: 28
+```
 
 
 ### **Memory Layout of Arrays**
