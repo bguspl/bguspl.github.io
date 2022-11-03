@@ -1,559 +1,692 @@
-Practical Session #3 C++ Classes
+# Practical Session #3: C++ Classes and Objects
 
-The main goal for this practical session is learning Object Oriented programming in C++ with emphasis on classes that hold resources, specifically classes with pointer members. We will learn basic syntax definitions and explore the differences between C++ conventions and Java conventions.
 
-Parameter passing
-Correct parameter passing can help reduce the number of bugs and generate more efficient code. Passing parameters can be done in 3 distinct methods:
-Passing by value
-Passing by pointer
-Passing by reference
-The following examples will refer to passing a parameter into a function. the same principles apply to the return value.
 
-Passing by value - example
-int power(int i) 
-{
-  i = i*i;
-  return i;
-}
-int main (int argc, char **argv) 
-{
-  int number = 5;
-  power(number);
-}
-In this example the primitive integer value is passed to the power function by value. This means that the value of number is being copied to the argument list of the called function. Passing by value is usually done for primitive variables. Passing by value also works with objects, it will cause the compiler to add a call to the copy constructor making it a slow option. In general, unless a new copy of the object is needed, we will never pass an object by value.
-Passing by pointer - example
-void emphasize(std::string *word) 
-{
-  if (word == nullptr)
-    return;
-  word->append(3, '!'); // same as (*word).append(3,'!');
-}
-int main (int argc, char **argv) 
-{
-  std::string mySentence = "Everything is awesome";
-  emphasize(&mySentence);
-}
-In this code the function emphasize is used to add 3 exclamation marks to the end of a string. we notice, that the function must work on the same string that was sent to it, if we used passing by value the change would not impact the string that was sent from the main function. Notice that when passing by pointer we can also pass pointers to NULL (which is 0). Having the possibility of an uninitialized object is one of the reasons to use this method.
-Passing by pointer is not actually real. A pointer is just a numerical value, similar to int, that holds the address of a parameter. When using such a method of parameter passing we are actually passing the address by value.
+[TOC]
 
-Passing by reference - example
-void emphasize(std::string &word) 
-{
-  word.append(3,'!');
-}
-int main (int argc, char **argv) 
-{
-  std::string mySentence = "Everything is awesome";
-  emphasize(mySentence);
-}
-We use the same scenario as above, only now we pass by reference. notice that while passing by reference, except for the "&" that declares word as a reference, the syntax is the same as passing by value. Passing by reference allows us to send a link to the original object without using pointers, this means that any change in the object word will also apply on mySentence. This is usually a much safer method since pointers might suggest responsibility for the memory allocation and release and might confuse when attempting to search for bugs. References must be initialized at start, this means that they cannot have a NULL value.
-Behind the scenes, the compiler actually looks at references as constant pointers (cannot have their addresses changed). the compiler passes the address by value, similarly to passing by pointer, but it does not allow the programmer access to the address nor does it allow the user to change it. This method should be used in most instances of object parameter passing.
+## 1. Goal
 
-ClassesWe shall start with a simple class example and move on later to classes that hold a resource.
-C++ simple class exampleThe class syntax in C++ is somewhat different than in Java. Here is an example of a Point class:
-// THIS IS THE DECLARATION FILE OF THE CLASS POINT (Point.h) 
-  class Point 
-  {
-  public:
-     Point();
-     Point(double xval, double yval);
-     void move(double dx, double dy);
-     double getX() const;
-     double getY() const;
-     
-  private:
-     double x_;
-     double y_;
-  };               // semicolon at the end of the class declaration
-// THIS IS THE IMPLEMENTATION FILE OF CLASS POINT (Point.cpp) 
+The goal for this practical session is to explain Object Oriented programming in C++ with emphasis on classes that hold resources - specifically, classes with pointer member variables.
+
+We will learn basic syntax definitions and explore the differences between C++ conventions and Java conventions.  
+
+
+
+## 2. Function Parameters and Return Values
+
+
+
+### 2.1. Function Parameters
+
+Passing parameters (a.k.a. arguments) correctly is important to avoid bugs and generate more efficient code.
+
+It is done in C++ in 2 ways:
+
+1. Passing by value
+
+2. Passing by reference
+
+   
+
+#### 2.1.1. Passing parameters by value[^1]
+
+When passing parameters by value changes made to the parameter inside the function are not reflected to the caller. 
+
+Usually, when passing primitive variables this method is used since there is little to no performance benefit for passing primitives by reference.
+
+Passing by value also works with objects, in which case a call to the class's copy constructor will happen which impacts performance. Usually, unless a new copy of the object is really needed, passing objects by value is not recommended[^2].
+
+> Notes:
+>
+> [^1]: This method is also called ***call by value***.
+> [^2]: Since C++11, **when using [move semantics](https://stackoverflow.com/q/3106110/2375105)**, passing objects by value *is* in fact the recommended method. 
+
+
+
+Example:
+
+```c++
+int power(int i)
+{
+	i = i * i;
+	return i;
+}
+
+int main(int argc, char **argv)
+{
+	int number = 5;
+	power(number); // here number (a primitive integer variable) is passed by value
+}
+```
+
+
+
+> Note: C++ arrays are never passed by value unless wrapped inside a struct or class.
+
+
+
+#### 2.1.2. Passing parameters by reference
+
+The syntax of passing parameters by reference is similar to passing by value, except of the & (ampersand) before the variable name, which indicate that the variable is actually a reference (a "link") to another variable. Changes made to the variable inside the function are reflected to the caller.
+
+References to objects must be initialized (there is no "null reference").
+
+Passing parameters this way to a function emphasizes that the owner of the object is the caller (so there is no confusion as to who is responsible for freeing the memory). 
+
+Example:
+
+```c++
+void emphasize(std::string &word)
+{
+	word.append(3, '!');
+}
+
+int main(int argc, char **argv)
+{
+	std::string mySentence = "Everything is awesome";
+	emphasize(mySentence);
+}
+```
+
+In the example, any change in to the variable _word_ will also apply to _mySentence_.
+
+
+
+#### 2.1.3. Passing pointers
+
+To avoid passing objects by value you can also pass (by value) a pointer to the object.
+
+When passing a pointer we obtain a reference to the object but can also pass `nullptr` as an "uninitialized reference". 
+
+Example:
+
+```c++
+void emphasize(std::string *word)
+{
+	if (word == nullptr)
+		return;
+    
+	word->append(3, '!'); // same as (*word).append(3, '!');
+}
+
+int main(argc, char **argv)
+{
+	std::string mySentence = "Everything is awesome";
+	emphasize(&mySentence);
+}
+```
+
+In this example, the function `emphasize` receives a string and if it is not `nullptr`, it adds 3 exclamation marks to the end of a string. 
+
+This function accepts a pointer since it must perform the change on the caller's object. If we passed the string by value the change would not have been reflected to the caller. If we passed the string by reference we could not have passed `nullptr`.
+
+
+
+## 3. Classes
+
+
+
+### 3.1. General
+
+A *class* is a user-defined data type that contains variables of primitive data types and/or other classes.
+
+An *object* is an allocated instance (a variable) of a class data type.
+
+We shall start with a simple class example and move on later to classes that hold a resource.
+
+> Note: ***structures*** in C++ are simply classes with `public` default access modifier.
+
+
+
+Example 3.1.1:
+
+Header file `Point.h`:
+
+```c++
+class Point
+{
+    double x;
+    double y;
+
+public:
+    Point();
+    Point(double xVal, double yVal);
+    void move(double dx, double dy);
+    double getX() const; // this is a const method - it cannot change the object's data
+    double getY() const; // ditto
+}; // note: a semicolon is required at the end of the class declaration
+```
+
+Implementation file `Point.cpp`:
+
+```c++
 #include "Point.h"
- 
-Point::Point():x_(0), y_(0){ }
- 
-Point::Point(double xval, double yval):x_(xval),y_(yval){}
- 
-void Point::move(double dx, double dy) 
+
+Point::Point() : x(0), y(0) {}
+
+Point::Point(double xVal, double yVal) : x(xVal), y(yVal) {}
+
+void Point::move(double dx, double dy)
 {
-  x_ = x_ + dx;
-  y_ = y_ + dy;
+    x = x + dx;
+    y = y + dy;
 }
+
 double Point::getX() const
 {
-  return x_;
+    return x;
 }
-double Point::getY() const
-{  
-  return y_;
-}
-C++ class syntax vs Java class syntax
-Declarations and implementation are separated - The class definition only contains the declarations of the methods. The actual implementation are listed separately, where each method name is prefixed by the class name. The :: operator separates class name and method name. Note that the separation of declaration and implementation is usually done in cases where you want to export or share the class with another class, and is not required for inner, local private or helper classes.
-Semicolon at the end of the class - There is a semicolon at the end of the class declaration. Not placing it will lead to unclear compilation error.
-Public and private section - In C++, there are public and private sections, started by the keywords public and private. In Java, each individual item must be tagged with public or private.
-Const methods - const functions do not change the state of an object. Good candidates for const are accessors functions (getters). Furthermore const functions cannot be used in a way that would allow you to use them to modify const data. This means that when const functions return references or pointers to members of the class, they must also be const. Also notice, that const methods can only access const methods.
 
-Once declared a const variable, one can only use methods declared const on that variable.
+double Point::getY() const
+{
+    return y;
+}
+```
+
+
+
+### 3.2. Differences from Java
+
+The syntax of classes in C++ is somewhat different than it is in Java;
+
+*   **Declarations and implementations are separate**[^3] - The class definition contains class variables and the declarations of the methods. The actual implementation is listed separately, where each method name is prefixed by the class name. The scope resolution operator (the :: operator) designates to which class the method belongs.
+*   **Semicolon at the end of the class** - A semicolon at the end of the class declaration. Not placing it will result in a compilation error.
+*   **Public and private <u>section</u>** - In C++, there are public, private and protected *sections* as opposed to Java where each individual class member must be tagged separately.
+*   **`Const` methods** - `const` functions[^4] do not change the state of an object. Good candidates for `const` are accessors functions (getters). `Const` methods cannot be used in a way that would allow you to use them to modify the object data[^5]. This means that when `const` methods  return references or pointers to members of the class, they must also be `const` and they cannot call non- `const` methods.
+*   **`Const` objects** - Once an object is declared as `const`, one can only use `const` methods on that object.
+
+
+
+Example of a `const` object:
+
+```c++
 ...
 const Point p(0,0);
-p.getY();         //this is O.K since getY is declared const
-p.move(1,1);      //compilation error since move is not declared const
+p.getY();         // this is ok since getY is declared const
+p.move(1,1);      // compilation error since move is not declared const
 ...
+```
 
-Member Initialization List
 
-In C++, we use a member initialization list to initialize class members. The initial value can be any expression. The member initialization list is executed before the body of the function. It is possible to initialize data members inside the constructor body but not advised for the following two reasons:
-Implicit call to default constructor - when a data member is itself a class object, not initializing it via the initialization list means implicitly calling its default constructor! If you do initialize it in the body of the constructor you are actually initializing it twice. If your data member is a class with no default constructor, meaning you supplied some constructor that has parameters, you will not be able to pass compilation - think why.
-Const members - Const members of a class can only be initialized via member initialization list.
-The order the initialization happens is according to the order the member vars are declared (not the order in the member initialization list). It is hence a convention to keep the order of the list as the order of the declaration.
 
-Project Handling and Division into Files
+> Notes:
+>
+> [^3]: The separation of declaration and implementation is not mandatory and may be omitted for inner, local private or helper classes.
+> [^4]: `Const` methods are different than methods that return a `const`. They are declared with `const` **after** the parameters list (see the example above). 
+> [^5]: Except for data members that are marked as `mutable`.
 
-As mentioned above, the declarations and the implementation are defined separately in C++. We place the class declaration file in a header file (e.g X.h) and the class implementation in file X.cpp.
-To avoid including a Header twice, we check whether a pre-compiler unique variable is defined. If not we define it and include the header. A convention is to use as a variable the name of the header class. for example:
 
-//Header file of Point class
-#IFNDEF _POINT_H_
-#DEFINE _POINT_H_
-// now the header class declaration as before
-//...//
-#ENDIF
-To compile a project you need to compile each class separately to an object file then to link them. If you are not familiar with those terms please refer to previous practical sessions as they are VERY important to understand ! Make is a tool that can do that work for you. It is the equivalent of ANT if you wish.
 
-In this course, we do not allow writing any implementation in the H file. It is possible but requires some care which we leave to experienced C++ programmers.
+### 3.3. Member Initialization List
 
-Here is an example of a project with 3 cpp files + 2 H file + makefile.
+In C++ constructors, we use a _member initialization list_ to initialize class variables. It appears after a single colon character, between the function declaration and the function body of the constructor. This code initialized the class variables and is executed before the code in the body of the constructor.
 
-Objects
+Any class variable (field) that does not appear in this list it will be initialized with it's *default value*. If the field is an object this will produce an implicit call to it's *default constructor*. If the object's class has no default constructor the compilation will fail. 
 
-In C++, object variables hold values, not object references. You simply supply the construction parameters after the variable name.
-Example: Point p(1, 2); /* construct p */
+Const class variables can *only* be initialized in the _member initialization list_. Attempting to change their value anywhere else, *including in the constructor's body* will cause a compilation error.
 
-If you do not supply construction parameters, then the object is constructed with the default constructor. Time now; /* construct now with Time::Time() */
+The order of initialization is according to the **order the fields in the class** - **not the order in the *member initialization list***. It is advisable to keep the order in the initialization list the same as in the class to avoid confusion.
 
-This is very different from Java. In Java, this command would merely create an uninitialized reference. In C++, it constructs an actual object.
+In example 3.1.1 the initialization list is `x(xVal), y(yVal)` as follows:
 
-When one object is assigned to another, a copy of the actual values is made. In Java, copying an object variable merely establishes a second reference to the object. Copying a C++ object is just like calling clone in Java. Modifying the copy does not change the original.
+```c++
+Point::Point(double xVal, double yVal) : x(xVal), y(yVal) {}
+//									   ^^^^^^^^^^^^^^^^^^
+//									   initialization list
+```
 
-Point q = p; /*invokes copy constructor*/
-q.move(1, 1); /* moves q but not p */
-In most cases, the fact that objects behave like values is very convenient. There are, however, a number of situations where this behavior is undesirable.
+> Notice that the *body* of this constructor is empty: `{}`
 
-When modifying an object in a function, you must remember to use call by reference
-Two object variables cannot jointly access one object. If you need this effect in C++, then you need to use references
-An object variable can only hold values of a particular type. If you want a variable to hold objects from different subclasses, you need to use pointers
-If you want a variable to point to either null or to an actual object, then you need to use pointers in C++
 
-The "this" Pointer
 
-Note that, as in Java, this is a pointer to the active object. So for example, when L1 = L2 is executed, L1's member function copy assignment operator is called, so this is a pointer to L1.
-We also make use of this for the returned value in the copy assignment operator; the type to be returned is List& so we dereference this, a.k.a return *this.
-We would like to establish a way to distinguish between parameters and class variables.This can be done by the this pointer. It is used as a pointer to the class object instance by the member functions.
-this pointer stores the address of the object instance, to enable pointer access of the object.
-this pointers are not accessible for static member functions.
-this pointers are not modifiable.
-Operator -> and Operator .
+Since C++11 you can also use curly braces for initialization:
 
-The pointer-to-member operators, .* and –>*, return the value of a specific class member for the object specified on the left side of the expression. The right side must specify a member of the class. The following example shows how to use these operators:
-class Point{.....
+```c++
+Point::Point(double xVal, double yVal) : x{xVal}, y{yVal} {}
+```
+
+
+
+### 3.4. Project Handling and Division into Files
+
+As mentioned before, the declarations and the implementation are defined separately in C++. We place the class declaration file in a header file (e.g `Point.h`) and the class implementation in a cpp file (e.g. `Point.cpp`).
+
+It is possible to write implementation code within header files but requires special care and understanding of the implications of doing so. In this course we do not allow this.
+
+To avoid including a Header twice, we check whether a preprocessor unique variable is defined. If not, we define it and include the header. A common convention is to use the name of the header file as the preprocessor variable name. 
+
+For example in `Point.h`:
+
+```c++
+#ifndef POINT_H
+#define POINT_H
+
+// all the header file content goes here
+
+#endif
+```
+
+The same can be achieve by using the `#pragma once` preprocessor directive. For example:
+
+```c++
+#pragma once
+
+// all the header file content goes here
+```
+
+In order to create an executable file (or a library) you need to *build* your project. To build the project you need to compile each class separately to object files and then link them.
+
+> Important: the terms *preprocess*, *compile* and *link* are extremely important. If you are not familiar with them please refer to previous practical sessions! 
+
+[Make](http://en.wikipedia.org/wiki/Make_software) is a tool that can help with complex build processes (it is somewhat equivalent to Java's *Ant*).
+
+[Here](https://github.com/bguspl/bguspl.github.io/blob/main/code/srcPS3.tar.gz) is an example of a project with 2 header files, 3 cpp files and a make file.
+
+
+
+## 4. Objects
+
+
+
+### 4.1. General
+
+An object is an instance of a class.
+
+In C++, object variables hold *values*, not *references*. In the variable declaration you supply the parameters to the constructor after the variable name: 
+
+```c++
+Point p(1, 2); /* create the variable using the constructor Point::Point(double xVal, double yVal) */
+```
+
+If you do not supply construction parameters, then the object will be constructed using the default (no arguments) constructor: 
+
+```c++
+Time now; /* create the variable using the constructor Time::Time() */
+```
+
+> Note: In Java, `Time now` would create an uninitialized reference. In C++, it allocates and constructs an actual object.
+
+
+
+### 4.1. The dot and arrow operators
+
+The dot (.) operator and the arrow (->) operator are used to reference class members.
+
+The dot operator in C++ is similar to Java's dot operator.
+
+The arrow operator is used to dereference a point first and then reference the class member.
+
+```c++
+int main( )
+{
+	Point *p1 = new Point(0,0);
+	Point p2(0,0);
+	(*p1).getX();
+	p1->getX(); // exactly the same as (*p1).getX()
+	p2.getX();
+    (&p2)->getX(); // exactly the same as p2.getX()
 }
-int main( ){
-    Point *p1 = new Point(0,0);
-    Point p2(0,0);
-    p1->getX();
-    (*p1).getX();
-    p2.getX();
-    (&p2)->getX();
+```
+
+
+
+### 4.2. The `this` pointer
+
+In C++ every object can access it's own address using the keyword `this` (a.k.a. the `this` pointer). It is an implicit (hidden) parameter to all non-static class methods and is used within the class method to refer to the invoking object.
+
+If a method variable name is the same as a class variable it is said that it *shadows* the variable. The `this` pointer can be used to differentiate between method arguments and class variables (fields).
+
+
+
+For example:
+
+```c++
+class MyClass
+{
+    int variable;
+    
+public:
+    void setVariable(int);
+};
+```
+
+```c++
+void MyClass:setVariable(int variable)
+{
+    this->variable = variable; // possible, but not recommended
 }
-The Rule of 3 (Classes that Hold Pointers)
+```
 
-A thumb rule in C++ (prior to C++11) for classes that own a resource (such as allocated memory on the heap and files). This rule requires such class to define and implement the following functions:
-A destructor
-A copy constructor
-A copy assignment operator
+However, a more common way to do this is by using :: (the scope resolution operator):
 
-The Rule of 3 Example
-We learned that a class that own a resource must explicitly define three functions, according to the rule of 3. We will now see an example of such classes, a List class and a Link that together implement a linked list object. The List class includes a pointer to a dynamically allocated Link.
-The List class own the resource head_, and the responsibility for allocating memory, deleting it and making changes to it belongs to the class. In a similar way, the Link class own the resource for the next_ object in the list.
+```c++
+void MyClass:setVariable(int aVariable)
+{
+    MyClass::variable = variable; // also possible but not recommended
+}
+```
+
+Or better yet - avoid this altogether by using different names:
+
+```c++
+void MyClass:setVariable(int _variable)
+{
+	variable = _variable; // recommended - avoid shadowing altogether
+}
+```
+
+
+
+> Notes: 
+>
+> 1. In C++ `this` is an rvalue and cannot be changed.
+>
+> 2. C++ allows objects to destroy themselves by executing the code:
+>
+>    ```c++
+>    delete this; // not recommended!
+>    ```
+>
+>    However, this requires special handling and is **not** recommended.
+
+
+
+### 4.3. Creation of objects
+
+As in Java, in C++, objects are created by calling a class *constructor*. In addition to regular constructors, there are a few additional "special" constructors and related methods. 
+
+In the definition of constructors there is no return value but they always return a constructed object (unless an exception is thrown). 
+
+Constructors can be called explicitly but there are also various situations in which they are called implicitly (some examples below).
+
+#### 4.3.1. The default constructor
+
+A *default constructor* is a constructor that can be called with no arguments (it either accepts no arguments or has default values for all it's arguments).
+
+Example:
+
+```c++
+class MyClass1
+{
+    ...
+public:
+    MyClass1(); // default constructor
+};
+
+MyClass1 mc11; // implicit call to the default constructor
+MyClass1 mc12(); // explicit call to the default constructor
+```
+
+
+
+If a class has no explicitly defined constructors (of any kind), the compiler will automatically create a *default constructor* for it.[^6]
+
+Example:
+
+```c++
+class MyClass2
+{
+    int x;
+    // a default constructor was automatically created by the compiler
+};
+
+MyClass2 mc21; // implicit call to the default constructor
+MyClass2 mc22(); // explicit call to the default constructor
+```
+
+
+
+#### 4.3.2. Copy constructor
+
+A *Copy constructor* is a constructor who's first parameter is a reference of the same class (a regular reference or a const reference) and either accepts no arguments or has default values for all it's other arguments.
+
+If a class has no explicitly defined copy constructor the compiler will automatically create a default copy constructor for it that receives a const reference.[^6]
+
+Example:
+
+```c++
+class MyClass3
+{
+    ...
+public:
+    MyClass3(const MyClass3 &other);
+};
+
+MyClass3 mc31;
+MyClass3 mc32(mc31); // explicit call to the copy constructor
+
+someFunc(MyClass3 mc3) {...}
+
+someFunc(mc31); // implicit call to the copy constructor
+```
+
+
+
+### 4.4. Destruction of objects
+
+When an object is going to be destroyed (when it goes out of scope or because of a explicit use of `delete`), a special member function called a `destructor` is automatically called. The purpose of the `destructor` is to release any resources that were held by the object and perform any other necessary cleanup.
+
+The `destructor` does not receive any arguments and does not return a value.
+
+The name of the destructor is the class name preceded by a tilde symbol (~).
+
+If a class has no explicitly defined destructor, the compiler will automatically create a default destructor for it.[^6]
+
+Example:
+
+```c++
+class MyClass4
+{
+    int *x;
+public:
+    MyClass4();
+    ~MyClass4();
+}
+```
+
+```c++
+MyClass4::MyClass4() : x(new int) {}
+MyClass4::~MyClass4() { delete x; }
+```
+
+
+
+### 4.5 Assigning objects
+
+The `copy assignment operator` is called whenever an object appears on the left side of an assignment expression (and in some other situations). It takes exactly one parameter that is an object or a reference (or const reference) of the same class and returns a reference to an object of the class.
+
+If a class has no explicitly defined copy assignment constructor the compiler will automatically create a default copy constructor for it that receives a const reference.[^6]
+
+Example (copy assignment operator of MyClass4):
+
+```c++
+MyClass::MyClass4 &operator=(const MyClass4 &other)
+{
+    if (this != &other) // if this is the same as other, no point in doing any work
+        *x = *other.x; 
+    return *this;
+}
+
+MyClass4 x, y;
+x = y; // this 
+```
+
+> Note: using assignment in the variable declaration (e.g. `MyClass3 x, y = x;`) will actually call the copy constructor (and *not* the copy assignment operator).
+
+> [^6]: Since C++11 you can force the compiler to create or not to create such methods by using the keywords `default` and `delete`. For example: `MyClass4() = default;` `MyClass4() = delete;`
+
+### 4.6. The Rule of 3
+
+If a class requires a user-defined destructor, a user-defined copy constructor, or a user-defined copy assignment operator, it almost certainly requires all three.[^7]
+
+> Note: 
+>
+> Since C++11 there are also "The Rule of 5" and since C++20 - "The Rule of Zero" [^6]
+>
+> [^7]: https://en.cppreference.com/w/cpp/language/rule_of_three
+
+## 5. A Complete Example: String Linked List Class
+
+In this example we implement a list of strings that supports copy and assignment.
+
+The List class owns the head of the list and the responsibility for allocating memory and deleting it. The Link class owns the next Link in the chain, etc.
 
 We will demonstrate declarations of the class's destructor, copy constructor, and assignment operator:
 
-#ifndef LINKED_LIST_H_
-#define LINKED_LIST_H_
+### 5.1. The file `List.h`:
+
+```c++
+#pragma once
+
 #include <string>
- 
-class Link {
+
 /**
- * The linked list is made of Link objects
- * each Link holds a pointer to the next link and its data (a string)
- * The Link object only knows about a single link - it never iterates through the next
- * No deep copy or deep delete - these are the responsibility of the LinkedList.
- */
-  private:
-    Link *next_;
+* The linked list is made of Link objects, each Link holds a pointer to the next link and
+* its data (a string). The Link object only knows about a single link - it never iterates
+* through the next. No deep copy or deep delete - these are the responsibility of List
+*/
+class Link
+{
+    Link* next_;
     std::string data_;
- 
-  public:
-    Link(const std::string &data,  Link *link);   // data passed by reference and link by pointer
-    Link(const Link &aLink);
+
+public:
+    Link(const std::string& data, Link* link); // data passed by reference and link by pointer
+    Link(const Link& aLink);
     virtual ~Link();
-    void setNext(Link *link);
-    Link * getNext() const;
-    const std::string & getData() const;
-    // Note - ‘const’ in Functions Return Values: to prevent   list.getData()[2] = 'b'
+    void setNext(Link* link);
+    Link* getNext() const;
+    const std::string& getData() const;
+
+    // Note - ‘const’ in Functions Return Values: to prevent list.getData()[2] = 'b'
 };
- 
-class List {
-  private:
-    Link *head_;
-    Link *copy() const;
+
+class List
+{
+    Link* head_;
+    Link* copy() const;
     void clear();
- 
-  public:
+
+public:
     List(); // constructor
- 
-    const Link * getHead() const;
-    void insertData(const std::string &data);
+    const Link* getHead() const;
+    void insertData(const std::string& data);
     void removeFirst();
- 
-    List(const List &aList);
+    List(const List& aList);
     virtual ~List();
-    List & operator=(const List &L);
+    List& operator=(const List& L);
 };
-#endif /*LINKED_LIST_H_*/
-#include "LinkedList.h"
- 
-/*****************************************************************
- * Link Implementation [Internal class]
- ****************************************************************/
- 
-/** constructor
- * A link is a single link in the list - this class never iterates beyond the single link.
- * No deep copy, deep delete - these are all responsibilities of the List.
- */
-Link::Link(const std::string &data,  Link *link) : data_(data)
-{
-   setNext(link);
-}
-void Link::setNext(Link *link)
-{
-   next_=link;
-}
-Link * Link::getNext() const
-{
-   return next_;
-}
-const std::string & Link::getData() const
-{
-   return data_;
-}
- 
-/** destructor
- *  No deep deletion for a simple link - this allows us to remove a single link from a list
- */
-Link::~Link() { }
- 
-/** copy constructor
- *  This only copies the data of the link - no deep copy and no copy of next to avoid sharing Links between lists.
- */
-Link::Link(const Link &aLink)
-{
-   data_=aLink.getData();
-   next_=nullptr;
-}
+```
+
+### 5.1. The file `List.cpp`:
+
+```c++
 /*****************************************************************
  * List Implementation
  ****************************************************************/
- 
+
+#include "List.h"
+
 /**
- * Constructor.
- * Builds an empty list.
+ * Default constructor - create an empty list
  */
-List::List() : head_(nullptr)
+List::List() : head(nullptr) {}
+
+const Link* List::getHead() const
 {
+    return head;
 }
-const Link * List::getHead() const
+
+void List::insertData(const std::string& data)
 {
-   return head_;
+    head = new Link(data, head);
 }
-void List::insertData(const std::string &data)
-{
-   head_ = new Link(data, head_);
-}
+
 /**
- * removes the current head
- * After the method head_ points to the next element
+ * Remove the current head. After the method head points to the next element.
  */
 void List::removeFirst()
 {
-  if (head_ != nullptr) {
-    Link *tmp = head_;
-    head_ = head_->getNext();
-    delete tmp;
-  }
+    if (head != nullptr) {
+        Link* tmp = head;
+        head = head->getNext();
+        delete tmp;
+    }
 }
+
 /**
- * Destructor: "deep delete"
+ * Destructor ("deep delete").
  */
 List::~List()
 {
-  clear();
+    clear();
 }
+
 /**
  * Clear all content (delete all links)
  */
 void List::clear()
 {
-  while (head_ != nullptr) {
-    removeFirst();
-  }
+    while (head != nullptr) {
+        removeFirst();
+    }
 }
+
 /**
  * deep copy of this list (allocates links)
  */
-Link * List::copy() const
+Link* List::copy() const
 {
-  if (getHead() == nullptr) {
-    return nullptr;
-  } else {
-    Link *head = new Link(*getHead());
-    Link *next = head;
-    // @inv: next points to last node in new list
-    // origPtr points to node in original list that is not yet copied
-    for (Link *origPtr = getHead()->getNext(); origPtr != nullptr; origPtr = origPtr->getNext()) {
-      next->setNext(new Link(*origPtr));
-      next = next->getNext();
+    if (getHead() == nullptr) {
+        return nullptr;
+    } else {
+        Link* head = new Link(*getHead());
+        Link* next = head;
+        // @inv: next points to last node in new list
+        // origPtr points to node in original list that is not yet copied
+        for (Link* origPtr = getHead()->getNext(); origPtr != nullptr; origPtr = origPtr->getNext()) {
+            next->setNext(new Link(*origPtr));
+            next = next->getNext();
+        }
+        return head;
     }
-    return head;
-  }
 }
+
 /**
  * Copy Constructor:deep copy of aList
  */
-List::List(const List &aList)
+List::List(const List& aList)
 {
-    head_ = aList.copy();
+    head = aList.copy();
 }
-/**
- * Assignment Operator
- */
-List & List::operator=(const List &aList)
-{
-  // check for "self assignment" and do nothing in that case
-  if (this == &aList) {
-    return *this;
-  }
-  clear();
-  head_ = aList.copy();
-  // return this List
-  return *this;
-}
- 
-int main() {
-  return 0;
-}
-
-Destructor 
-An object's destructor function is called when that object is about to "go away"; i.e., when:
-A class instance (a value parameter or a local variable) goes out of scope, or
-The dynamically allocated storage pointed to by the pointer is freed by the programmer using the delete operator
-
-The main purpose of the destructor function is to free any dynamically allocated storage pointed to only by a data member of that object. Note that it is up to the programmer to ensure that no other pointers are pointing to that storage.
-For example, consider the following function,
-
-void f(List list) {// list is passed by value only for sake of this example
-  List *p = new List();
-  while (...) {
-    List list1;
-    ...
-  }
-  delete p;
-}
-In this example, the scope of value parameter list is the whole function; list goes out of scope at the end of the function (line 8). So when function f ends, list's destructor function is called. (Note: if f had one or more return statements, list's destructor function would be called when a return was executed). Note we passed list by value only for the sake of the example as it is not recommended. It should have been passed by reference.
-
-The scope of variable list1 is the body of the while loop (lines 4 to 6). list1's constructor function is called at the beginning of every iteration of the loop, and its destructor function is called at the end of every iteration of the loop. Note that if the loop included a break or continue statement, the destructor would still be called.
-
-Variable p is a pointer to a List. When a List object is allocated using new at line 2, that object's constructor function is called. When the storage is freed at line 7, the object's destructor function is called (and then the memory for the List itself is freed).
-
-Question: Is a destructor function of a reference parameter called at the end of the function?
-A reference parameter's destructor function is not called at the end of the function because the corresponding actual parameter refers to the same object. The object does not "go away" when the function ends, so its dynamically allocated storage should not be freed.
-
-Destructor functions are defined using a syntax similar to that used for the constructor function (the name of the class followed by a double colon followed by the name of the function) and are always declared as virtual. For example, the definition of the List destructor function would look like this:
-
-/**
-  * Destructor: "deep delete"
-  */
- List::~List()
- {
-   clear();
- }
-/**
- * removes the current head
- * After the method head_ points to the next element
- */
-void List::removeFirst()
-{
-  if (head_ != nullptr) {
-    Link *tmp = head_;
-    head_ = head_->getNext();    
-    delete tmp;
-  }
-}
-/**
- * Clear all content (delete all links)
- */
-void List::clear()
-{
-  while (head_ != nullptr) {
-    removeFirst();
-  }
-}
-If you don't write a destructor function for a class that includes pointers to dynamically allocated storage, your code will still work, but you will probably have some storage leaks.
-
-Copy Constructor 
-An object's copy constructor is called (automatically, not by the programmer) when it is created, and needs to be initialized to be a copy of an existing object. This happens when an object is:
-passed as a value parameter to a function,
-....
-Point q(2,2);
-Point p(0,0);
-p.MoveTo(q);
-...
-returned (by value) as a function result,
-declared with initialization from an existing object of the same class.
-...
-A(Point p){
-Point temp=p;    //copy constructor called here to copy p
-Point temp2(p);  //copy constructor called here to copy p
-...
-
-Here are two functions that illustrate when copy constructors are called:
-List f( List &list ) {
-   List tmp1 = list;    // copy constructor called here to copy list
-   List tmp2(list);     // copy constructor called here to copy list
-   ...
-   return tmp1;      // copy constructor called here 
-                     // to copy tmp1 to list2
-}
- 
-int main() {
-   List list1;
-   ...
-   List list2 = f(list1);
-}
-On line 12, variable list1 is passed as a reference parameter to function f. The corresponding formal parameter is list.
-
-On line 2, variable tmp1 is declared to be a List, initialized to be the same as variable list. When line 2 is executed, tmp1's copy constructor is called to initialize tmp1 to be a copy of list. Similarly, when line 3 is executed, tmp2's copy constructor is called to initialize tmp2 to be a copy of list.
-
-On line 5, variable tmp1 is returned as the result of calling function f. When line 5 is executed, the copy constructor is called to make a copy of tmp1 to be returned. (Later, that copy is used as the right-hand side of the assignment on line 12.)
-
-A Copy Constructor must exist on classes that manages resources
-If you don't write a copy constructor, the compiler will provide one that just copies the value of each data member (this is sometimes called a shallow copy). If some data member is a pointer, this causes aliasing (both the original pointer and the copy point to the same location), and may lead to trouble.
-
-The Copy Constructor Declaration
-The copy constructor has one argument: its type is the class, and it is a const reference parameter. The argument is the object that the copy constructor is supposed to copy. For example:
-class List {
-   public:
-   ....
-   List(const List &aList);// copy constructor
-   ...
-};
-The Copy Constructor Definition
-The definition of the copy constructor (the actual code for the function) should be put in a ".cpp" file, along with the code for the other class member functions. The copy constructor should copy the values of all non-pointer data members, and should copy the objects pointed to by all pointer data members (this is sometimes called a deep copy). For example:
-/**
- * Copy Constructor:deep copy of aList
- */
-List::List(const List &aList)
-{
-  head_ = aList.copy();
-}
-/**
- * deep copy of this list (allocates links)
- */
-Link * List::copy() const
-{
-  if (getHead() == nullptr) {
-    return nullptr;
-  } else {
-    Link *head = new Link(*getHead());
-    Link *next = head;
-    // @inv: next points to last node in new list
-    // origPtr points to node in original list that is not yet copied
-    for (Link *origPtr = getHead()->getNext(); origPtr != nullptr; origPtr = origPtr->getNext()) {
-      next->setNext(new Link(*origPtr));
-      next = next->getNext();
-    }
-    return head;
-  }
-}
-Copy assignment operator
-Consider this example:
-List list1, list2;
-...
-list1 = list2;  // this assignment is OK
-By default, class assignment is just a field-by-field assignment (i.e., a shallow copy is done). For example, the above assignment is equivalent to:
-list1.data_ = list2.data_;
-list1.next_ = list2.next_;
-Of course, the field assignments could not be written outside a List member function, since they are private fields; however, they illustrate the effect of the assignment list1 = list2.
-If a class includes pointer fields, the default assignment operator causes aliasing, which lead to trouble! The default assignment can also cause storage leaks when the class has a pointer field.
-
-To prevent these problems, you should always override the assignment operator as a class member function for a class with a pointer field You may either define the operator to do a deep copy or make it private. The declaration of the member function looks like this for the List class:
-
-List & operator=(const List &aList);
-When the assignment list1=list2 is executed, list1's member function operator is called, and list2 is passed as the argument to that function. It can be actually be written like this list1.operator=(list2).
-
-Note that List's operator function returns a List. This is to permit chained assignment, for example: list1 = list2 = list3; When this statement is executed, the expression list2 = list3 is evaluated first; the result of evaluating that expression is used as the right-hand side of the assignment to list1. The operator function returns its result by reference (that's what the ampersand means). This is done for efficiency, to prevent the List copy constructor being called to make a copy of the returned value. So this can be written as list1.operator=(list2.operator=(list3)).
-
-Note that copy assignment operator differs from the copy constructor in three important ways:
-
-The object being assigned to has already been initialized; therefore, if it has a pointer field, the storage pointed to must be freed to prevent a storage leak.
-It is possible for a programmer to assign from a variable into itself; for example: list1 = list1. The copy assignment operator code must check for this case, and do nothing.
-The copy assignment operator code must return a value.
-Here is the definition of copy assignment operator for the List class. It should always include the following 4 sections:
-
-check assignment to self
-clear existing data members
-copy data member from other
-return this
-/**
- * Assignment Operator
- */
-List & List::operator=(const List &aList)
-{
-  // check for "self assignment" and do nothing in that case
-  if (this == &aList) {
-    return *this;
-  }
-  clear();
-  head_ = aList.copy();
-  // return this List
-  return *this;
-}
-
-Exception safety in copy assignment operator
-
-Suppose the aList.copy() expression yields an exception (either because there is insufficient memory for the allocation or because Link's copy constructor throws one), the List will end up holding a pointer to a deleted Link. Such pointers are toxic. You can't safely delete them. You can't even safely read them. About the only safe thing you can do with them is spend lots of debugging energy figuring out where they came from.
-Happily, making copy assignment operator exception-safe typically renders it self-assignment-safe, too. In many cases, a careful ordering of statements can yield exception-safe (and self-assignment-safe) code. Here, for example, we just have to be careful not to delete the List pointed by head_ until l.copy() completed successfully.
 
 /**
  * Assignment Operator
  */
-List & List::operator=(const List &aList)
-{    
+List& List::operator=(const List& aList)
+{
     // check for "self assignment" and do nothing in that case
     if (this == &aList) {
         return *this;
     }
-    Link *temp = aList.copy();        // make temp point to a copy of aList           
-    clear();            // delete the original List
-    head_ = temp;    
-  
-  // return this List
-  return *this;
+    clear();
+    head = aList.copy();
+    // return this List
+    return *this;
 }
-Now, if aList.copy() throws an exception, head_ remains unchanged. Even without the identity test, this code handles assignment to self, because first we make a copy of the new List, then delete the original List and finally point to the copy we made. It may not be the most efficient way to handle self-assignment, but it does work.
 
-If you're concerned about efficiency, you could put the identity test back at the top of the function. Before doing that, however, ask yourself how often you expect self-assignments to occur, because the test isn't free. It makes the code (both source and object) a bit bigger, and it introduces a branch into the flow of control, both of which can decrease runtime speed. The effectiveness of instruction prefetching, caching, and pipelining can be reduced, for example.
+int main()
+{
+    return 0;
+}
+```
 
-Additional links:
-examples1
-examples2
-Pointers and Functions
-The C++ 'const' declaration
+
+
+## 6. Additional links
+
+*   [examples1](http://pages.cs.wisc.edu/~hasti/cs368/CppTutorial/NOTES/CLASSES-PTRS.html)
+*   [examples2](http://www.cs.fiu.edu/~weiss/phc++/code/)
+*   [Pointers and Functions](http://mathbits.com/MathBits/CompSci/Pointers/Functions.htm)
+*   [The C++ 'const' declaration](http://duramecho.com/ComputerInformation/WhyHowCppConst.html)
+
