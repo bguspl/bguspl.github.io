@@ -41,7 +41,7 @@ For example the following program:
 template <typename T>
 void printFieldInfo(const std::string &name, const A &a, const T& field)
 {
-    std::cout << name << " size: " << sizeof(field) << ", address: " << &field 
+    std::cout << name << " size: " << sizeof(field) << ", address: " << (void*) &field 
         << ", offset: " << int(&field) - int(&a) << std::endl;
 }
 
@@ -68,17 +68,17 @@ int main()
 Produces this output:
 
 ```
-a.c1 size: 1, address: , offset: 0
-a.l size: 4, address: 00BFFE68, offset: 4
-a.c2 size: 1, address: , offset: 8
-a.s size: 2, address: 00BFFE6E, offset: 10
-a.c3 size: 1, address: , offset: 12
-a.n size: 4, address: 00BFFE74, offset: 16
-a.c4 size: 1, address: , offset: 20
-a.c5 size: 1, address: , offset: 21
-a.c6 size: 1, address: , offset: 22
-a.f size: 4, address: 00BFFE7C, offset: 24
-a.cstr size: 4, address: 00BFFE80, offset: 28
+a.c1 size: 1, address: 003CFCD8, offset: 0
+a.l size: 4, address: 003CFCDC, offset: 4
+a.c2 size: 1, address: 003CFCE0, offset: 8
+a.s size: 2, address: 003CFCE2, offset: 10
+a.c3 size: 1, address: 003CFCE4, offset: 12
+a.n size: 4, address: 003CFCE8, offset: 16
+a.c4 size: 1, address: 003CFCEC, offset: 20
+a.c5 size: 1, address: 003CFCED, offset: 21
+a.c6 size: 1, address: 003CFCEE, offset: 22
+a.f size: 4, address: 003CFCF0, offset: 24
+a.cstr size: 4, address: 003CFCF4, offset: 28
 ```
 
 
