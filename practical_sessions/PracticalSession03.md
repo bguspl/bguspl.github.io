@@ -229,8 +229,8 @@ In example 3.1.1 the initialization list is `x(xVal), y(yVal)` as follows:
 
 ```c++
 Point::Point(double xVal, double yVal) : x(xVal), y(yVal) {}
-//									   ^^^^^^^^^^^^^^^^^^
-//									   initialization list
+					^^^^^^^^^^^^^^^^^^
+//					initialization list
 ```
 
 > Notice that the *body* of this constructor is empty: `{}`
