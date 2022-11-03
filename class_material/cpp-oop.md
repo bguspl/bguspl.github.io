@@ -9,13 +9,15 @@ In C++, an object is implemented at runtime as a region of storage (a contiguous
 We distinguish between object values and object references. The simplest way to implement object references is as a pointer to an object value. Object values are implemented as a contiguous block of memory, where each field (data member) is stored in sequence. For example, the memory layout of the object defined as:
 ```c++
 struct A {
-    int n1;
     char c1;
+    long l;
     char c2;
-    char c3;
     short s;
-    int n2;
+    char c3;
+    int n;
     char c4;
+    char c5;
+    char c6;
     float f;
     char cstr[4];
 };
