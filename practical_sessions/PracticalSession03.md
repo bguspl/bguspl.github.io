@@ -2,8 +2,6 @@
 
 
 
-[TOC]
-
 ## 1. Goal
 
 The goal for this practical session is to explain Object Oriented programming in C++ with emphasis on classes that hold resources - specifically, classes with pointer member variables.
