@@ -8,12 +8,16 @@ In C++, an object is implemented at runtime as a region of storage (a contiguous
 
 We distinguish between object values and object references. The simplest way to implement object references is as a pointer to an object value. Object values are implemented as a contiguous block of memory, where each field (data member) is stored in sequence. For example, the memory layout of the object defined as:
 ```c++
-class A {
-  int a;
-  float f;
-  char c1;
-  char c2;
-  char d[4]; // An array of 4 char values
+struct A {
+    int n1;
+    char c1;
+    char c2;
+    char c3;
+    short s;
+    int n2;
+    char c4;
+    float f;
+    char cstr[4];
 };
 ```
 
@@ -21,33 +25,59 @@ will appear in memory as follows:
 
 ![image](../images/memory-layout-1.png)
 
-Each primitive type is encoded in a fixed amount of memory. For example, an int value is generally encoded in 4 bytes, a char in 1 byte, a double in 8 bytes etc. The sizeof operator of the compiler can be used to find out what is the size used by a given type. sizeof is computed at compile-time (it is not a function, it is a compiler operator). sizeof can also return the size allocated for object data-types. For example, sizeof(A) will return 20 (5 words of 4 bytes).
+Each primitive type is encoded in a fixed amount of memory. For example, an int value is generally encoded in 4 bytes, a char in 1 byte, a double in 8 bytes etc. The sizeof operator of the compiler can be used to find out what is the size used by a given type. sizeof is computed at compile-time (it is not a function - it is an operator). sizeof can also return the size allocated for object data-types. For example, sizeof(A) will return 20 (5 words of 4 bytes).
 
 ### **Field Alignment**
 
-Note that the fields c1 and c2 are "word aligned" within the block of memory of the object: all the fields start on a word boundary (each word is 4 bytes long). This means that some memory may be left "wasted" in the block of memory (as marked by the "unused" regions). (Sometimes we may be interested in avoiding this waste and may request the compiler not to align fields - but this is extremely rare.)
+Notice the unused space before s, n2 and f. In a class (or a struct), each primitive type T is aligned to the smaller of 4 bytes and sizeof(T).
 
 The reason for aligning fields within the memory is that it makes accessing the data fields much easier. Each field is known to the compiler by its datatype (which determines its size in memory) and its offset within the object.
-```
-a: offset 0
-f: offset 4
-c1: offset 8
-c2: offset 12
-d: offset 16
-```
-When the compiler translates a reference to a field, it uses the offset of the field within the object to access the specific field. For example, in the following code:
+
+For example the following program:
+
 ```c++
+template <typename T>
+void printFieldInfo(const std::string &name, const A &a, const T& field)
 {
-  A a1;
-  cout << a1.c2;
+    std::cout << name << " size: " << sizeof(field) << ", address: " << &field 
+        << ", offset: " << int(&field) - int(&a) << std::endl;
+}
+
+int main()
+{
+    A a{};
+
+    printFieldInfo("a.c1", a, a.c1);
+    printFieldInfo("a.l", a, a.l);
+    printFieldInfo("a.c2", a, a.c2);
+    printFieldInfo("a.s", a, a.s);
+    printFieldInfo("a.c3", a, a.c3);
+    printFieldInfo("a.n", a, a.n);
+    printFieldInfo("a.c4", a, a.c4);
+    printFieldInfo("a.c5", a, a.c5);
+    printFieldInfo("a.c6", a, a.c6);
+    printFieldInfo("a.f", a, a.f);
+    printFieldInfo("a.cstr", a, a.cstr);
+
+    return 0;
 }
 ```
-the reference to a1.c2 is translated to:
-```
-  -- push activation frame for new block with one variable of 20 bytes (for a1)
-  -- invoke constructor of A on the address of register S (top of stack)
-  READ [S]+12, B  -- Read the address [S]+12 into register B
-```
+
+Produces this output:
+
+> a.c1 size: 1, address: , offset: 0
+> a.l size: 4, address: 00BFFE68, offset: 4
+> a.c2 size: 1, address: , offset: 8
+> a.s size: 2, address: 00BFFE6E, offset: 10
+> a.c3 size: 1, address: , offset: 12
+> a.n size: 4, address: 00BFFE74, offset: 16
+> a.c4 size: 1, address: , offset: 20
+> a.c5 size: 1, address: , offset: 21
+> a.c6 size: 1, address: , offset: 22
+> a.f size: 4, address: 00BFFE7C, offset: 24
+> a.cstr size: 4, address: 00BFFE80, offset: 28
+
+
 
 ### **Memory Layout of Arrays**
 
