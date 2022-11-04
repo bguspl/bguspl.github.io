@@ -102,7 +102,7 @@ The memory layout of objects of class B looks as follows:
 
 ![image](../images/memory-layout-2.png)
 
-Note that the first 20 bytes of this block have exactly the same structure as a block of type A. This makes it easy to "look at a B value" as if it were an "A value": we just take the first part of B and "cut it short" to sizeof(A).
+Note that the first 32 bytes of this block have exactly the same structure as a block of type A. This makes it easy to "look at a B value" as if it were an "A value": we just take the first part of B and "cut it short" to sizeof(A).
 
 ### **Polymorphism Implementation: vtable**
 
