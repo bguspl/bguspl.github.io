@@ -205,13 +205,9 @@ p.move(1,1);      // compilation error since move is not declared const
 ...
 ```
 
-
-
-> Notes:
->
-> [^4]: The separation of declaration and implementation is not mandatory and may be omitted for inner, local private or helper classes.
-> [^5]: `Const` methods are different than methods that return a `const`. They are declared with `const` **after** the parameters list (see the example above). 
-> [^6]: Except for data members that are marked as `mutable`.
+[^4]:The separation of declaration and implementation is not mandatory and may be omitted for inner, local private or helper classes.
+[^5]:`Const` methods are different than methods that return a `const`. They are declared with `const` **after** the parameters list (see the example above). 
+[^6]:Except for data members that are marked as `mutable`.
 
 
 
@@ -517,7 +513,7 @@ x = y; // calls the copy assignment operator
 
 > Note: using assignment in the variable declaration (e.g. `MyClass3 x, y = x;`) will actually call the *copy constructor* (and **not** the copy assignment operator).
 
-> [^6]: Since C++11 you can force the compiler to generate or to not generate these methods by using the keywords `default` and `delete`. For example: `MyClass4() = default;` `MyClass4() = delete;`
+[^6]:Since C++11 you can force the compiler to generate or to not generate these methods by using the keywords `default` and `delete`. For example: `MyClass4() = default;` `MyClass4() = delete;`
 
 
 
@@ -529,7 +525,8 @@ If a class requires a user-defined destructor, a user-defined copy constructor, 
 >
 > Since C++11 there are also "The Rule of 5" and since C++20 - "The Rule of Zero" [^8]
 >
-> [^8]: https://en.cppreference.com/w/cpp/language/rule_of_three
+
+[^8]:https://en.cppreference.com/w/cpp/language/rule_of_three
 
 
 
