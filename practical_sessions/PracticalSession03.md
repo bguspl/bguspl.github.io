@@ -34,10 +34,10 @@ Usually, when passing primitive variables this method is used since there is lit
 
 Passing by value also works with objects, in which case a call to the class's copy constructor will happen which impacts performance. Usually, unless a new copy of the object is really needed, passing objects by value is not recommended[^2].
 
-> Notes:
->
-> [^1]: This method is also called ***call by value***.
-> [^2]: Since C++11, **when using [move semantics](https://stackoverflow.com/q/3106110/2375105)**, passing objects by value *is* in fact the recommended method. 
+
+
+[^1]: These methods is also called *call by value* and *call by reference*.
+[^2]: Since C++11, **when using [move semantics](https://stackoverflow.com/q/3106110/2375105)**, passing objects by value *is* in fact the recommended method. 
 
 
 
@@ -63,7 +63,7 @@ int main(int argc, char **argv)
 
 
 
-#### 2.1.2. Passing parameters by reference
+#### 2.1.2. Passing parameters by reference[^1]
 
 The syntax of passing parameters by reference is similar to passing by value, except of the & (ampersand) before the variable name, which indicate that the variable is actually a reference (a "link") to another variable. Changes made to the variable inside the function are reflected to the caller.
 
@@ -132,7 +132,7 @@ An *object* is an allocated instance (a variable) of a class data type.
 
 We shall start with a simple class example and move on later to classes that hold a resource.
 
-> [^3]: Note: ***structures*** in C++ are simply classes with `public` default access modifier.
+[^3]: Note: ***structures*** in C++ are simply classes with `public` default access modifier.
 
 
 
