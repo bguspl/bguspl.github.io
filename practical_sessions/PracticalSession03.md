@@ -59,8 +59,8 @@ int main(int argc, char **argv)
 
 
 > Note: C++ arrays are never passed by value unless wrapped inside a struct or class.
->
-> 
+
+
 
 #### 2.1.2. Passing parameters by reference<sup>**†**</sup>
 
@@ -525,7 +525,6 @@ If a class requires a user-defined destructor, a user-defined copy constructor, 
 > Note: 
 >
 > Since C++11 there are also "The Rule of 5" and since C++20 - "The Rule of Zero" [^1]
->
 
 
 
@@ -554,9 +553,7 @@ The Link class represents a single node in the list.
 
 ### 5.1. Object Diagram
 
-![StringQueueStack Object Diagram](../images/StringQueueStack.jpg)
-
-
+![StringQueueStack](https://github.com/bguspl/bguspl.github.io/raw/main/images/StringQueueStack.jpg)
 
 ### 5.2. The file `StringQueueStack.h`:
 
