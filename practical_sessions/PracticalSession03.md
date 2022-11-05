@@ -314,11 +314,11 @@ The arrow operator is used to dereference a point first and then reference the c
 ```c++
 int main( )
 {
-	Point *p1 = new Point(0,0);
-	Point p2(0,0);
-	(*p1).getX();
-	p1->getX(); // exactly the same as (*p1).getX()
-	p2.getX();
+    Point *p1 = new Point(0,0);
+    Point p2(0,0);
+    (*p1).getX();
+    p1->getX(); // exactly the same as (*p1).getX()
+    p2.getX();
     (&p2)->getX(); // exactly the same as p2.getX()
 }
 ```
