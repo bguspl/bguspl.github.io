@@ -92,7 +92,7 @@ In the example, any change in to the variable _word_ will also apply to _mySente
 
 #### 2.1.3. Passing pointers
 
-To avoid passing objects by value you can also pass (by value) a pointer to the object.
+To avoid passing objects by value you can also pass a pointer to the object. The pointer itself can be either passed by value or by reference (although passing a pointer by reference is only useful if you want to change the value of the pointer variable of the caller, or you need the pointer variable's address for some reason).
 
 When passing a pointer we obtain a reference to the object but can also pass `nullptr` as an "uninitialized reference". 
 
@@ -126,13 +126,13 @@ This function accepts a pointer since it must perform the change on the caller's
 
 ### 3.1. General
 
-A *class* is a user-defined data type that contains variables of primitive data types and/or other classes.
+A `class` (or `struct`[^3]) is a user-defined data type that contains variables of primitive data types and/or other classes.
 
 An *object* is an allocated instance (a variable) of a class data type.
 
 We shall start with a simple class example and move on later to classes that hold a resource.
 
-> Note: ***structures*** in C++ are simply classes with `public` default access modifier.
+> [^3]: Note: ***structures*** in C++ are simply classes with `public` default access modifier.
 
 
 
@@ -187,10 +187,10 @@ double Point::getY() const
 
 The syntax of classes in C++ is somewhat different than it is in Java;
 
-*   **Declarations and implementations are separate**[^3] - The class definition contains class variables and the declarations of the methods. The actual implementation is listed separately, where each method name is prefixed by the class name. The scope resolution operator (the :: operator) designates to which class the method belongs.
+*   **Declarations and implementations are separate**[^4] - The class definition contains class variables and the declarations of the methods. The actual implementation is listed separately, where each method name is prefixed by the class name. The scope resolution operator (the :: operator) designates to which class the method belongs.
 *   **Semicolon at the end of the class** - A semicolon at the end of the class declaration. Not placing it will result in a compilation error.
 *   **Public and private <u>section</u>** - In C++, there are public, private and protected *sections* as opposed to Java where each individual class member must be tagged separately.
-*   **`Const` methods** - `const` functions[^4] do not change the state of an object. Good candidates for `const` are accessors functions (getters). `Const` methods cannot be used in a way that would allow you to use them to modify the object data[^5]. This means that when `const` methods  return references or pointers to members of the class, they must also be `const` and they cannot call non- `const` methods.
+*   **`Const` methods** - `const` methods[^5] do not change the state of an object (similar to `final` in Java). Good candidates for `const` are accessors functions (getters). `Const` methods cannot be used in a way that would allow you to use them to modify the object data[^6]. This means that when `const` methods  return references or pointers to members of the class, they must also be `const` and they cannot call non- `const` methods.
 *   **`Const` objects** - Once an object is declared as `const`, one can only use `const` methods on that object.
 
 
@@ -209,9 +209,9 @@ p.move(1,1);      // compilation error since move is not declared const
 
 > Notes:
 >
-> [^3]: The separation of declaration and implementation is not mandatory and may be omitted for inner, local private or helper classes.
-> [^4]: `Const` methods are different than methods that return a `const`. They are declared with `const` **after** the parameters list (see the example above). 
-> [^5]: Except for data members that are marked as `mutable`.
+> [^4]: The separation of declaration and implementation is not mandatory and may be omitted for inner, local private or helper classes.
+> [^5]: `Const` methods are different than methods that return a `const`. They are declared with `const` **after** the parameters list (see the example above). 
+> [^6]: Except for data members that are marked as `mutable`.
 
 
 
@@ -219,7 +219,7 @@ p.move(1,1);      // compilation error since move is not declared const
 
 In C++ constructors, we use a _member initialization list_ to initialize class variables. It appears after a single colon character, between the function declaration and the function body of the constructor. This code initialized the class variables and is executed before the code in the body of the constructor.
 
-Any class variable (field) that does not appear in this list it will be initialized with it's *default value*. If the field is an object this will produce an implicit call to it's *default constructor*. If the object's class has no default constructor the compilation will fail. 
+Any class variable (field) that does not appear in this list it will be initialized with it's *default constructor*. If the object's class has no default constructor the compilation will fail. 
 
 Const class variables can *only* be initialized in the _member initialization list_. Attempting to change their value anywhere else, *including in the constructor's body* will cause a compilation error.
 
@@ -293,13 +293,15 @@ An object is an instance of a class.
 In C++, object variables hold *values*, not *references*. In the variable declaration you supply the parameters to the constructor after the variable name: 
 
 ```c++
-Point p(1, 2); /* create the variable using the constructor Point::Point(double xVal, double yVal) */
+// create the variable using the constructor Point::Point(double xVal, double yVal)
+Point p(1, 2); 
 ```
 
 If you do not supply construction parameters, then the object will be constructed using the default (no arguments) constructor: 
 
 ```c++
-Time now; /* create the variable using the constructor Time::Time() */
+// create the variable using the (default) constructor Time::Time()
+Time now;
 ```
 
 > Note: In Java, `Time now` would create an uninitialized reference. In C++, it allocates and constructs an actual object.
@@ -332,7 +334,9 @@ int main( )
 
 In C++ every object can access it's own address using the keyword `this` (a.k.a. the `this` pointer). It is an implicit (hidden) parameter to all non-static class methods and is used within the class method to refer to the invoking object.
 
-If a method variable name is the same as a class variable it is said that it *shadows* the variable. The `this` pointer can be used to differentiate between method arguments and class variables (fields).
+If a method variable name is the same as a class variable it is said that it *shadows* the variable. A possible usage of the `this` pointer is to differentiate between method arguments and class variables - however, it is better to *avoid these situation altogether by using different names* (see in the example below).
+
+The `this` pointer is an `rvalue` (and therefore it cannot be modified).
 
 
 
@@ -417,7 +421,7 @@ MyClass1 mc12(); // explicit call to the default constructor
 
 
 
-If a class has no explicitly defined constructors (of any kind), the compiler will automatically create a *default constructor* for it.[^6]
+If a class has no explicitly defined constructors (of any kind), the compiler will automatically generate a *default constructor* for it.[^7]
 
 Example:
 
@@ -425,7 +429,7 @@ Example:
 class MyClass2
 {
     int x;
-    // a default constructor was automatically created by the compiler
+    // a default constructor was automatically generated by the compiler
 };
 
 MyClass2 mc21; // implicit call to the default constructor
@@ -436,9 +440,9 @@ MyClass2 mc22(); // explicit call to the default constructor
 
 #### 4.3.2. Copy constructor
 
-A *Copy constructor* is a constructor who's first parameter is a reference of the same class (a regular reference or a const reference) and either accepts no arguments or has default values for all it's other arguments.
+A *Copy constructor* is a constructor who's first parameter is a reference of the same class (a regular reference or a `const` reference) and either accepts no arguments or has default values for all it's other arguments.
 
-If a class has no explicitly defined copy constructor the compiler will automatically create a default copy constructor for it that receives a const reference.[^6]
+If a class has no explicitly defined copy constructor the compiler will automatically generate a default copy constructor for it that receives a const reference.[^7]
 
 Example:
 
@@ -468,7 +472,7 @@ The `destructor` does not receive any arguments and does not return a value.
 
 The name of the destructor is the class name preceded by a tilde symbol (~).
 
-If a class has no explicitly defined destructor, the compiler will automatically create a default destructor for it.[^6]
+If a class has no explicitly defined destructor, the compiler will automatically generate a default destructor for it.[^7]
 
 Example:
 
@@ -493,7 +497,9 @@ MyClass4::~MyClass4() { delete x; }
 
 The `copy assignment operator` is called whenever an object appears on the left side of an assignment expression (and in some other situations). It takes exactly one parameter that is an object or a reference (or const reference) of the same class and returns a reference to an object of the class.
 
-If a class has no explicitly defined copy assignment constructor the compiler will automatically create a default copy constructor for it that receives a const reference.[^6]
+If a class has no explicitly defined copy assignment constructor the compiler will automatically generate a default copy constructor for it that receives a const reference.[^7]
+
+The copy assignment operator must not throw exceptions (this may leave the object in an invalid state). If the automatically-generated default copy assignment operator may throw exceptions, one must be written explicitly.
 
 Example (copy assignment operator of MyClass4):
 
@@ -506,177 +512,221 @@ MyClass::MyClass4 &operator=(const MyClass4 &other)
 }
 
 MyClass4 x, y;
-x = y; // this 
+x = y; // calls the copy assignment operator
 ```
 
-> Note: using assignment in the variable declaration (e.g. `MyClass3 x, y = x;`) will actually call the copy constructor (and *not* the copy assignment operator).
+> Note: using assignment in the variable declaration (e.g. `MyClass3 x, y = x;`) will actually call the *copy constructor* (and **not** the copy assignment operator).
 
-> [^6]: Since C++11 you can force the compiler to create or not to create such methods by using the keywords `default` and `delete`. For example: `MyClass4() = default;` `MyClass4() = delete;`
+> [^6]: Since C++11 you can force the compiler to generate or to not generate these methods by using the keywords `default` and `delete`. For example: `MyClass4() = default;` `MyClass4() = delete;`
+
+
 
 ### 4.6. The Rule of 3
 
-If a class requires a user-defined destructor, a user-defined copy constructor, or a user-defined copy assignment operator, it almost certainly requires all three.[^7]
+If a class requires a user-defined destructor, a user-defined copy constructor, or a user-defined copy assignment operator, it almost certainly requires all three.[^8]
 
 > Note: 
 >
-> Since C++11 there are also "The Rule of 5" and since C++20 - "The Rule of Zero" [^6]
+> Since C++11 there are also "The Rule of 5" and since C++20 - "The Rule of Zero" [^8]
 >
-> [^7]: https://en.cppreference.com/w/cpp/language/rule_of_three
+> [^8]: https://en.cppreference.com/w/cpp/language/rule_of_three
 
-## 5. A Complete Example: String Linked List Class
 
-In this example we implement a list of strings that supports copy and assignment.
 
-The List class owns the head of the list and the responsibility for allocating memory and deleting it. The Link class owns the next Link in the chain, etc.
+## 5. A Complete Example: String Queue-Stack Class
 
-We will demonstrate declarations of the class's destructor, copy constructor, and assignment operator:
+> Sources and makefile for this example are [here](../code/StringQueueStack.zip).
 
-### 5.1. The file `List.h`:
+In this example we implement an efficient data structure that can operate both as a queue and as a stack. It is implemented using a dynamic (linked) list of strings. Strings can be added from both ends of the list but can be removed only from the head. The class supports (deep) copy and assignment. We will demonstrate declarations of the class's destructor, copy constructor, and assignment operator.
+
+> Note: in this particular example, it is (by design) the caller's responsibility to free the memory of the strings returned from pop()
+
+Supported operations are:
+
+- pop - removes the string at the head of the list and return it or nullptr if the stack is empty.
+- push - pushes a string to the head of the list.
+- append - inserts a string to the end of the list.
+- clear - clears up the list (freeing all memory).
+
+The Link class represents a single node in the list.
+
+
+
+### 5.1. Object Diagram
+
+![StringQueueStack Object Diagram](../images/StringQueueStack.jpg)
+
+
+
+### 5.2. The file `StringQueueStack.h`:
 
 ```c++
 #pragma once
 
+
 #include <string>
 
-/**
-* The linked list is made of Link objects, each Link holds a pointer to the next link and
-* its data (a string). The Link object only knows about a single link - it never iterates
-* through the next. No deep copy or deep delete - these are the responsibility of List
-*/
-class Link
+class StringQueueStack
 {
-    Link* next_;
-    std::string data_;
+    struct Link
+    {
+        std::string* data;
+        Link* next;
+        Link(std::string* data, Link* next);
+    } *first = nullptr, *last = nullptr;
 
 public:
-    Link(const std::string& data, Link* link); // data passed by reference and link by pointer
-    Link(const Link& aLink);
-    virtual ~Link();
-    void setNext(Link* link);
-    Link* getNext() const;
-    const std::string& getData() const;
+    StringQueueStack() = default;
 
-    // Note - ‘const’ in Functions Return Values: to prevent list.getData()[2] = 'b'
-};
+    // the rule of 3
+    StringQueueStack(const StringQueueStack& other);
+    ~StringQueueStack();
+    StringQueueStack& operator=(const StringQueueStack& other);
 
-class List
-{
-    Link* head_;
-    Link* copy() const;
+    // other class methods
+    void push(const std::string* data);
+    void append(const std::string* data);
+    std::string* pop();
     void clear();
-
-public:
-    List(); // constructor
-    const Link* getHead() const;
-    void insertData(const std::string& data);
-    void removeFirst();
-    List(const List& aList);
-    virtual ~List();
-    List& operator=(const List& L);
 };
+
 ```
 
-### 5.1. The file `List.cpp`:
+
+
+### 5.3. The file `StringQueueStack.cpp`:
 
 ```c++
-/*****************************************************************
- * List Implementation
- ****************************************************************/
+#include "StringQueueStack.h"
 
-#include "List.h"
+StringQueueStack::Link::Link(std::string* data, StringQueueStack::Link* next) 
+    : data(data), next(next) {}
 
-/**
- * Default constructor - create an empty list
- */
-List::List() : head(nullptr) {}
-
-const Link* List::getHead() const
+void StringQueueStack::push(const std::string* data)
 {
-    return head;
+    first = new Link{new std::string(*data), first}; // insert a new link before first
+
+    if (!last)
+        last = first;
 }
 
-void List::insertData(const std::string& data)
+void StringQueueStack::append(const std::string* data)
 {
-    head = new Link(data, head);
+    Link* newLink = new Link{new std::string(*data), nullptr};
+
+    if (last)
+        last = last->next = newLink; 
+    	// (this evaluates "last->next = newLink" and then "last = last->next")
+    else
+        first = last = newLink;
 }
 
-/**
- * Remove the current head. After the method head points to the next element.
- */
-void List::removeFirst()
+std::string* StringQueueStack::pop()
 {
-    if (head != nullptr) {
-        Link* tmp = head;
-        head = head->getNext();
-        delete tmp;
-    }
-}
-
-/**
- * Destructor ("deep delete").
- */
-List::~List()
-{
-    clear();
-}
-
-/**
- * Clear all content (delete all links)
- */
-void List::clear()
-{
-    while (head != nullptr) {
-        removeFirst();
-    }
-}
-
-/**
- * deep copy of this list (allocates links)
- */
-Link* List::copy() const
-{
-    if (getHead() == nullptr) {
+    if (!first) // stack is empty?
         return nullptr;
-    } else {
-        Link* head = new Link(*getHead());
-        Link* next = head;
-        // @inv: next points to last node in new list
-        // origPtr points to node in original list that is not yet copied
-        for (Link* origPtr = getHead()->getNext(); origPtr != nullptr; origPtr = origPtr->getNext()) {
-            next->setNext(new Link(*origPtr));
-            next = next->getNext();
-        }
-        return head;
-    }
+
+    if (last == first) // only 1 item in the stack?
+        last = nullptr;
+
+    std::string* data = first->data; // save the data so that we can return it later
+    Link* oldHead = first; // save the head so that we can free it later
+    first = first->next; // set the head to whatever comes next
+    delete oldHead;
+    return data;
 }
 
-/**
- * Copy Constructor:deep copy of aList
- */
-List::List(const List& aList)
+void StringQueueStack::clear()
 {
-    head = aList.copy();
+    while (first)
+        delete pop(); // delete the data
 }
 
-/**
- * Assignment Operator
- */
-List& List::operator=(const List& aList)
+StringQueueStack::StringQueueStack(const StringQueueStack& other) 
+    : first{nullptr}, last{nullptr}
 {
-    // check for "self assignment" and do nothing in that case
-    if (this == &aList) {
-        return *this;
-    }
+    *this = other; // invoke copy assignment operator to do the work for us
+}
+
+StringQueueStack::~StringQueueStack()
+{
     clear();
-    head = aList.copy();
-    // return this List
+}
+
+StringQueueStack& StringQueueStack::operator=(const StringQueueStack& other)
+{
+    if (this != &other) { // is this not self-assignment?
+        clear();
+        for (Link* link = other.first; link != nullptr; link = link->next)
+            append(link->data); // append will keep the correct order
+    }
+
     return *this;
+}
+```
+
+
+
+### 5.4 Execution example:
+
+```c++
+#include "StringQueueStack.h"
+
+#include <iostream>
+
+
+void pushAndPrint(StringQueueStack *sqs, std::string *s)
+{
+    std::cout << "Pushing " << *s << std::endl;
+    sqs->push(s);
+}
+
+void appendAndPrint(StringQueueStack *sqs, std::string *s)
+{
+    std::cout << "Appending " << *s << std::endl;
+    sqs->append(s);
+}
+
+void popAndPrint(StringQueueStack* sqs)
+{
+    std::string *s = sqs->pop();
+    std::cout << "Popped: " << *s << std::endl;
+    delete s;
 }
 
 int main()
 {
+    StringQueueStack *sqs = new StringQueueStack();
+
+    std::string s1{"1"}, s2{"2"};
+
+    pushAndPrint(sqs, &s1);
+    pushAndPrint(sqs, &s2);
+
+    popAndPrint(sqs);
+    popAndPrint(sqs);
+
+    appendAndPrint(sqs, &s1);
+    appendAndPrint(sqs, &s2);
+
+    popAndPrint(sqs);
+    popAndPrint(sqs);
+
+    delete sqs;
+
     return 0;
 }
+```
+
+```
+Pushing 1
+Pushing 2
+Popped: 2
+Popped: 1
+Appending 1
+Appending 2
+Popped: 1
+Popped: 2
 ```
 
 
