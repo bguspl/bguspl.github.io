@@ -45,14 +45,14 @@ Example:
 ```c++
 int power(int i)
 {
-	i = i * i;
-	return i;
+    i = i * i;
+    return i;
 }
 
 int main(int argc, char **argv)
 {
-	int number = 5;
-	power(number); // here number (a primitive integer variable) is passed by value
+    int number = 5;
+    power(number); // here number (a primitive integer variable) is passed by value
 }
 ```
 
@@ -75,13 +75,13 @@ Example:
 ```c++
 void emphasize(std::string &word)
 {
-	word.append(3, '!');
+    word.append(3, '!');
 }
 
 int main(int argc, char **argv)
 {
-	std::string mySentence = "Everything is awesome";
-	emphasize(mySentence);
+    std::string mySentence = "Everything is awesome";
+    emphasize(mySentence);
 }
 ```
 
@@ -102,16 +102,16 @@ Example:
 ```c++
 void emphasize(std::string *word)
 {
-	if (word == nullptr)
-		return;
+    if (word == nullptr)
+        return;
     
-	word->append(3, '!'); // same as (*word).append(3, '!');
+    word->append(3, '!'); // same as (*word).append(3, '!');
 }
 
 int main(argc, char **argv)
 {
-	std::string mySentence = "Everything is awesome";
-	emphasize(&mySentence);
+    std::string mySentence = "Everything is awesome";
+    emphasize(&mySentence);
 }
 ```
 
@@ -224,8 +224,8 @@ In example 3.1.1 the initialization list is `x(xVal), y(yVal)` as follows:
 
 ```c++
 Point::Point(double xVal, double yVal) : x(xVal), y(yVal) {}
-					^^^^^^^^^^^^^^^^^^
-//					initialization list
+                    ^^^^^^^^^^^^^^^^^^
+//                  initialization list
 ```
 
 > Notice that the *body* of this constructor is empty: `{}`
@@ -368,7 +368,7 @@ Or better yet - avoid this altogether by using different names:
 ```c++
 void MyClass:setVariable(int _variable)
 {
-	variable = _variable; // recommended - avoid shadowing altogether
+    variable = _variable; // recommended - avoid shadowing altogether
 }
 ```
 
@@ -529,7 +529,7 @@ If a class requires a user-defined destructor, a user-defined copy constructor, 
 
 
 
-[1]: https://en.cppreference.com/w/cpp/language/rule_of_three	""The rule of three/five/zero""
+[1]: https://en.cppreference.com/w/cpp/language/rule_of_three   ""The rule of three/five/zero""
 
 
 
@@ -616,7 +616,7 @@ void StringQueueStack::append(const std::string* data)
 
     if (last)
         last = last->next = newLink; 
-    	// (this evaluates "last->next = newLink" and then "last = last->next")
+        // (this evaluates "last->next = newLink" and then "last = last->next")
     else
         first = last = newLink;
 }
