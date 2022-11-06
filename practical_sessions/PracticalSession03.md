@@ -525,7 +525,6 @@ If a class requires a user-defined destructor, a user-defined copy constructor, 
 > Note: 
 >
 > Since C++11 there are also "The Rule of 5" and since C++20 - "The Rule of Zero" [^1]
->
 
 
 
@@ -535,7 +534,7 @@ If a class requires a user-defined destructor, a user-defined copy constructor, 
 
 ## 5. A Complete Example: String Queue-Stack Class
 
-> Sources and makefile for this example are [here](../code/StringQueueStack.zip).
+> Sources and makefile for this example are [here](https://github.com/bguspl/bguspl.github.io/raw/main/code/StringQueueStack.zip).
 
 In this example we implement an efficient data structure that can operate both as a queue and as a stack. It is implemented using a dynamic (linked) list of strings. Strings can be added from both ends of the list but can be removed only from the head. The class supports (deep) copy and assignment. We will demonstrate declarations of the class's destructor, copy constructor, and assignment operator.
 
