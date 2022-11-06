@@ -26,18 +26,17 @@ It is done in C++ in 2 ways:
 
    
 
-#### 2.1.1. Passing parameters by value[^1]
+#### 2.1.1. Passing parameters by value<sup>**†**</sup>
 
 When passing parameters by value changes made to the parameter inside the function are not reflected to the caller. 
 
 Usually, when passing primitive variables this method is used since there is little to no performance benefit for passing primitives by reference.
 
-Passing by value also works with objects, in which case a call to the class's copy constructor will happen which impacts performance. Usually, unless a new copy of the object is really needed, passing objects by value is not recommended[^2].
+Passing by value also works with objects, in which case a call to the class's copy constructor will happen which impacts performance. Usually, unless a new copy of the object is really needed, passing objects by value is not recommended<sup>‡</sup>.
 
-> Notes:
->
-> [^1]: This method is also called ***call by value***.
-> [^2]: Since C++11, **when using [move semantics](https://stackoverflow.com/q/3106110/2375105)**, passing objects by value *is* in fact the recommended method. 
+<small><sup>**†**</sup> This method is also called *call by value*.</small>
+
+<small><sup>‡</sup> Since C++11, when using [move semantics](https://stackoverflow.com/q/3106110/2375105), passing by value *is* in fact the recommended method.</small>
 
 
 
@@ -46,14 +45,14 @@ Example:
 ```c++
 int power(int i)
 {
-	i = i * i;
-	return i;
+    i = i * i;
+    return i;
 }
 
 int main(int argc, char **argv)
 {
-	int number = 5;
-	power(number); // here number (a primitive integer variable) is passed by value
+    int number = 5;
+    power(number); // here number (a primitive integer variable) is passed by value
 }
 ```
 
@@ -63,7 +62,7 @@ int main(int argc, char **argv)
 
 
 
-#### 2.1.2. Passing parameters by reference
+#### 2.1.2. Passing parameters by reference<sup>**†**</sup>
 
 The syntax of passing parameters by reference is similar to passing by value, except of the & (ampersand) before the variable name, which indicate that the variable is actually a reference (a "link") to another variable. Changes made to the variable inside the function are reflected to the caller.
 
@@ -76,17 +75,19 @@ Example:
 ```c++
 void emphasize(std::string &word)
 {
-	word.append(3, '!');
+    word.append(3, '!');
 }
 
 int main(int argc, char **argv)
 {
-	std::string mySentence = "Everything is awesome";
-	emphasize(mySentence);
+    std::string mySentence = "Everything is awesome";
+    emphasize(mySentence);
 }
 ```
 
 In the example, any change in to the variable _word_ will also apply to _mySentence_.
+
+<small><sup>**†**</sup> This method is also called *call by reference*.</small>
 
 
 
@@ -101,16 +102,16 @@ Example:
 ```c++
 void emphasize(std::string *word)
 {
-	if (word == nullptr)
-		return;
+    if (word == nullptr)
+        return;
     
-	word->append(3, '!'); // same as (*word).append(3, '!');
+    word->append(3, '!'); // same as (*word).append(3, '!');
 }
 
 int main(argc, char **argv)
 {
-	std::string mySentence = "Everything is awesome";
-	emphasize(&mySentence);
+    std::string mySentence = "Everything is awesome";
+    emphasize(&mySentence);
 }
 ```
 
@@ -126,13 +127,13 @@ This function accepts a pointer since it must perform the change on the caller's
 
 ### 3.1. General
 
-A `class` (or `struct`[^3]) is a user-defined data type that contains variables of primitive data types and/or other classes.
+A `class` (or `struct`<sup>†</sup>) is a user-defined data type that contains variables of primitive data types and/or other classes.
 
 An *object* is an allocated instance (a variable) of a class data type.
 
 We shall start with a simple class example and move on later to classes that hold a resource.
 
-> [^3]: Note: ***structures*** in C++ are simply classes with `public` default access modifier.
+<small><sup>†</sup> *Structures* in C++ are simply classes with `public` default access modifier.</small>
 
 
 
@@ -187,13 +188,15 @@ double Point::getY() const
 
 The syntax of classes in C++ is somewhat different than it is in Java;
 
-*   **Declarations and implementations are separate**[^4] - The class definition contains class variables and the declarations of the methods. The actual implementation is listed separately, where each method name is prefixed by the class name. The scope resolution operator (the :: operator) designates to which class the method belongs.
+*   **Declarations and implementations are separate<sup>†</sup>** - The class definition contains class variables and the declarations of the methods. The actual implementation is listed separately, where each method name is prefixed by the class name. The scope resolution operator (the :: operator) designates to which class the method belongs.
 *   **Semicolon at the end of the class** - A semicolon at the end of the class declaration. Not placing it will result in a compilation error.
 *   **Public and private <u>section</u>** - In C++, there are public, private and protected *sections* as opposed to Java where each individual class member must be tagged separately.
-*   **`Const` methods** - `const` methods[^5] do not change the state of an object (similar to `final` in Java). Good candidates for `const` are accessors functions (getters). `Const` methods cannot be used in a way that would allow you to use them to modify the object data[^6]. This means that when `const` methods  return references or pointers to members of the class, they must also be `const` and they cannot call non- `const` methods.
+*   **`Const` methods** - `const` methods do not change the state of an object<sup>‡</sup>, can only call other `const` methods and cannot return non-const references or pointers to members of the class. They are declared with the keyword `const` after the parameter list (see example 3.1.1).
 *   **`Const` objects** - Once an object is declared as `const`, one can only use `const` methods on that object.
 
+<small><sup>†</sup> The separation of declaration and implementation is not mandatory and may be omitted for inner, local private or helper classes.</small>
 
+<small><sup>‡</sup> With the exception of data members marked as `mutable`.</small>
 
 Example of a `const` object:
 
@@ -204,14 +207,6 @@ p.getY();         // this is ok since getY is declared const
 p.move(1,1);      // compilation error since move is not declared const
 ...
 ```
-
-
-
-> Notes:
->
-> [^4]: The separation of declaration and implementation is not mandatory and may be omitted for inner, local private or helper classes.
-> [^5]: `Const` methods are different than methods that return a `const`. They are declared with `const` **after** the parameters list (see the example above). 
-> [^6]: Except for data members that are marked as `mutable`.
 
 
 
@@ -229,8 +224,8 @@ In example 3.1.1 the initialization list is `x(xVal), y(yVal)` as follows:
 
 ```c++
 Point::Point(double xVal, double yVal) : x(xVal), y(yVal) {}
-					^^^^^^^^^^^^^^^^^^
-//					initialization list
+                    ^^^^^^^^^^^^^^^^^^
+//                  initialization list
 ```
 
 > Notice that the *body* of this constructor is empty: `{}`
@@ -319,11 +314,11 @@ The arrow operator is used to dereference a point first and then reference the c
 ```c++
 int main( )
 {
-	Point *p1 = new Point(0,0);
-	Point p2(0,0);
-	(*p1).getX();
-	p1->getX(); // exactly the same as (*p1).getX()
-	p2.getX();
+    Point *p1 = new Point(0,0);
+    Point p2(0,0);
+    (*p1).getX();
+    p1->getX(); // exactly the same as (*p1).getX()
+    p2.getX();
     (&p2)->getX(); // exactly the same as p2.getX()
 }
 ```
@@ -373,7 +368,7 @@ Or better yet - avoid this altogether by using different names:
 ```c++
 void MyClass:setVariable(int _variable)
 {
-	variable = _variable; // recommended - avoid shadowing altogether
+    variable = _variable; // recommended - avoid shadowing altogether
 }
 ```
 
@@ -416,12 +411,12 @@ public:
 };
 
 MyClass1 mc11; // implicit call to the default constructor
-MyClass1 mc12(); // explicit call to the default constructor
+MyClass1 mc12{}; // explicit call to the default constructor
 ```
 
 
 
-If a class has no explicitly defined constructors (of any kind), the compiler will automatically generate a *default constructor* for it.[^7]
+If a class has no explicitly defined constructors (of any kind), the compiler will automatically generate a *default constructor* for it.
 
 Example:
 
@@ -433,8 +428,12 @@ class MyClass2
 };
 
 MyClass2 mc21; // implicit call to the default constructor
-MyClass2 mc22(); // explicit call to the default constructor
+MyClass2 mc22{}; // explicit call to the default constructor
 ```
+
+
+
+> Note: Since C++11 you can force the compiler to generate or to not generate such methods by using the keywords `default` and `delete`. For example: `MyClass4() = default;` `MyClass4() = delete;`
 
 
 
@@ -442,7 +441,7 @@ MyClass2 mc22(); // explicit call to the default constructor
 
 A *Copy constructor* is a constructor who's first parameter is a reference of the same class (a regular reference or a `const` reference) and either accepts no arguments or has default values for all it's other arguments.
 
-If a class has no explicitly defined copy constructor the compiler will automatically generate a default copy constructor for it that receives a const reference.[^7]
+If a class has no explicitly defined copy constructor the compiler will automatically generate a default copy constructor for it that receives a const reference.
 
 Example:
 
@@ -472,7 +471,7 @@ The `destructor` does not receive any arguments and does not return a value.
 
 The name of the destructor is the class name preceded by a tilde symbol (~).
 
-If a class has no explicitly defined destructor, the compiler will automatically generate a default destructor for it.[^7]
+If a class has no explicitly defined destructor, the compiler will automatically generate a default destructor for it.
 
 Example:
 
@@ -497,7 +496,7 @@ MyClass4::~MyClass4() { delete x; }
 
 The `copy assignment operator` is called whenever an object appears on the left side of an assignment expression (and in some other situations). It takes exactly one parameter that is an object or a reference (or const reference) of the same class and returns a reference to an object of the class.
 
-If a class has no explicitly defined copy assignment constructor the compiler will automatically generate a default copy constructor for it that receives a const reference.[^7]
+If a class has no explicitly defined copy assignment constructor the compiler will automatically generate a default copy constructor for it that receives a const reference.
 
 The copy assignment operator must not throw exceptions (this may leave the object in an invalid state). If the automatically-generated default copy assignment operator may throw exceptions, one must be written explicitly.
 
@@ -506,7 +505,7 @@ Example (copy assignment operator of MyClass4):
 ```c++
 MyClass::MyClass4 &operator=(const MyClass4 &other)
 {
-    if (this != &other) // if this is the same as other, no point in doing any work
+    if (this != &other) // if this is the same as other. do nothing.
         *x = *other.x; 
     return *this;
 }
@@ -517,19 +516,20 @@ x = y; // calls the copy assignment operator
 
 > Note: using assignment in the variable declaration (e.g. `MyClass3 x, y = x;`) will actually call the *copy constructor* (and **not** the copy assignment operator).
 
-> [^6]: Since C++11 you can force the compiler to generate or to not generate these methods by using the keywords `default` and `delete`. For example: `MyClass4() = default;` `MyClass4() = delete;`
-
 
 
 ### 4.6. The Rule of 3
 
-If a class requires a user-defined destructor, a user-defined copy constructor, or a user-defined copy assignment operator, it almost certainly requires all three.[^8]
+If a class requires a user-defined destructor, a user-defined copy constructor, or a user-defined copy assignment operator, it almost certainly requires all three.[^1]
 
 > Note: 
 >
-> Since C++11 there are also "The Rule of 5" and since C++20 - "The Rule of Zero" [^8]
+> Since C++11 there are also "The Rule of 5" and since C++20 - "The Rule of Zero" [^1]
 >
-> [^8]: https://en.cppreference.com/w/cpp/language/rule_of_three
+
+
+
+[1]: https://en.cppreference.com/w/cpp/language/rule_of_three   ""The rule of three/five/zero""
 
 
 
@@ -554,9 +554,7 @@ The Link class represents a single node in the list.
 
 ### 5.1. Object Diagram
 
-![StringQueueStack Object Diagram](../images/StringQueueStack.jpg)
-
-
+![StringQueueStack](https://github.com/bguspl/bguspl.github.io/raw/main/images/StringQueueStack.jpg)
 
 ### 5.2. The file `StringQueueStack.h`:
 
@@ -616,7 +614,7 @@ void StringQueueStack::append(const std::string* data)
 
     if (last)
         last = last->next = newLink; 
-    	// (this evaluates "last->next = newLink" and then "last = last->next")
+        // (this evaluates "last->next = newLink" and then "last = last->next")
     else
         first = last = newLink;
 }
