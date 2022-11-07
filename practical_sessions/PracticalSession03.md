@@ -701,6 +701,8 @@ int main()
 
     popAndPrint(sqs);
     popAndPrint(sqs);
+    
+    delete sqs;
 
     return 0;
 }
