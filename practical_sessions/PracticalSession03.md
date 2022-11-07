@@ -580,9 +580,6 @@ public:
     ~StringQueueStack();
     StringQueueStack& operator=(const StringQueueStack& other);
 
-    // the rule of 5
-    StringQueueStack(StringQueueStack&& other) noexcept;
-
     // other class methods
     void push(const char* data);
     void append(const char* data);
@@ -728,3 +725,4 @@ Popped: 2
 *   [examples2](http://www.cs.fiu.edu/~weiss/phc++/code/)
 *   [Pointers and Functions](http://mathbits.com/MathBits/CompSci/Pointers/Functions.htm)
 *   [The C++ 'const' declaration](http://duramecho.com/ComputerInformation/WhyHowCppConst.html)
+
