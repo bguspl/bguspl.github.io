@@ -1,11 +1,14 @@
-Persistence Layer
-What Is Persistence Layer
+# Persistence Layer
+
+## What Is Persistence Layer
+
 Assume we have an application that is storing and accessing data to/from a DB, as seen in class, if the application accesses the DB directly, each change in the DB structure, table format or application needs will require changes in several parts of the code. Persistence layer is a design pattern for managing the storing and accessing of permanent data. it manages the communication between the application and the DB and creates a separation between the application logic and the DB access which allows for better code stability.
+
 In order to demonstrate an implementation of the persistence layer design pattern we will review the implementation of the assignment tester as seen in class. Reminder, the assignment tester is a Python application designed to grade students' assignments. it uses a DB with the following tables:
 
-students which includes the id of the student and its name
-assignments which includes the number of the assignment and a string representing the expected output of the run_assignment method of the corresponding assignment
-grades which includes the grade of each student on a specific assignment
+*students* which includes the id of the student and its name
+*assignments* which includes the number of the assignment and a string representing the expected output of the run_assignment method of the corresponding assignment
+*grades* which includes the grade of each student on a specific assignment
 
 the implementation of a persistence later revolves around 3 types of objects:
 DTO - Data Transfer Object
@@ -18,10 +21,10 @@ A DTO is an object that represents a record in most cases from a single table. I
 DTOs are passed to and from the persistence layer. When passed from the persistence layer to the application logic, they contain the data retrieved from the database. When passed from the application logic to the persistence layer, they contain the data that should be written to the database.
 
 DTO naming convention
-The DTO naming convention is that a DTO named 'Abc' represents a table named 'abcs'. we will use this convention in the future to map a DTO object to the table it represents.
-downloadtoggle
-17 lines ...
-# Data Transfer Objects:
+The DTO naming convention is that a DTO named 'Abc' represents a table named 'abcs'. we will use this convention in the future to map a DTO object to the table it 
+
+### Data Transfer Objects
+
 class Student:
     def __init__(self, id, name):
         self.id = id
@@ -39,10 +42,11 @@ class Grade:
         self.student_id = student_id
         self.assignment_num = assignment_num
         self.grade = grade
-DAO - Data Access Object
+        
+### DAO - Data Access Object
+
 These objects contain methods for retrieving and storing DTOs, In most cases, each DAO is responsible for a single DTO.
-downloadtoggle
-53 lines ...
+
 # Data Access Objects:
 # All of these are meant to be singletons
 class _Students:
@@ -97,13 +101,14 @@ class _Grades:
         """).fetchall()
  
         return [Grade(*row) for row in all]
-Repository
+        
+### Repository
+
 In many cases, DTO and DAOs are not sufficient, since each DAO only knows how to handle a specific DTO, where should we put methods that aren't related to just a single DTO(table)? for example:
 create_tables method?
 queries that span multiple tables (using join)?
 which DAO should hold these methods? The answer is in the repository. the repository is similar to a DAO but it manages a group of related DTOs.
-downloadtoggle
-38 lines ...
+
 #The Repository
 class _Repository:
     def __init__(self):
