@@ -6,25 +6,27 @@ Assume we have an application that is storing and accessing data to/from a DB, a
 
 In order to demonstrate an implementation of the persistence layer design pattern we will review the implementation of the assignment tester as seen in class. Reminder, the assignment tester is a Python application designed to grade students' assignments. it uses a DB with the following tables:
 
-*students* which includes the id of the student and its name
-*assignments* which includes the number of the assignment and a string representing the expected output of the run_assignment method of the corresponding assignment
-*grades* which includes the grade of each student on a specific assignment
+* **students** - which includes the id of the student and its name
+* **assignments** - which includes the number of the assignment and a string representing the expected output of the run_assignment method of the corresponding assignment
+* **grades** - which includes the grade of each student on a specific assignment
 
 the implementation of a persistence later revolves around 3 types of objects:
-DTO - Data Transfer Object
-DAO - Data Access Object
-Repository
+* **DTO** - Data Transfer Object
+* **DAO** - Data Access Object
+* **Repository**
 
-*the full working code can be found in the class materials.
-DTO - Data Transfer Object
+the full working code can be found in the class materials.
+
+### DTO - Data Transfer Object
+
 A DTO is an object that represents a record in most cases from a single table. Its variables represent the columns of the table.
 DTOs are passed to and from the persistence layer. When passed from the persistence layer to the application logic, they contain the data retrieved from the database. When passed from the application logic to the persistence layer, they contain the data that should be written to the database.
 
-DTO naming convention
+**DTO naming convention**
 The DTO naming convention is that a DTO named 'Abc' represents a table named 'abcs'. we will use this convention in the future to map a DTO object to the table it 
 
-### Data Transfer Objects
-
+** Data Transfer Objects**
+```python
 class Student:
     def __init__(self, id, name):
         self.id = id
@@ -42,12 +44,15 @@ class Grade:
         self.student_id = student_id
         self.assignment_num = assignment_num
         self.grade = grade
-        
+```
+       
 ### DAO - Data Access Object
 
 These objects contain methods for retrieving and storing DTOs, In most cases, each DAO is responsible for a single DTO.
 
-# Data Access Objects:
+** Data Access Objects:**
+
+```python
 # All of these are meant to be singletons
 class _Students:
     def __init__(self, conn):
@@ -100,15 +105,17 @@ class _Grades:
             SELECT student_id, assignment_num, grade FROM grades
         """).fetchall()
  
-        return [Grade(*row) for row in all]
+        return [Grade(*row) for row in all]]
+```
         
 ### Repository
 
 In many cases, DTO and DAOs are not sufficient, since each DAO only knows how to handle a specific DTO, where should we put methods that aren't related to just a single DTO(table)? for example:
-create_tables method?
-queries that span multiple tables (using join)?
-which DAO should hold these methods? The answer is in the repository. the repository is similar to a DAO but it manages a group of related DTOs.
+* create_tables method?
+* queries that span multiple tables (using join)?
+* which DAO should hold these methods? The answer is in the repository. the repository is similar to a DAO but it manages a group of related DTOs.
 
+```python
 #The Repository
 class _Repository:
     def __init__(self):
@@ -148,10 +155,11 @@ class _Repository:
 # the repository singleton
 repo = _Repository()
 atexit.register(repo._close)
-Application logic
-using the objects described above, our application logic implementation can be something like this:
-downloadtoggle
-25 lines ...
+```
+
+**Application logic**
+
+```python
 from persistence import repo
  
 import os
@@ -213,17 +221,22 @@ class _Repository:
 # the repository singleton
 repo = _Repository()
 atexit.register(repo._close)
-with that addition to the repository our print_grades function can simply be:
+```
 
-download
+With that addition to the repository our print_grades function can simply be:
+
+```python
 def print_grades():
     print('grades:')
     for studentGradeWithName in repo.get_grades_with_names():
         print('grade of student {} on assignment {} is {}'.format(studentGradeWithName.name, studentGradeWithName.assignment_num, studentGradeWithName.grade))
-Update
-Suppose we want our assignment tester to also support in appeals, we will need a method to update a student's assignment grade. The DAOs we have seen so far only supported 2 functions, insert and find. lets try and add support for the appeals in the _Grades class:
-downloadtoggle
-13 lines ...
+```
+
+**Update**
+
+Suppose we want our assignment tester to also support in appeals, we will need a method to update a student's assignment grade. The DAOs we have seen so far only supported 2 functions, insert and find. lets try and add support for the appeals in the *_Grades* class:
+
+```python
 class _Grades:
     def __init__(self, conn):
         # see code above...
@@ -238,16 +251,18 @@ class _Grades:
         self._conn.execute("""
                UPDATE grades SET grade=(?) WHERE student_id=(?) AND assignment_num=(?)
            """, [grade.grade, grade.student_id, grade.assignment_num])
-now we have support for appeals, but what if we want to support additional update functions such as update student name (in case of a marriage :))? In class we have seen the ORM and generic DAO classes designed to implement generic DAO methods. lets first revise the ORM and then try and add an update method to the generic DAO class.
+```
 
-ORM - Object Relational Mapping
+Now we have support for appeals, but what if we want to support additional update functions such as update student name (in case of a marriage :))? In class we have seen the ORM and generic DAO classes designed to implement generic DAO methods. lets first revise the ORM and then try and add an update method to the generic DAO class.
+
+### ORM - Object Relational Mapping
+
 The ORM is a method for mapping between a certain DTO object and its related table in a manner that suits any given DTO. reminder, the DTO uses several assumptions in order to function properly:
-Each DTO class represents a single table
-The different DTO classes are obeying a common naming conventions: A DTO class named Foo will represents a table named foos
-DTO constructor parameters names == DTO fields names == table represented by the DTO column names
+* Each DTO class represents a single table
+* The different DTO classes are obeying a common naming conventions: A DTO class named Foo will represents a table named foos
+* DTO constructor parameters names == DTO fields names == table represented by the DTO column names
 
-downloadtoggle
-23 lines ...
+```python
 #file dbtools.py
  
 import inspect
@@ -272,7 +287,9 @@ def orm(cursor, dto_type):
 def row_map(row, col_mapping, dto_type):
     ctor_args = [row[idx] for idx in col_mapping]
     return dto_type(*ctor_args)
-lets go over the code above line by line to make sure we understand it.
+```
+
+Lets go over the code above line by line to make sure we understand it.
 
 line number 1: using the inspect module, we get the arguments of the constructor of the dto_type received. dto_type is a class type, __init__ is the constructor.
 line number 2: the first argument of the constructor (or any method) is 'self' so we remove it cause it does not represent a column in the table.
@@ -280,9 +297,9 @@ line number 3: gets the name of the columns from the table th cursor last execut
 line number 4: creates an array that at each index i, it will hold j where j is the column number in the table of the ith element in the constructor arguments.
 line number 5: using the col_mapping created the previous line and the row_map method, it will create a DTO object for each record returned from the select command executed before the ORM method was called.
 
-using the ORM, we can construct a generic DAO:
-downloadtoggle
-32 lines ...
+Using the ORM, we can construct a generic DAO:
+
+```python
 class Dao:
     def __init__(self, dto_type, conn):
         self._conn = conn
@@ -316,10 +333,13 @@ class Dao:
         c = self._conn.cursor()
         c.execute(stmt, params)
         return orm(c, self._dto_type)
-Generic delete
+```
+
+**Generic delete**
+
 Now after we have learned about the ORM and generic DAO, we can add more generic methods. before we try to add a generic update, lets start with something simpler and add a generic delete. notice that the SQL delete command has a structure similar to that used in our find method. so adding delete will be just a minor modification to our find method that instead of returning the DTO objects using the ORM, it will simply execute the delete.
-downloadtoggle
-20 lines ...
+
+```python
 class Dao:
     def __init__(self, dto_type, conn):
         # see code above...
@@ -341,10 +361,13 @@ class Dao:
  
         c = self._conn.cursor()
         c.execute(stmt, params)
-Generic Update
+```
+
+**Generic Update**
+
 After we have seen how to add generic delete, lets finally try and add our generic update. in order to add generic update, we must allow for both a number of set values and a complex where condition. that will require us to use two different dictionaries, one containing the set values, and the other the condition.
-downloadtoggle
-29 lines ...
+
+```python
 class Dao:
     def __init__(self, dto_type, conn):
         # see code above...
@@ -375,3 +398,4 @@ class Dao:
                                                       ' AND '.join([cond + '=?' for cond in cond_column_names]))
  
         self._conn.execute(stmt, params)
+```
