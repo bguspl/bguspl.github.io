@@ -25,7 +25,7 @@ DTOs are passed to and from the persistence layer. When passed from the persiste
 **DTO naming convention**
 The DTO naming convention is that a DTO named 'Abc' represents a table named 'abcs'. we will use this convention in the future to map a DTO object to the table it 
 
-** Data Transfer Objects**
+**Data Transfer Objects**
 ```python
 class Student:
     def __init__(self, id, name):
