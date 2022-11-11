@@ -439,9 +439,9 @@ MyClass2 mc22{}; // explicit call to the default constructor
 
 #### 4.3.2. Copy constructor
 
-A *Copy constructor* is a constructor who's first parameter is a reference of the same class (a regular reference or a `const` reference) and either accepts no arguments or has default values for all it's other arguments.
+A *copy constructor* is a constructor who's first parameter is a reference of the same class (a regular reference or a `const` reference) and either accepts no arguments or has default values for all it's other arguments.
 
-If a class has no explicitly defined copy constructor the compiler will automatically generate a default copy constructor for it that receives a const reference.
+If a class has no explicitly defined copy constructor the compiler will automatically generate a default copy constructor for it that receives a `const` reference.
 
 Example:
 
@@ -454,7 +454,7 @@ public:
 };
 
 MyClass3 mc31;
-MyClass3 mc32(mc31); // explicit call to the copy constructor
+MyClass3 mc32{mc31}; // explicit call to the copy constructor
 
 someFunc(MyClass3 mc3) {...}
 
@@ -465,9 +465,9 @@ someFunc(mc31); // implicit call to the copy constructor
 
 ### 4.4. Destruction of objects
 
-When an object is going to be destroyed (when it goes out of scope or because of a explicit use of `delete`), a special member function called a `destructor` is automatically called. The purpose of the `destructor` is to release any resources that were held by the object and perform any other necessary cleanup.
+When an object is going to be destroyed (when it goes out of scope or because of a explicit use of `delete`), a special member function called a *destructor* is automatically called. The purpose of the *destructor* is to release any resources that were held by the object and perform any other necessary cleanup.
 
-The `destructor` does not receive any arguments and does not return a value.
+The *destructor* does not receive any arguments and does not return a value.
 
 The name of the destructor is the class name preceded by a tilde symbol (~).
 
@@ -494,7 +494,7 @@ MyClass4::~MyClass4() { delete x; }
 
 ### 4.5 Assigning objects
 
-The `copy assignment operator` is called whenever an object appears on the left side of an assignment expression (and in some other situations). It takes exactly one parameter that is an object or a reference (or const reference) of the same class and returns a reference to an object of the class.
+The *copy assignment operator* is called whenever an object appears on the left side of an assignment expression (and in some other situations). It takes exactly one parameter that is an object or a reference (or const reference) of the same class and returns a reference to an object of the class.
 
 If a class has no explicitly defined copy assignment constructor the compiler will automatically generate a default copy constructor for it that receives a const reference.
 
@@ -560,7 +560,6 @@ The Link class represents a single node in the list.
 ```c++
 #pragma once
 
-
 #include <string>
 
 class StringQueueStack
@@ -570,9 +569,10 @@ class StringQueueStack
         std::string* data;
         Link* next;
         Link(std::string* data, Link* next);
-    } *first = nullptr, *last = nullptr;
+    } * first, * last; // declares first, last as class variables of type "pointer to struct Link"
 
 public:
+
     StringQueueStack() = default;
 
     // the rule of 3
@@ -581,12 +581,11 @@ public:
     StringQueueStack& operator=(const StringQueueStack& other);
 
     // other class methods
-    void push(const std::string* data);
-    void append(const std::string* data);
+    void push(const char* data);
+    void append(const char* data);
     std::string* pop();
     void clear();
 };
-
 ```
 
 
@@ -596,24 +595,22 @@ public:
 ```c++
 #include "StringQueueStack.h"
 
-StringQueueStack::Link::Link(std::string* data, StringQueueStack::Link* next) 
-    : data(data), next(next) {}
+StringQueueStack::Link::Link(std::string* data, StringQueueStack::Link* next) : data(data), next(next) {}
 
-void StringQueueStack::push(const std::string* data)
+void StringQueueStack::push(const char* data)
 {
-    first = new Link{new std::string(*data), first}; // insert a new link before first
+    first = new Link{new std::string(data), first}; // insert a new link before first
 
     if (!last)
         last = first;
 }
 
-void StringQueueStack::append(const std::string* data)
+void StringQueueStack::append(const char* data)
 {
-    Link* newLink = new Link{new std::string(*data), nullptr};
+    Link* newLink = new Link{new std::string(data), nullptr};
 
     if (last)
-        last = last->next = newLink; 
-        // (this evaluates "last->next = newLink" and then "last = last->next")
+        last = last->next = newLink; // evaluates "last->next = newLink" and then "last = last->next"
     else
         first = last = newLink;
 }
@@ -639,8 +636,7 @@ void StringQueueStack::clear()
         delete pop(); // delete the data
 }
 
-StringQueueStack::StringQueueStack(const StringQueueStack& other) 
-    : first{nullptr}, last{nullptr}
+StringQueueStack::StringQueueStack(const StringQueueStack& other) : first{nullptr}, last{nullptr}
 {
     *this = other; // invoke copy assignment operator to do the work for us
 }
@@ -652,10 +648,11 @@ StringQueueStack::~StringQueueStack()
 
 StringQueueStack& StringQueueStack::operator=(const StringQueueStack& other)
 {
-    if (this != &other) { // is this not self-assignment?
+    if (this != &other) { // is this not self assignment?
         clear();
+
         for (Link* link = other.first; link != nullptr; link = link->next)
-            append(link->data); // append will keep the correct order
+            append(link->data->c_str()); // append will keep the correct order
     }
 
     return *this;
@@ -668,17 +665,15 @@ StringQueueStack& StringQueueStack::operator=(const StringQueueStack& other)
 
 ```c++
 #include "StringQueueStack.h"
-
 #include <iostream>
 
-
-void pushAndPrint(StringQueueStack *sqs, std::string *s)
+void pushAndPrint(StringQueueStack* sqs, const char* s)
 {
     std::cout << "Pushing " << *s << std::endl;
     sqs->push(s);
 }
 
-void appendAndPrint(StringQueueStack *sqs, std::string *s)
+void appendAndPrint(StringQueueStack* sqs, const char* s)
 {
     std::cout << "Appending " << *s << std::endl;
     sqs->append(s);
@@ -686,29 +681,27 @@ void appendAndPrint(StringQueueStack *sqs, std::string *s)
 
 void popAndPrint(StringQueueStack* sqs)
 {
-    std::string *s = sqs->pop();
+    std::string* s = sqs->pop();
     std::cout << "Popped: " << *s << std::endl;
     delete s;
 }
 
 int main()
 {
-    StringQueueStack *sqs = new StringQueueStack();
+    StringQueueStack* sqs = new StringQueueStack{};
 
-    std::string s1{"1"}, s2{"2"};
-
-    pushAndPrint(sqs, &s1);
-    pushAndPrint(sqs, &s2);
+    pushAndPrint(sqs, "1");
+    pushAndPrint(sqs, "2");
 
     popAndPrint(sqs);
     popAndPrint(sqs);
 
-    appendAndPrint(sqs, &s1);
-    appendAndPrint(sqs, &s2);
+    appendAndPrint(sqs, "1");
+    appendAndPrint(sqs, "2");
 
     popAndPrint(sqs);
     popAndPrint(sqs);
-
+    
     delete sqs;
 
     return 0;

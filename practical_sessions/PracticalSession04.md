@@ -1,555 +1,593 @@
-The Rule of 5
-We saw in class that the rule of 3 suffers from inherent efficiency problems. Therefore, starting from C++11 two addition functions were added to the rule of 3 thumb rule, which aim to solve these problems: the move constructor and the move assignment operator. In total, the thumb rule states that the following methods need to be implemented:
-destructor
-copy constructor
-move constructor
-copy assignment operator
-move assignment operator
+# Practical Session #4: Advanced Topics in C++
 
-Note that sometimes we don't want to hold a copy of a certain object in the field of a class, but still hold the object. This can be done by declaring the field as a reference. However, in this case we must remember to initialize it in the constructor using initialization list.
-You can find more examples in the code below:
 
-The Rule of 5
-Its important to note that the rule of 5 and the rule of 3 implies only for classes that manage dynamic resources, such as pointers. In general, we would usually try to avoid such classes and use classes that use only primitive or static fields. Such classes are not considered as classes that manage resources and therefore does not require an implementation based on the rule of 5 or the rule of 3.
-The rule of 0 states that classes that does not manage dynamic resources (pointers) should not implement any of the methods mentioned in the rule of 5.
 
-The Rule of 5 Example
-We now see an example for the rule of 5:
-downloadtoggle
-34 lines ...
-#ifndef RULEOFFIVE_H
-#define RULEOFFIVE_H
- 
-class charArray
+## 1. Goal
+
+The goal for this practical session is to explain several key terms in modern C++ (version 11 and later):
+
+- Move semantics
+- The *auto* keyword
+- Smart pointers
+
+We will also discuss:
+
+- Public, protected and private inheritance
+- Constructors of derived classes
+- Virtual functions
+- Namespaces
+
+
+
+> Note: Some of the examples in this document follow up on the StringQueueStack example from the previous practical session.
+
+
+
+## 2. Object lifetime
+
+Every object<sup>†</sup> and reference has a *lifetime*.  The *lifetime* is a runtime property (it is the period during which the object exists in the program's memory space).
+
+The *lifetime* of an object begins when storage for it is obtained and it gets initialized.
+
+The *lifetime* of an object ends when the object is destroyed and the storage it used is freed.
+
+<small><sup>†</sup> In this context the term "object" also refers to a primitive variable.</small>
+
+
+
+## 3. Value categories and temporary objects
+
+Every C++ expression has a *type* and belongs to a *value category*. These *value categories* are the basis for the rules that compilers follow for creating, copying and moving temporary objects when evaluating expressions.
+
+Two such categories are<sup>†</sup>:
+
+1. ***lvalue*** - something that can appear in the left side of an assignment expression.
+2. ***rvalue*** - something that can appear *only* in the right side of an assignment expression. 
+
+<small><sup>†</sup> These are heuristical definitions (the formal ones are more complex).</small>
+
+Literals (numbers, characters, etc.), for example, are *rvalues*. You cannot change their values so naturally they cannot appear in the left side of an assignment expression.
+
+A *temporary object* is an object that is created temporarily in order to evaluate some expression. It is an *rvalue* and *usually* exists only until the expression is evaluated.
+
+Example:
+
+```c++
+int x = 2, y = 3;
+int z = x * 2 + y; // this creates a temporary object
+```
+
+When the expression `x * 2` is evaluated, a *temporary object* must be created to hold the result.
+
+>  Note: in fact, in this example, a 2nd temporary object will be created unless optimized by the compiler
+
+
+
+In some cases temporary objects are a mandatory part of the evaluation process of an expression, but in other cases they are not. 
+
+One of the caveats of C++ is the creation of unnecessary temporary objects during the evaluation of expressions. In certain situations, this may incur a significant performance (and possibly also memory) penalty.
+
+Example: 
+
+Supposed that we would like to overload the plus (+) operator of `StringQueueStack` in order to combine 2 `StringQueueStack` objects. We could write the following method:
+
+```c++
+StringQueueStack StringQueueStack::operator+(const StringQueueStack& other) const
 {
-private:
-    char *cstring; // raw pointer used as a handle to a dynamically-allocated memory block
-    int cstringlen;
- 
-    void copy(const char *other_cstring, const int &other_cstringlen);
-    void clear();
-public:
- 
-    const char* toString() const;
- 
-    // Constructor
-    charArray(const char *arg);
- 
-    // Destructor
-    virtual ~charArray();
- 
-    // Copy Constructor
-    charArray(const charArray &other);
- 
-    // Move Constructor
-    charArray(charArray &&other);
- 
-    // Copy Assignment
-    charArray& operator=(const charArray &other);
- 
-    // Move Assignment
-    charArray& operator=(charArray &&other);
-};
- 
-#endif
-downloadtoggle
-30 lines ...
-#include "RuleOfFive.h"
-#include <string>
-#include <cstring>
- 
- 
-const char* charArray::toString() const { return cstring; }
- 
-void charArray::copy(const char *other_cstring, const int &other_cstringlen)
-{
-        cstringlen = other_cstringlen;
-        cstring = new char[cstringlen + 1]; // allocate
-        strcpy(cstring, other_cstring); // populate
+    StringQueueStack result{*this};
+
+    for (Link* link = other.first; link != nullptr; link = link->next)
+        result.append(link->data->c_str()); // append will keep the correct order
+
+    return result;
 }
- 
-// Constructor
-charArray::charArray(const char *arg) {    copy(arg, std::strlen(arg)); }
- 
-// Copy Constructor
-charArray::charArray(const charArray &other) { copy(other.cstring, other.cstringlen); }
- 
-// Copy Assignment
-charArray& charArray::operator=(const charArray &other)
+```
+
+Consider the following code:
+
+```c++
+StringQueueStack sqs{};
+...
+sqs = sqs + sqs + sqs + sqs;
+```
+
+The last line will create 3 temporary objects (1 on each invocation of `operator+`), each time copying the data inside both objects to the temporary object (later we will explain how to avoid that).
+
+
+
+## 4. Const references
+
+A common way to avoid the creation of unnecessary temporary objects is by using const references (but this however, does not not cover all cases).
+
+Consider the following code:
+
+```c++
+void func1(MyClass x)
 {
-    if (this != &other)
-    {
-        clear();
-        copy(other.cstring, other.cstringlen);
-    }
- 
-    return *this;
-}
-The Destructor
-Similar to the destructor we built in PS3, we use a private function clear() to release the memory. This is done as a preparation for the move and copy assignment operators that also need to perform a clearing operation.
-Note that the last line cstringlen = 0; is not actually required in the destructor, however it is done to maintain the correctness of our object: if its cstring is null, not changing its length to 0 may lead to logical mistake later on.
-
-downloadtoggle
-11 lines ...
-// Destructor
-charArray::~charArray() { clear(); }
- 
-void charArray::clear()
-{
-    if (cstring)
-    {
-        delete[] cstring; // deallocate
-        cstring = nullptr;
-        cstringlen = 0;
-    }
-}
-The Move Constructor
-The move constructor is typically called when an object is initialized from rvalue. This is done using rvalue references that we've seen in class. This usually happens in the following cases:
-initialization, std::string a = "str"
-function argument passing: v.push_back("str")
-function return by value
-
-download
-// Move Constructor
-charArray::charArray(charArray&& other) 
-    : cstring(other.cstring), cstringlen(other.cstringlen)
-{
-    other.cstring = nullptr;
-    other.cstringlen = 0;
-}
-Move constructors typically "steal" the resources held by the argument (e.g. pointers to dynamically-allocated objects, etc), rather than make copies of them, and leave the argument in some valid but otherwise indeterminate state. For example, moving from a std::string or from a std::vector may result in the argument being left empty. However, this behavior should not be relied upon. For some types, such as std::unique_ptr, the moved-from state is fully specified.
-
-For example, in the following line
-
-download
-v.push_back(charArray("I will be moved, then destroyed"));
-The following actions will happen:
-A new object will be created with the string "I will be moved, then destroyed"
-The move constructor will create a new object inside the vector and will move the created object to it
-The pointer that was created in the first object will become nullptr and the object inside the vecter will now hold the first pointer
-The object that was created outside of the vector will be destroyed. Since its cstring pointer was null, the destruction will not effect the object inside the vector
-
-rvalue references are defined using &&, i.e., int&& i is an rvalue reference to int. In this way, we can use temporary variables without making an actual copy of them.
-downloadtoggle
-26 lines ...
-#include <vector>
-#include "RuleOfFive.h"
-#include <iostream>
- 
-int main(){
-    charArray t1("I a will be copied");
- 
-    charArray t2(t1);
- 
-    std::vector<charArray> v;
-    v.push_back(charArray("I will be moved, then destroyed"));
- 
-    std::cout << v.front().toString() << std::endl;
- 
-    charArray t3("I will be copied by assignment");
-    std::cout << t2.toString() << std::endl;
-    t2 = t3;
-    std::cout << t3.toString() << std::endl;
- 
-    charArray t4("I will be moved by assignment");
- 
-    std::cout << t2.toString() << std::endl;
-    t2 = std::move(t4); //explicit 
-    //std::cout << t4.toString() << std::endl; //This line will not work as t4 is empty
-    t2 = charArray("I will be moved by assignment");
-    return 0;
-}
-The Move Assignment
-The move assignment operator is built using the same steps we've seen in the copy assignment operator. The only difference is that the move assignment operator doesn't copy the values, and instead only moves the ownership of its pointers from one object to another.
-downloadtoggle
-13 lines ...
-// Move Assignment
-charArray& charArray::operator=(charArray &&other)
-{
-    if (this != &other)
-    {
-        clear();
-        cstringlen = other.cstringlen;
-        cstring = other.cstring;
-        other.cstring = nullptr;
-        other.cstringlen = 0;
-    }    
- 
-    return *this;
-}
-Smart Pointers
-In modern C++ programming, the Standard Library includes smart pointers, which are used to help ensure that programs are free of memory and resource leaks and are exception-safe.
-std::unique_ptr
-This smart pointers provides a limited garbage-collection facility, with little to no overhead over built-in pointers. Objects of this kind "steals" the ownership of a pointer. Once ownership is obtained, they manage the pointed object by becoming responsible for its deletion at some point.
-unique_ptr objects automatically delete the object they manage, as soon as they themselves are destroyed, or as soon as their value changes either by an assignment operation or by an explicit call to unique_ptr::reset.
-
-unique_ptr objects own their pointer uniquely: no other facility shall take care of deleting the object, and thus no other managed pointer should point to its managed object, since as soon as they have to, unique_ptr objects delete their managed object without taking into account whether other pointers still point to the same object or not, and thus leaving any other pointers that point there as pointing to an invalid location.
-
-downloadtoggle
-29 lines ...
-#include <memory>
- 
-class Cow {
-private:
-    int id;
-public:
-    Cow(int _id): id(_id) {}
-    void printCowId() { std::cout << "Cow id=" << id << std::endl; }
-};
- 
-int main()
-{
-    std::unique_ptr<Cow> p1(new Cow(100));  // p1 owns Cow(100)
-    p1->printCowId();    //100
- 
-    {  
-        std::unique_ptr<Cow> p2(std::move(p1));  
-        if (p2)
-            p2->printCowId();   //100
-        if (p1)                 //if (p1) is false
-            p1->printCowId();
-        p1 = std::move(p2);     // ownership returns to p1
-        std::cout << "destroying p2...\n";
-    }  
- 
-        if (p1){   //if (p1) is true
-        p1->printCowId();   //100
-    }
-    return 0;
-} // Cow instance is destroyed when p1 goes out of scope
-unique_prt is implemented using two components:
-
-A stored pointer: the pointer to the object it manages
-A stored deleter: a callable object that takes an argument of the same type as the stored pointer and is called to delete the managed object
-Inheritance
-Inheritance is a relationship among classes, in which one class shares the structure or behavior defined in other classe(s). In object-oriented programming (OOP), inheritance is a way to reuse code by creating collections of attributes and behaviors called objects which can be based on previously created objects.
-In C++ class can be defined by means of an older, pre-existing class, which leads to a situation in which a new class has all the functionality of the older class, and additionally introduces its own specific functionality.
-
-The new class inherits the functionality of an existing class, while the existing class does not appear as a data member in the definition of the new class. When speaking of inheritance the existing class is called the base class, while the new class is called the derived class.
-
-For example, lets create a class intArray:
-
-downloadtoggle
-16 lines ...
-class intArray
-{
-public:
-    intArray();
-    intArray(const int &size);
-    int insert(const int &num, const unsigned int &index);
-    bool isEmpty() const;
- 
-private:
-    int *arr;
-    unsigned int arrSize;
- 
-    void expandArray(const unsigned int &newArrSize);
- 
-//protected:
-    //unsigned int arrSize;
-};
-downloadtoggle
-28 lines ...
-intArray::intArray() : arr(nullptr), arrSize(0) { }
- 
-intArray::intArray(const int &size) : arr(new int[size]), arrSize(size) { }
- 
-int intArray::insert(const int &num, const unsigned int &index)
-{
-    expandArray(index + 1);
-    return arr[index] = num;
-}
- 
-bool intArray::isEmpty() const { return arr == nullptr; }
- 
-void intArray::expandArray(const unsigned int &newArrSize)
-{
-    if (newArrSize >= arrSize)
-    {
-        int *newArr(new int[newArrSize]);
-        for (size_t i = 0; i < arrSize; i++)
-            newArr[i] = arr[i];
- 
-        if (arr)
-        {
-            delete[] arr;
-        }
- 
-        arr = newArr;
-        arrSize = newArrSize;
-    }
-}
-Now we create a class with the same functionality as intArray but all data will be sorted:
-
-download
-class intSortedArray : public intArray
-{
-public:
-    intSortedArray();
-    intSortedArray(const int &size);
-    int insert(const int &num, const unsigned int &index);
-    int biggest() const;
-private:
-    int biggestElem;
-};
-downloadtoggle
-15 lines ...
-intSortedArray::intSortedArray() : intArray(), biggestElem(std::numeric_limits<int>::min()) { }
- 
-intSortedArray::intSortedArray(const int &size) : intArray(size), biggestElem(std::numeric_limits<int>::min()) { }
- 
-int intSortedArray::insert(const int &num, const unsigned int &index)
-{
-    if (biggestElem < num)
-        biggestElem = num;
- 
-    //std::cout << "now the variable arrSize is accessible from derived classes! arrSize = " 
-    //    << arrSize << std::endl;
- 
-    return intArray::insert(num, index);
-}
- 
-int intSortedArray::biggest() const { return biggestElem; }
-The relationship is better achieved with inheritance: intSortedArray is derived from intArray, in which intArray is the base class of the derivation. By post-fixing the class name intSortedArray in its definition by public intArray the derivation is defined: the class intSortedArray now contains all the functionality of its base class intArray plus its own specific information.
-
-The extra functionality consists here of a CTORs and interface functions to access the biggest item in array.
-
-Types of Inheritance
-In cpp there are 3 levels of inheriting a base class. In the example above, we used a public inheritance. There are also protected and private inheritance. The table below summarizes the access level (public, protected or private) that a derived class gets, to the base class members according to each inheritance level
-Inheritance levels
-
-Public Inheritance Example
-Example: The previous code
-download
-class intSortedArray : public intArray {...}
- 
-intSortedArray sortArray;
-std::cout << sortArray.isEmpty() << std::endl;
-std::cout << sortArray.insert(10, 5) << std::endl;
-std::cout << sortArray.biggest() << std::endl;
-This example shows three features of derivation.
-
-isEmpty() - is no direct member of a intSortedArray. This member function is an implicit part of the class, inherited from its "parent" class.
-biggest() - derived class intSortedArray now adds to functionality of intArray.
-insert() - is overloaded in the class intSortedArray.
-Protected access control
-In C++ we can declare a variable or a function that seems private to outside users of a class but seems public to classes that inherit the class. To do so, we use the protected section of the base class. Note that the derived class must use either public or protected level of inheritance.
-For example, say that the intSortedArray class needed direct access to the arrSize variable in intArray in order to improve its performance, but we still want to keep normal instances of intArray and intSortedArray from accessing the arrSize directly.
-
-By declaring arrSize as a protected member in intArray, it would be accessible by the derived class intSortedArray but not by normal instances of intArray or intSortedArray:
-
-download
-class intArray {
-public:
-    intArray();
-    int insert(const int*);
-protected:
-    int arrSize;
-private:
     ...
 }
-Private Inheritance Example
-As mentioned earlier, it is also possible to use a protected/private inheritance using private/protected keyword instead of public, however this is generally not recommended (we will not elaborate on that).
-Bellow is an example of private inheritance use. Private inheritance makes all of the public members of the base class private in the derived class. This means that they can be used in order to implement the derived class without being accessible to the outside world.
 
-Unlike a public inheritance, a private inheritance defines a "has-a" relation with its parent, and not an "is-a" relation like public inheritance.
-
-For example:
-
-downloadtoggle
-11 lines ...
-class Person {};
-class Student : private Person {};    // private
-void eat(const Person& p){}            // anyone can eat
-void study(const Student& s){}        // only students study
- 
-void main()
+void func2(MyClass y)
 {
-    Person p;    // p is a Person
-    Student s;    // s is a Student
-    eat(p);        // Fine, p is a Person
-    eat(s);        // Compilation error! s isn't a Person
+    y.someConstMethod();
+    func1(y);
 }
-The CTOR of a derived class
-A derived class inherits the functionality of its base class. How effects the inheritance on the CTOR of a derived class ?
-As can be seen from the definition of the class intSortedArray, a CTOR exists to set the biggestElem of an object. The implementations of this CTORs could be:
 
-download
-intSortedArray::intSortedArray() : biggestElem(std::numeric_limits<int>::min()) { }
-Memory Layout Of Derived Class
-Memory layout of derived class:
-|*****************|
-
-| Base part |
-
-|*****************|
-
-| Derived part |
-
-|*****************|
-
-The C++ compiler will generate code to call the default CTOR of a base class from each CTOR in the derived class, unless explicitly instructed otherwise.
-
-Calling CTOR of the Base Class
-The better solution is of course to directly call the CTOR of intArray which expects an int argument. The syntax to achieve this, is to place the CTOR to be called (supplied with an argument) following the argument list of the CTOR of the derived class:
-download
-intSortedArray::intSortedArray(const int &size) : intArray(size), biggestElem(std::numeric_limits<int>::min()) { }
-Virtual Functions
-Virtual functions are member functions whose behavior can be overridden in derived classes. As opposed to non-virtual functions, the overridden behavior is preserved even if there is no compile-time information about the actual type of the class.
-The access level to a virtual member function is determined by the declared type of the variable that is used to access it, regardless the actual variable type, since it is determined at compilation time. This means that overridden functions that are defined with a different access level than the base class (this is legal), their access level might not be respected.
-
-For example:
-
-downloadtoggle
-22 lines ...
-class Base {
-public:
-    virtual void foo(){ std::cout << "foo of Base\n"; }
-};
- 
-class Derived : public Base {
-public:
-    …
-private:
-    virtual void foo() { std::cout << "foo of derived\n"; } 
-};
- 
- 
-void callFoo(Base* bp) { bp->foo(); } //Can access publicly both functions, public Base::foo() and private Derived::foo() even though Derived::foo() is private
- 
-void main() {
-    Base b;
-    Derived d;
-    b.foo();      // OK
-    d.foo();      // compilation error since d is declared "Derived" which has no access to foo()
-    callFoo(&b);  // OK, will print "foo of base" 
-    callFoo(&d);  // OK, will print ""foo of derived"
+void func3()
+{
+    func2(MyClass{});
 }
-Running this example (after commenting out d.foo() line) produces the following output:
+```
 
-download
-foo of Base
-foo of Base
-foo of derived
-Virtual Destructor
-Without a garbage collector, polymorphism can be problematic when attempting to release memory. This is best explained with an example. We first look at what happens when not using virtual destructor:
-downloadtoggle
-19 lines ...
-class Base
+The function `func2` receives `y`, an object of `MyClass`, and passes it along to `func1`. It does not change it (assuming `someConstMethod` is indeed a const method) at any point. When `func3` calls `func2` a copy of the object is created. Making a copy is redundant since neither `func2` change `y` nor does `func1` (since the parameter is passed by value).
+
+This can be avoided by declaring `y` as a const reference:
+
+```c++
+void func2(const MyClass &y)
 {
-public:
-    Base(){ std::cout << "Constructing Base"; }
-    // this is a non virtual destructor:
-    ~Base(){ std::cout << "Destroying Base"; }
-};
- 
-class Derived : public Base
-{
-public:
-    Derived(){ std::cout << "Constructing Derived"; }
-    ~Derived(){ std::cout << "Destroying Derived"; }
-};
- 
-void main()
-{
-    Base *basePtr = new Derived();
-    delete basePtr;
+    y.someConstMethod();
+    func1(y);
 }
-Since Derived class inherits from Base, we can treat a Derived object as a Base pointer. What will be the output of these lines?
+```
 
-download
-Constructing Base  
-Constructing Derived 
-Destroying Base
-Since we told the compiler that basePtr is a pointer of type Base, the destructor of the Base class was used. This means that if Derived allocated memory, it would not have been deleted (since the destructor of Derived was not called) and we would have a memory leak.
 
-Now lets take a look at what happens when we use a virtual destructor. We now change the destructor's definition in the Base class to be virtual:
 
-download
-virtual ~Base(){ cout<<"Destroying Base";}
-And repeat the same function. The output will now be:
+## 5. Move semantics and rvalue references
 
-download
-Constructing Base  
-Constructing Derived 
-Destroying Derived
-Destroying Base
-Now, when the compiler see that we assigned a Derived class to a Base class with a virtual destructor, it knows that in order to delete this pointer, we need to call the destructor of Derived before calling the destructor of Base.
+C++11 introduced the `move semantics` mechanism to further avoid redundant copying of objects. Using this mechanism, an object (under certain conditions) may take ownership of another object's external resources (such as memory allocation). 
 
-The best way to avoid such cases is to use virtual destructor whenever possible.
+The two main use cases for this are:
 
-Pure Virtual Functions & Abstract Base Classes
-Let’s say we want to create a set of classes that implement different kinds of shapes ( circle, rectangle … ). The functionality of them is similar. We’ll not want to rewrite the same code many times and we would like to create some class that will contain common code but would be impossible to make instantiation of such class.
-Example is class "shape" which will be a base class of all kinds of real shapes as circle, ellipse, rectangle etc. In C++ this is possible to do by declaration of one or more member functions as pure virtual.
+1. Avoiding unnecessary copying of objects, saving both runtime and memory.
+2. Safely transferring ownership of resources that cannot be shared (such as certain types of locks and file handles).
 
-download
-class shape {
+## 5.1. **rvalue** references
+
+To further unleash the potential of *move semantics*, C++11 also introduced *rvalue references*. An *rvalue reference* is a reference to a *temporary object*. We use double-ampersand to indicate that a variable is an *rvalue reference*.
+
+Example:
+
+```c++
+void func3(MyClass &&x)
+{
+    ...
+}
+
+MyClass y;
+
+func3(y); // compilation error - y is not an rvalue
+func3(MyClass{y}); // this is fine
+```
+
+The line `func3(MyClass{y})` is fine because `MyClass{y}` creates a *temporary object* using the *copy constructor*.
+
+## 5.2 Converting *lvalue* to *rvalue*
+
+It is possible to convert an *lvalue* to an *rvalue* by using `std::move`.
+
+In fact, `std::move` doesn't actually move anything (it is technically a function but is considered a cast).
+
+By converting it's argument to an *rvalue*, `std::move` allows the compiler to perform optimizations that are not allowed for an *lvalue* at the cost of invalidating the argument after finishing the evaluation of the expression it is in.
+
+
+
+Example:
+
+```c++
+void func1(MyClass x) 
+{
+    ...
+}
+
+void func2(MyClass y)
+{
+    func1(std::move(y));
+    MyClass z = y; // this compiles but is a mistake!
+}
+```
+
+The expression `MyClass z = y` above will compile but **is a mistake** since the `y` has been invalidated by `std::move`.
+
+
+
+## 6. The rule of 5
+
+As mentioned above,  C++ may create unnecessary temporary objects which may incur a significant performance (and sometimes also memory) penalty.
+
+One way of eliminating (or at least mitigating) this is to employ the "rule of 5" heuristic, which is "the rule of 3" plus 2 more special methods: the *move constructor* and the *move assignment operator*.
+
+> Note: both the *move constructor* and the *move assignment operator* may not throw exceptions since this may leave objects in an invalid state.
+
+
+
+### 6.1. The move constructor
+
+A *move constructor* is a constructor who's first parameter is an *rvalue reference* of the same class (a regular or a const reference) and either accepts no arguments or has default values for all it's other arguments.
+
+A *move constructor* "steals" the resources of the object it is given as an argument rather than make copies of them, but leaves the other object in some valid state that will ensure that when the other object is destroyed it will not attempt to free it's resources.
+
+If a class has no explicitly defined copy and move constructors, no copy and move assignment operators and no destructor (all of which must not exist), the compiler will automatically generate a default *move constructor* for it that receives a normal (non-const) reference to an *rvalue*.
+
+Example: 
+
+```c++
+StringQueueStack::StringQueueStack(StringQueueStack&& other) noexcept
+    : first{other.first}, last{other.last}
+{
+    other.first = nullptr;
+    other.last = nullptr;
+}
+```
+
+Notice that we assign `nullptr` to `other.first` and `other.last` since `other` does not own these resources anymore (for example, we do not want it to free the memory when it gets destroyed).
+
+
+
+### 6.2 Move assignment operator
+
+The *move assignment operator* is called when an object appears on the left side of an assignment expression and on the right side of the assignment operation there is an *rvalue* of the same type (or an implicitly-convertible type).
+
+Similarly to *move constructor*, the *move assignment operator* typically "steals" the resources of the other object.
+
+If a class has no explicitly defined copy and move constructors, no copy and move assignment operators and no destructor (all of which must not exist), the compiler will automatically generate a default *move assignment operator* for it that receives a normal (non-const) reference to an *rvalue*.
+
+Example: 
+
+```c++
+StringQueueStack& StringQueueStack::operator=(StringQueueStack&& other) noexcept
+{
+    first = other.first;
+    last = other.last;
+    other.first = nullptr;
+    other.last = nullptr;
+}
+```
+
+Again, we assign `nullptr` to `other.first` and `other.last` since `other` does not own these resources anymore.
+
+
+
+## 7. Temporary object lifetime extension
+
+References to variables can be also be declared as any other variables. When a reference to a temporary object is declared, the temporary object's lifetime is extended to the reference's lifetime (making the temporary object "not so temporary"...).
+
+There are 2 types of references to an *rvalue* that are allowed:
+
+1. A const reference
+
+Example:
+
+```c++
+const MyClass& tmp = MyClass{};
+MyClass* ref = const_cast<MyClass*>(&tmp);
+```
+
+> Note: this is bad practice (because of the *const cast*), but will work.
+
+2. An *rvalue reference*
+
+Example:
+
+```c++
+MyClass&& tmp = MyClass{};
+MyClass* ref = &tmp;
+```
+
+
+
+Here is another example:
+
+```c++
+int x = 1;
+int &y = x; // y is a reference to x
+int &&z = int(y); // z is a reference to a temporary variable created by the casting
+y = 2; // changing y will change x
+z = 3; // changing z will not change y
+std::cout << "x = " << x << " y = " << y << " z = " << z << std::endl;
+```
+
+Output:
+
+```
+x = 2 y = 2 z = 3
+```
+
+> Note: a expression such as `int &&z = y` will not compile since y is not a temporary variable
+
+In this example, the lifetime of the temporary object created by casting `y` to an `int` has been extended. If it was not so, the expression `z = 3` might have caused a *memory access violation* (a.k.a. *segmentation fault*).
+
+> Note: casting `y` to an `int` creates a temporary object here even though `y` is already an `int`. In other circumstance this might be automatically removed by compiler optimization.
+
+
+
+## 8. Placeholder type specifiers (the *auto* keyword)
+
+Another mechanism introduced in C++11 is *placeholder type specifiers*, i.e. the `auto` keyword.
+
+The `auto` keyword may (sometimes) used in variable / function declarations instead of an explicit type specifier in order to automatically deduce the type from the variable initializer / function return value.
+
+Using `auto` where applicable is generally considered a recommended practice for reason of usability and robustness (it reduces the chance of typos for example), performance (no conversions are guaranteed when using it) and other reasons.
+
+You can also notify the compiler you want to use `auto` but only if a reference / pointer type can be deduced by declaring `auto&` / `auto*` and/or a `const` type with `const auto`.
+
+Example:
+
+```c++
+auto list = new std::vector<MyClass>{};
+
+for (const auto& item: *list)
+    item.doSomething();
+```
+
+
+
+> Note: in general, an `auto` type specifier can almost always be replaced by an explicit type specifier (but some very esoteric scenarios do exist where this is not the case).
+
+
+
+## 9. Smart pointers
+
+In modern C++ programming, the Standard Library includes *smart pointers*. These are class templates that provide a limited garbage-collection facility of automatic destruction of objects when they are no longer used, with little to no overhead over built-in pointers.
+
+There are currently 3 types of smart pointers:
+
+1. Unique pointer
+2. Shared pointer
+3. Weak pointer
+
+
+
+### 9.1. Unique pointers
+
+A *unique pointer* allows exactly one owner of the underlying pointer. It can be moved to a new owner, but not copied or shared.
+
+> Note: *unique pointer* replaces the older (now deprecated) *auto pointer*.
+
+Example:
+
+```c++
+auto up1 = std::make_unique<MyClass>(); // using default constructor
+auto up2 = std::make_unique<MyClass>(1, 2); // using constructor with 2 int arguments
+
+up2 = up1;
+```
+
+The expression `up2 = up1` has two consequences:
+
+1. The current pointer `up2` stores will be deleted.
+2. The pointer `up1` stores will be transferred to the variable `up2` (resetting `up1` to an empty state).
+
+
+
+### 9.2. Shared pointers
+
+A *shared pointer* is a smart pointer that  designed for scenarios in which more than one owner might need to manage the lifetime of an object.  
+
+A *shared pointer* uses a a reference count control block to designate when the pointer can be deleted. Whenever a new object is created from the shared pointer (as a result of it being copied, passed by value or assigned) the reference is incremented. When any of these objects gets destroyed the reference count is decremented. When the reference count reaches zero, the underlying pointer and the control block are deleted.
+
+Example:
+
+```c++
+auto sp1 = std::make_shared<MyClass>(); // using default constructor
+auto sp2 = std::make_unique<MyClass>(1, 2); // using constructor with 2 int arguments
+
+sp2 = sp1;
+```
+
+The expression `sp2 = sp1` will also have 2 consequences:
+
+1. The current pointer `sp2` stores will be deleted.
+2. The pointer `sp1` stores will be copied to `sp2`, making both `sp1` and `sp2` owners and the reference count will increase to 2.
+
+
+
+### 9.3. Weak pointers
+
+This type of pointers are used in conjunction with *shared pointers*. They are intended for situations when we need access to shared pointer without increasing the reference count and the state of the pointer might have been changed elsewhere (i.e. the reference count reached zero and it was deleted). A common scenario for this is when implementing a memory cache.
+
+You can query the state of the shared pointer by using the weak pointer's `expired()` method. If you want to access the resource itself you must create a shared pointer from the weak pointer by using the `lock()` method.
+
+Example:
+
+```c++
+auto sp1 = std::make_shared<MyClass>();
+std::weak_ptr<MyClass> wp = sp; // implicit cast 
+
+if (wp.expired())
+    std::cout << "object expired";
+
+auto sp2 = wp.lock();
+if (sp2 == false)
+	std::cout << "object expired";
+else
+    // you can use sp2 to access the resource
+```
+
+
+
+## 10. Inheritance in C++
+
+*Inheritance* is a mechanism for reusing and extending existing classes without modifying them by creating hierarchical relationships between them. 
+
+When a class inherits from another class it is said to be *derived* from it (it is a *derived class* or a *subclass*). When a class is inherited from, it is said to be the *base class* (or a *superclass*). 
+
+We say there is an "is-a" relationship between the derived and base classes. In the example below this relationship is illustrated as follows: a Student **is a** Person.
+
+A *derived class* inherits the members of a *base class*. The access modifier of the *base class* members in the derived class depends on the *access specifier* of the inheritance. In C++ there are 3 possible *access specifiers* of inheritance:
+
+1. ***Public inheritance*** - members of the base class keep their original access specifiers (*public* stays public, *protected* stays protected) except *private* members which become inaccessible.
+2. ***Protected inheritance*** - members that have *public* access in the base class become protected. *Protected* stays protected. *Private* members are inaccessible.
+3. ***Private inhertiance*** - members that have *public* and *protected* access in the base class become private. *Private* members are inaccessible.
+
+> Note: public inheritance is the most common. Protected and private inheritance are rarely used as in most cases a better strategy is object *composition*. 
+
+
+
+### 10.1 Constructors in derived classes
+
+When a derived class is initialized (using a constructor), the constructor of the base class is called first of all - either explicitly (as in the example below) or implicitly, in which case the default constructor is called. 
+
+Compilation will fail if no constructor is explicitly called and the base class has no default constructor or the default constructor is declared *private*.
+
+
+
+Example:
+
+```c++
+class Person
+{
 public:
-    virtual void draw() = 0;
-    …
+    Person(std::string _name) : name{_name} {}
+	std::string getName();
+    
+protected:
+    std::string name;
 };
-Now compiler will fail compiling following code:
 
-download
-shape shp; // compilation error
-The only type of object that can be declared is an object of derived class in which virtual member function draw() is implemented
+class Student : public Person
+{
+public:
+    Student(std::string _name) : Person{name} {}
+    void doHomework();
+};
 
-Until now the base class shape contained its own, concrete, implementations of the virtual functions draw(). In C++ it is also possible only to mention virtual functions in a base class, and not define them. The functions are concretely implemented in a derived class. The special feature of only declaring functions in a base class, and not defining them, is that derived classes must take care of the actual definition: C++ compiler will not allow the definition of an object of a class which doesn't concretely define the function.
+void Student::doHomework()
+{
+    std::cout << name << " is doing homework" << std::endl;
+}
+```
 
-The base class enforces a protocol by declaring a function prototype, but the derived classes must care of the actual implementation. The base class itself is therefore only a model, to be used for the derivation of other classes. Such base classes are also called abstract classes.
 
-A function is made pure virtual by preceding its declaration with the keyword virtual and by post-fixing it with =0. The functions are called pure virtual functions.
 
-Namespace
-C++ namespace is similar to Java packages only in the sense that it helps identifying names. The C++ compiler will not create a folder hierarchy of the namespace.
-downloadtoggle
-37 lines ...
-// namespace.cpp   namespaces are typically defined in header files
-//                 usually one namespace per file
-//                 usually the "using namespace xxx;" is after the  #include's
-#include <iostream>
-using namespace std;
- 
+### 10.2 Virtual functions
+
+As mentioned earlier, there is an "**is-a**" relationship between a derived class and it's base class, it therefore makes perfect sense that a reference or pointer to the base class can be used with an object of the derived class.
+
+Example:
+
+```c++
+void DriveToSchool(Person &person) 
+{ 
+    person.OpenGate();
+}
+
+Student student{};
+
+Walk(student);
+```
+
+If a (non-virtual) method of the base class is overridden in a derived class and we call this method using a reference or pointer to the base class, the method of the base class will be called - not the derived class's method, which is usually not the desired behavior. This is called *compile time (early) binding*.
+
+The solution for this is a *virtual function*. A virtual function is a method in the base class that we expect to redefine in derived classes. When you call a virtual function the "correct" method (i.e. the method of the actual class of the object) will automatically be called according to the type of the reference or pointer at runtime and not according to the type in the declaration. This is called *runtime (late) binding*.
+
+When *overriding* a virtual function we use the `override` keyword in the method declaration (there is no need to repeat the `virtual` keyword though since it is implied by the `override` keyword).
+
+Example:
+
+```c++
+class Person
+{
+public:
+    Person(std::string _name) : name{std::move(_name)} {}
+	virtual std::string doSomething();
+};
+
+class Student : public Person
+{
+public:
+    Student(std::string _name) : Person{std::move(_name)} {}
+    std::string doSomething() override;
+};
+```
+
+
+
+**Rules for virtual functions:**
+
+1. Virtual functions cannot be static.
+2. The prototype of a virtual function must be the same in the base and derived classes.
+3. If a virtual function is not overridden in the derived class, the method of the base class will be automatically called instead.
+4. Constructors cannot be defined as virtual.
+
+
+
+#### 10.2.1 The virtual destructor
+
+Virtual destructors are particularly important  because if an object of a derived class is deleted using a pointer of a base class the result is undefined and almost always a bug. To address this, destructors should always be declared as virtual if a class is inherited from (as a guideline, any time you have a virtual function in a class, you should immediately add a virtual destructor - even if it does nothing).
+
+Example:
+
+```c++
+class MyClass
+{
+public:
+    virtual void doSomething();
+    virtual ~MyClass() = default; // a default destructor defined as virtual
+}
+```
+
+
+
+#### 10.2.2 Pure virtual functions and abstract classes
+
+A *virtual function* can be declared as *pure virtual* by appending `= 0` in the function declaration. In which case it is not defined (implemented) at the class where it is declared and it is not possible to create an instance (a variable) of this class. 
+
+An instance of a class can only be created if all virtual functions are implemented either by the derived class or by an ancestor (i.e. the base class or the base class's base class, etc.). A class that cannot be instantiated due to this reason is called an *abstract class* (it is similar to a Java *interface* or *abstract class*) .
+
+Example:
+
+```c++
+class MyClass
+{
+public:
+    virtual void doSomething() = 0; // pure virtual function => the class is abstract
+}
+```
+
+
+
+## 11. C++ namespaces
+
+A *namespace* is a declarative region that provides an artificial scope to identifiers (type names, variables, functions, classes, etc.) declared within it. It is somewhat similar to Java packages although it is not derived from the directory structure but is declared explicitly.
+
+*Namespaces* are used to organize code into logical groups and to prevent name collisions that may occur (mostly) when a program includes different libraries written by different parties.
+
+A *namespace* is declared using the `namespace` keyword and must be declared in the *global scope* or within other namespaces. To access identifiers that is within a namespace from outside the namespace, you must use the *scope resolution operator* (::) or with the `using` keyword.
+
+Example:
+
+```c++
 namespace mine
 {
-  int i, j;          // without 'static' or 'namespace' these are seen by linker
-  //   all declarations including 'namespace' and 'using' allowed
-}
- 
-namespace yours
+struct MyStruct
 {
-  int i, k, n;      // this could give a linker error about "i" doubly defined
-}                   // with 'namespace' each "i" is unique to the linker
- 
- 
-int global_name_known_to_linker;  // other files use  extern int global_nam...
-static int global_to_this_file_but_not_to_linker;
- 
-int main(void)
+    int x;
+};
+} // end of namespace "mine"
+
+namespace your
 {
-  int n = 1;
-  mine::i = 2;            // same notation used for class variables
-  yours::i = 3;
-  yours::n = 4;
-  using namespace mine;
-  j = 5;
-  using namespace yours;
-  k = 6;
- 
-  // i = 7;              error, ambiguous now that 'using' both namespaces
-  n = 8;                 // local 'n' not overridden or ambiguous
-  cout << mine::i << yours::i << j << k << n << yours::n << '\n';
-  return 0;
+struct MyStruct
+{
+    int y;
+};
+} // end of namespace "your"
+
+int main()
+{
+    mine::MyStruct myMyStruct{};
+    your::MyStruct yourMyStruct{};
+    
+    myMyStruct.x = yourMyStruct.y;
+    
+    using namespace mine;
+    MyStruct myMyStruct2;
+    
+    using namespace your;
+    MyStruct bad; // error "ambiguous reference"!
+
+    return 0;
 }
-// results are:   235684
-More information can be found here.
+```
 
-References
-Excellent C++ reference page
-C++ String Examples
-
-Programming in C includes C/C++ Program Compilation
-
-Moving from Java to C++
-
-Header files and the preprocessor (Microsoft discussion)
