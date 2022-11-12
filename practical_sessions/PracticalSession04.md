@@ -69,7 +69,7 @@ In some cases temporary objects are a mandatory part of the evaluation process o
 
 
 
-## 4. Const References
+## 5. Const References
 
 A common way to avoid the creation of unnecessary temporary objects is by using const references.
 
@@ -111,7 +111,7 @@ void func2(const MyClass &y)
 
 
 
-## 5. Move Semantics and rvalue References
+## 6. Move Semantics and rvalue References
 
 C++11 introduced the `move semantics` mechanism to further avoid redundant copying of objects. Using this mechanism, an object (under certain conditions) may take ownership of another object's external resources (such as memory allocation). 
 
@@ -120,7 +120,7 @@ The two main use cases for this are:
 1. Avoiding unnecessary copying of objects, saving both runtime and memory.
 2. Safely transferring ownership of resources that cannot be shared (such as certain types of locks and file handles).
 
-## 5.1. **rvalue** references
+## 6.1. **rvalue** references
 
 To further unleash the potential of *move semantics*, C++11 also introduced *rvalue references*. An *rvalue reference* is a reference to a *temporary object*. We use double-ampersand to indicate that a variable is an *rvalue reference*.
 
@@ -140,7 +140,7 @@ func3(MyClass{y}); // this is fine
 
 The line `func3(MyClass{y})` is fine because `MyClass{y}` creates a *temporary object* using the *copy constructor*.
 
-## 5.2 Converting *lvalue* to *rvalue*
+## 6.2. Converting *lvalue* to *rvalue*
 
 It is possible to convert an *lvalue* to an *rvalue* by using `std::move`.
 
@@ -167,7 +167,7 @@ The expression `MyClass z = y` above will compile but **is a bug** since the `y`
 
 
 
-## 6. The Rule of 5
+## 7. The Rule of 5
 
 As mentioned above,  C++ may create unnecessary temporary objects which may incur a significant performance (and sometimes also memory) penalty.
 
@@ -177,7 +177,7 @@ One way of eliminating (or at least mitigating) this is to employ the "rule of 5
 
 
 
-### 6.1. The Move Constructor
+### 7.1. The Move Constructor
 
 A *move constructor* is a constructor who's first parameter is an *rvalue reference* of the same class (a regular or a const reference) and either accepts no arguments or has default values for all it's other arguments.
 
@@ -200,7 +200,7 @@ Notice that we assign `nullptr` to `other.first` and `other.last` since `other` 
 
 
 
-### 6.2 Move Assignment Operator
+### 7.2. Move Assignment Operator
 
 The *move assignment operator* is called when an object appears on the left side of an assignment expression and on the right side of the assignment operation there is an *rvalue* of the same type (or an implicitly-convertible type).
 
@@ -225,7 +225,7 @@ Again, we assign `nullptr` to `other.first` and `other.last` since `other` does 
 
 
 
-## 7. Temporary Object Lifetime Extension (advanced<sup>†</sup>)
+## 8. Temporary Object Lifetime Extension (advanced<sup>†</sup>)
 
 <sup>†</sup> This is an advanced topic. It is not mandatory for this course.
 
@@ -234,7 +234,7 @@ References to variables can be also be declared as any other variables. When a r
 There are 2 types of references to an *rvalue* that are allowed:
 
 1. A const reference
-1. An rvalue reference
+2. An rvalue reference
 
 ##### Examples
 
@@ -279,7 +279,7 @@ In this example, the lifetime of the temporary object created by casting `y` to 
 
 
 
-## 8. Placeholder Type Specifier (the *auto* keyword)
+## 9. Placeholder Type Specifier (the *auto* keyword)
 
 Another mechanism introduced in C++11 is the *placeholder type specifier* - the `auto` keyword.
 
@@ -303,7 +303,7 @@ for (const auto& item: list1) // item is a const reference to MyClass
 
 
 
-## 9. Smart Pointers
+## 10. Smart Pointers
 
 In modern C++ programming, the Standard Library includes *smart pointers*. These are class templates that  contain a pointer and provide a limited garbage collecting facility, *with little to no overhead* over built-in pointers, by automatically deleting the pointer when it is no longer needed.
 
@@ -315,7 +315,7 @@ There are currently 3 types of smart pointers:
 
 
 
-### 9.1. Shared Pointers
+### 10.1. Shared Pointers
 
 A *shared pointer* is a smart pointer that  designed for scenarios in which more than one owner might need to manage the lifetime of an object.  It uses a *reference count control block* to designate when the pointer can be deleted. 
 
@@ -337,7 +337,7 @@ The expression `sp2 = sp1` will also have 2 consequences:
 
 
 
-### 9.2. Unique Pointers
+### 10.2. Unique Pointers
 
 A *unique pointer* allows exactly one owner of the underlying pointer. It can be moved to a new owner, but not copied or shared.
 
@@ -359,7 +359,7 @@ The expression `up2 = up1` has two consequences:
 
 
 
-### 9.3. Weak Pointers (advanced<sup>†</sup>)
+### 10.3. Weak Pointers (advanced<sup>†</sup>)
 
 <sup>†</sup> This is an advanced topic. It is not mandatory for this course.
 
@@ -385,7 +385,7 @@ else
 
 
 
-### 9.4. Creation of Smart Pointers
+### 10.4. Creation of Smart Pointers
 
 It is better (for reasons that are beyond the scope of this lesson) to use `std:make_shared` and `std::make_unique` to create a smart pointer. These functions call the constructor that matches their argument list to create the object.
 
@@ -411,7 +411,7 @@ auto up2 = std::make_unique<MyClass>(1, 2); // calls a constructor with 2 argume
 
 
 
-## 10. Inheritance in C++
+## 11. Inheritance in C++
 
 *Inheritance* is a mechanism for reusing and extending existing classes without modifying them by creating hierarchical relationships between them. 
 
@@ -429,7 +429,7 @@ A *derived class* inherits the members of a *base class*. The access modifier of
 
 
 
-### 10.1 Constructors in Derived Classes
+### 11.1. Constructors in Derived Classes
 
 When a derived class is initialized (using a constructor), the constructor of the base class is called first of all - either explicitly (as in the example below) or implicitly, in which case the default constructor is called. 
 
@@ -463,7 +463,7 @@ void Student::doHomework()
 
 
 
-### 10.2 Virtual Functions
+### 11.2. Virtual Functions
 
 As mentioned earlier, there is an "**is-a**" relationship between a derived class and it's base class, it therefore makes perfect sense that a reference or pointer to the base class can be used with an object of the derived class.
 
@@ -513,7 +513,7 @@ public:
 
 
 
-#### 10.2.1 The Virtual Destructor
+#### 11.2.1. The Virtual Destructor
 
 Virtual destructors are particularly important  because if an object of a derived class is deleted using a pointer of a base class the result is undefined and almost always a bug. To address this, destructors should always be declared as virtual if a class is inherited from (as a guideline, any time you have a virtual function in a class, you should immediately add a virtual destructor - even if it does nothing).
 
@@ -530,7 +530,7 @@ public:
 
 
 
-#### 10.2.2 Pure Virtual Functions and Abstract Classes
+#### 11.2.2. Pure Virtual Functions and Abstract Classes
 
 A *virtual function* can be declared as *pure virtual* by appending `= 0` in the function declaration. In which case it is not defined (implemented) at the class where it is declared and it is not possible to create an instance (a variable) of this class. 
 
@@ -548,7 +548,7 @@ public:
 
 
 
-## 11. C++ Namespaces
+## 12. C++ Namespaces
 
 A *namespace* is a declarative region that provides an artificial scope to identifiers (type names, variables, functions, classes, etc.) declared within it. It is somewhat similar to Java packages although it is not derived from the directory structure but is declared explicitly.
 
