@@ -26,7 +26,7 @@ It is done in C++ in 2 ways:
 
    
 
-#### 2.1.1. Passing parameters by value<sup>**†**</sup>
+#### 2.1.1. Passing Parameters by Value<sup>**†**</sup>
 
 When passing parameters by value changes made to the parameter inside the function are not reflected to the caller. 
 
@@ -38,9 +38,7 @@ Passing by value also works with objects, in which case a call to the class's co
 
 <small><sup>‡</sup> Since C++11, when using [move semantics](https://stackoverflow.com/q/3106110/2375105), passing by value *is* in fact the recommended method.</small>
 
-
-
-Example:
+##### Example
 
 ```c++
 int power(int i)
@@ -62,7 +60,7 @@ int main(int argc, char **argv)
 
 
 
-#### 2.1.2. Passing parameters by reference<sup>**†**</sup>
+#### 2.1.2. Passing Parameters by Reference<sup>**†**</sup>
 
 The syntax of passing parameters by reference is similar to passing by value, except of the & (ampersand) before the variable name, which indicate that the variable is actually a reference (a "link") to another variable. Changes made to the variable inside the function are reflected to the caller.
 
@@ -70,7 +68,7 @@ References to objects must be initialized (there is no "null reference").
 
 Passing parameters this way to a function emphasizes that the owner of the object is the caller (so there is no confusion as to who is responsible for freeing the memory). 
 
-Example:
+##### Example
 
 ```c++
 void emphasize(std::string &word)
@@ -91,13 +89,13 @@ In the example, any change in to the variable _word_ will also apply to _mySente
 
 
 
-#### 2.1.3. Passing pointers
+#### 2.1.3. Passing Pointers
 
 To avoid passing objects by value you can also pass a pointer to the object. The pointer itself can be either passed by value or by reference (although passing a pointer by reference is only useful if you want to change the value of the pointer variable of the caller, or you need the pointer variable's address for some reason).
 
 When passing a pointer we obtain a reference to the object but can also pass `nullptr` as an "uninitialized reference". 
 
-Example:
+##### Example
 
 ```c++
 void emphasize(std::string *word)
@@ -137,7 +135,7 @@ We shall start with a simple class example and move on later to classes that hol
 
 
 
-Example 3.1.1:
+##### Example
 
 Header file `Point.h`:
 
@@ -191,14 +189,14 @@ The syntax of classes in C++ is somewhat different than it is in Java;
 *   **Declarations and implementations are separate<sup>†</sup>** - The class definition contains class variables and the declarations of the methods. The actual implementation is listed separately, where each method name is prefixed by the class name. The scope resolution operator (the :: operator) designates to which class the method belongs.
 *   **Semicolon at the end of the class** - A semicolon at the end of the class declaration. Not placing it will result in a compilation error.
 *   **Public and private <u>section</u>** - In C++, there are public, private and protected *sections* as opposed to Java where each individual class member must be tagged separately.
-*   **`Const` methods** - `const` methods do not change the state of an object<sup>‡</sup>, can only call other `const` methods and cannot return non-const references or pointers to members of the class. They are declared with the keyword `const` after the parameter list (see example 3.1.1).
+*   **`Const` methods** - `const` methods do not change the state of an object<sup>‡</sup>, can only call other `const` methods and cannot return non-const references or pointers to members of the class. They are declared with the keyword `const` after the parameter list (see example in section 3.1).
 *   **`Const` objects** - Once an object is declared as `const`, one can only use `const` methods on that object.
 
 <small><sup>†</sup> The separation of declaration and implementation is not mandatory and may be omitted for inner, local private or helper classes.</small>
 
 <small><sup>‡</sup> With the exception of data members marked as `mutable`.</small>
 
-Example of a `const` object:
+##### Example
 
 ```c++
 ...
@@ -220,7 +218,7 @@ Const class variables can *only* be initialized in the _member initialization li
 
 The order of initialization is according to the **order the fields in the class** - **not the order in the *member initialization list***. It is advisable to keep the order in the initialization list the same as in the class to avoid confusion.
 
-In example 3.1.1 the initialization list is `x(xVal), y(yVal)` as follows:
+In the from section 3.1 the initialization list is `x(xVal), y(yVal)` as follows:
 
 ```c++
 Point::Point(double xVal, double yVal) : x(xVal), y(yVal) {}
@@ -232,7 +230,9 @@ Point::Point(double xVal, double yVal) : x(xVal), y(yVal) {}
 
 
 
-Since C++11 you can also use curly braces for initialization:
+##### Curly braces
+
+Since C++11 you can also use curly braces for initialization;
 
 ```c++
 Point::Point(double xVal, double yVal) : x{xVal}, y{yVal} {}
@@ -248,7 +248,9 @@ It is possible to write implementation code within header files but requires spe
 
 To avoid including a Header twice, we check whether a preprocessor unique variable is defined. If not, we define it and include the header. A common convention is to use the name of the header file as the preprocessor variable name. 
 
-For example in `Point.h`:
+##### Example
+
+In the file `Point.h`:
 
 ```c++
 #ifndef POINT_H
@@ -303,13 +305,15 @@ Time now;
 
 
 
-### 4.1. The dot and arrow operators
+### 4.1. The Dot and Arrow Operators
 
 The dot (.) operator and the arrow (->) operator are used to reference class members.
 
 The dot operator in C++ is similar to Java's dot operator.
 
 The arrow operator is used to dereference a point first and then reference the class member.
+
+##### Example
 
 ```c++
 int main( )
@@ -325,7 +329,7 @@ int main( )
 
 
 
-### 4.2. The `this` pointer
+### 4.2. The `this` Pointer
 
 In C++ every object can access it's own address using the keyword `this` (a.k.a. the `this` pointer). It is an implicit (hidden) parameter to all non-static class methods and is used within the class method to refer to the invoking object.
 
@@ -333,9 +337,7 @@ If a method variable name is the same as a class variable it is said that it *sh
 
 The `this` pointer is an `rvalue` (and therefore it cannot be modified).
 
-
-
-For example:
+##### Example
 
 ```c++
 class MyClass
@@ -372,8 +374,6 @@ void MyClass:setVariable(int _variable)
 }
 ```
 
-
-
 > Notes: 
 >
 > 1. In C++ `this` is an rvalue and cannot be changed.
@@ -388,7 +388,7 @@ void MyClass:setVariable(int _variable)
 
 
 
-### 4.3. Creation of objects
+### 4.3. Creation of Objects
 
 As in Java, in C++, objects are created by calling a class *constructor*. In addition to regular constructors, there are a few additional "special" constructors and related methods. 
 
@@ -396,11 +396,11 @@ In the definition of constructors there is no return value but they always retur
 
 Constructors can be called explicitly but there are also various situations in which they are called implicitly (some examples below).
 
-#### 4.3.1. The default constructor
+#### 4.3.1. The Default Constructor
 
 A *default constructor* is a constructor that can be called with no arguments (it either accepts no arguments or has default values for all it's arguments).
 
-Example:
+##### Example
 
 ```c++
 class MyClass1
@@ -418,7 +418,7 @@ MyClass1 mc12{}; // explicit call to the default constructor
 
 If a class has no explicitly defined constructors (of any kind), the compiler will automatically generate a *default constructor* for it.
 
-Example:
+##### Example
 
 ```c++
 class MyClass2
@@ -437,13 +437,13 @@ MyClass2 mc22{}; // explicit call to the default constructor
 
 
 
-#### 4.3.2. Copy constructor
+#### 4.3.2. The Copy Constructor
 
 A *copy constructor* is a constructor who's first parameter is a reference of the same class (a regular reference or a `const` reference) and either accepts no arguments or has default values for all it's other arguments.
 
 If a class has no explicitly defined copy constructor the compiler will automatically generate a default copy constructor for it that receives a `const` reference.
 
-Example:
+##### Example
 
 ```c++
 class MyClass3
@@ -463,7 +463,7 @@ someFunc(mc31); // implicit call to the copy constructor
 
 
 
-### 4.4. Destruction of objects
+### 4.4. Destruction of Objects
 
 When an object is going to be destroyed (when it goes out of scope or because of a explicit use of `delete`), a special member function called a *destructor* is automatically called. The purpose of the *destructor* is to release any resources that were held by the object and perform any other necessary cleanup.
 
@@ -473,7 +473,7 @@ The name of the destructor is the class name preceded by a tilde symbol (~).
 
 If a class has no explicitly defined destructor, the compiler will automatically generate a default destructor for it.
 
-Example:
+##### Example
 
 ```c++
 class MyClass4
@@ -492,7 +492,7 @@ MyClass4::~MyClass4() { delete x; }
 
 
 
-### 4.5 Assigning objects
+### 4.5 Assigning Objects
 
 The *copy assignment operator* is called whenever an object appears on the left side of an assignment expression (and in some other situations). It takes exactly one parameter that is an object or a reference (or const reference) of the same class and returns a reference to an object of the class.
 
@@ -500,7 +500,7 @@ If a class has no explicitly defined copy assignment constructor the compiler wi
 
 The copy assignment operator must not throw exceptions (this may leave the object in an invalid state). If the automatically-generated default copy assignment operator may throw exceptions, one must be written explicitly.
 
-Example (copy assignment operator of MyClass4):
+##### Example (copy assignment operator of MyClass4)
 
 ```c++
 MyClass::MyClass4 &operator=(const MyClass4 &other)
@@ -555,7 +555,7 @@ The Link class represents a single node in the list.
 
 ![StringQueueStack](https://github.com/bguspl/bguspl.github.io/raw/main/images/StringQueueStack.jpg)
 
-### 5.2. The file `StringQueueStack.h`:
+### 5.2. The File `StringQueueStack.h`:
 
 ```c++
 #pragma once
@@ -590,7 +590,7 @@ public:
 
 
 
-### 5.3. The file `StringQueueStack.cpp`:
+### 5.3. The File `StringQueueStack.cpp`:
 
 ```c++
 #include "StringQueueStack.h"
@@ -661,7 +661,7 @@ StringQueueStack& StringQueueStack::operator=(const StringQueueStack& other)
 
 
 
-### 5.4 Execution example:
+### 5.4 Execution Example:
 
 ```c++
 #include "StringQueueStack.h"
@@ -721,7 +721,7 @@ Popped: 2
 
 
 
-## 6. Additional links
+## 6. Additional Links
 
 *   [examples1](http://pages.cs.wisc.edu/~hasti/cs368/CppTutorial/NOTES/CLASSES-PTRS.html)
 *   [examples2](http://www.cs.fiu.edu/~weiss/phc++/code/)

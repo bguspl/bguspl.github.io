@@ -23,21 +23,21 @@ We will also discuss:
 
 
 
-## 2. Object lifetime
+## 2. Object Lifetime
 
-Every object<sup>†</sup> and reference has a *lifetime*.  The *lifetime* is a runtime property (it is the period during which the object exists in the program's memory space).
+Every object<sup>†</sup> and reference has a ***lifetime***.  The lifetime is a runtime property (it is the period during which the object exists in the program's memory space).
 
-The *lifetime* of an object begins when storage for it is obtained and it gets initialized.
+The lifetime of an object begins when storage for it is obtained and it gets initialized.
 
-The *lifetime* of an object ends when the object is destroyed and the storage it used is freed.
+The lifetime of an object ends when the object is destroyed and the storage it used is freed.
 
 <small><sup>†</sup> In this context the term "object" also refers to a primitive variable.</small>
 
 
 
-## 3. Value categories and temporary objects
+## 3. Value Categories
 
-Every C++ expression has a *type* and belongs to a *value category*. These *value categories* are the basis for the rules that compilers follow for creating, copying and moving temporary objects when evaluating expressions.
+Every C++ expression has a ***type*** and belongs to a ***value category***. These value categories are the basis for the rules that compilers follow for creating, copying and moving temporary objects when evaluating expressions.
 
 Two such categories are<sup>†</sup>:
 
@@ -46,63 +46,39 @@ Two such categories are<sup>†</sup>:
 
 <small><sup>†</sup> These are heuristical definitions (the formal ones are more complex).</small>
 
-Literals (numbers, characters, etc.), for example, are *rvalues*. You cannot change their values so naturally they cannot appear in the left side of an assignment expression.
+Literals (numbers, characters, etc.), for example, are rvalues. You cannot change their values so naturally they cannot appear in the left side of an assignment expression.
 
-A *temporary object* is an object that is created temporarily in order to evaluate some expression. It is an *rvalue* and *usually* exists only until the expression is evaluated.
 
-Example:
+
+## 4. Temporary Objects
+
+A ***temporary object*** is an object that is created temporarily in order to evaluate some expression. It is an rvalue and it's lifetime usually ends immediately after the expression is evaluated.
+
+##### Example
 
 ```c++
 int x = 2, y = 3;
 int z = x * 2 + y; // this creates a temporary object
 ```
 
-When the expression `x * 2` is evaluated, a *temporary object* must be created to hold the result.
+When the expression `x * 2` is evaluated (lets call it `tmp` for the sake of this explanation), a temporary object must be created to hold the result. Another temporary object will be created for `tmp + y` before it is assigned to `z`.
 
->  Note: in fact, in this example, a 2nd temporary object will be created unless optimized by the compiler
+##### What is wrong with temporary objects?
+
+In some cases temporary objects are a mandatory part of the evaluation process of an expression, but in other cases they are not. Creation of unnecessary temporary objects during the evaluation of expressions is a frequent culprit that incur a significant performance penalty (and also memory).
 
 
 
-In some cases temporary objects are a mandatory part of the evaluation process of an expression, but in other cases they are not. 
+## 4. Const References
 
-One of the caveats of C++ is the creation of unnecessary temporary objects during the evaluation of expressions. In certain situations, this may incur a significant performance (and possibly also memory) penalty.
+A common way to avoid the creation of unnecessary temporary objects is by using const references.
 
-Example: 
-
-Supposed that we would like to overload the plus (+) operator of `StringQueueStack` in order to combine 2 `StringQueueStack` objects. We could write the following method:
-
-```c++
-StringQueueStack StringQueueStack::operator+(const StringQueueStack& other) const
-{
-    StringQueueStack result{*this};
-
-    for (Link* link = other.first; link != nullptr; link = link->next)
-        result.append(link->data->c_str()); // append will keep the correct order
-
-    return result;
-}
-```
+##### Example
 
 Consider the following code:
 
 ```c++
-StringQueueStack sqs{};
-...
-sqs = sqs + sqs + sqs + sqs;
-```
-
-The last line will create 3 temporary objects (1 on each invocation of `operator+`), each time copying the data inside both objects to the temporary object (later we will explain how to avoid that).
-
-
-
-## 4. Const references
-
-A common way to avoid the creation of unnecessary temporary objects is by using const references (but this however, does not not cover all cases).
-
-Consider the following code:
-
-```c++
-void func1(MyClass x)
+void func3(MyClass x)
 {
     ...
 }
@@ -113,13 +89,15 @@ void func2(MyClass y)
     func1(y);
 }
 
-void func3()
+void func1()
 {
     func2(MyClass{});
 }
 ```
 
-The function `func2` receives `y`, an object of `MyClass`, and passes it along to `func1`. It does not change it (assuming `someConstMethod` is indeed a const method) at any point. When `func3` calls `func2` a copy of the object is created. Making a copy is redundant since neither `func2` change `y` nor does `func1` (since the parameter is passed by value).
+The function `func2` receives `y`, an object of `MyClass`, and passes it along to `func3`. It does not change it at any point (assuming `someConstMethod` is indeed a const method). 
+
+When `func1` calls `func2`, a copy of the object is created (because it is passed by value). Making a copy here is redundant since `func2` doesn't change `y`.
 
 This can be avoided by declaring `y` as a const reference:
 
@@ -133,7 +111,7 @@ void func2(const MyClass &y)
 
 
 
-## 5. Move semantics and rvalue references
+## 5. Move Semantics and rvalue References
 
 C++11 introduced the `move semantics` mechanism to further avoid redundant copying of objects. Using this mechanism, an object (under certain conditions) may take ownership of another object's external resources (such as memory allocation). 
 
@@ -170,9 +148,7 @@ In fact, `std::move` doesn't actually move anything (it is technically a functio
 
 By converting it's argument to an *rvalue*, `std::move` allows the compiler to perform optimizations that are not allowed for an *lvalue* at the cost of invalidating the argument after finishing the evaluation of the expression it is in.
 
-
-
-Example:
+##### Example
 
 ```c++
 void func1(MyClass x) 
@@ -183,25 +159,25 @@ void func1(MyClass x)
 void func2(MyClass y)
 {
     func1(std::move(y));
-    MyClass z = y; // this compiles but is a mistake!
+    MyClass z = y; // this compiles but is a bug!
 }
 ```
 
-The expression `MyClass z = y` above will compile but **is a mistake** since the `y` has been invalidated by `std::move`.
+The expression `MyClass z = y` above will compile but **is a bug** since the `y` has been invalidated by `std::move`.
 
 
 
-## 6. The rule of 5
+## 6. The Rule of 5
 
 As mentioned above,  C++ may create unnecessary temporary objects which may incur a significant performance (and sometimes also memory) penalty.
 
 One way of eliminating (or at least mitigating) this is to employ the "rule of 5" heuristic, which is "the rule of 3" plus 2 more special methods: the *move constructor* and the *move assignment operator*.
 
-> Note: both the *move constructor* and the *move assignment operator* may not throw exceptions since this may leave objects in an invalid state.
+> Note: both the *move constructor* and the *move assignment operator* should never throw exceptions since this may leave objects in an invalid state.
 
 
 
-### 6.1. The move constructor
+### 6.1. The Move Constructor
 
 A *move constructor* is a constructor who's first parameter is an *rvalue reference* of the same class (a regular or a const reference) and either accepts no arguments or has default values for all it's other arguments.
 
@@ -224,7 +200,7 @@ Notice that we assign `nullptr` to `other.first` and `other.last` since `other` 
 
 
 
-### 6.2 Move assignment operator
+### 6.2 Move Assignment Operator
 
 The *move assignment operator* is called when an object appears on the left side of an assignment expression and on the right side of the assignment operation there is an *rvalue* of the same type (or an implicitly-convertible type).
 
@@ -237,6 +213,7 @@ Example:
 ```c++
 StringQueueStack& StringQueueStack::operator=(StringQueueStack&& other) noexcept
 {
+    clear();
     first = other.first;
     last = other.last;
     other.first = nullptr;
@@ -248,15 +225,18 @@ Again, we assign `nullptr` to `other.first` and `other.last` since `other` does 
 
 
 
-## 7. Temporary object lifetime extension
+## 7. Temporary Object Lifetime Extension
 
 References to variables can be also be declared as any other variables. When a reference to a temporary object is declared, the temporary object's lifetime is extended to the reference's lifetime (making the temporary object "not so temporary"...).
 
 There are 2 types of references to an *rvalue* that are allowed:
 
 1. A const reference
+1. An rvalue reference
 
-Example:
+##### Examples
+
+###### Const value reference for an object
 
 ```c++
 const MyClass& tmp = MyClass{};
@@ -265,18 +245,14 @@ MyClass* ref = const_cast<MyClass*>(&tmp);
 
 > Note: this is bad practice (because of the *const cast*), but will work.
 
-2. An *rvalue reference*
-
-Example:
+###### rvalue reference for an object
 
 ```c++
 MyClass&& tmp = MyClass{};
 MyClass* ref = &tmp;
 ```
 
-
-
-Here is another example:
+###### With primitives
 
 ```c++
 int x = 1;
@@ -301,15 +277,15 @@ In this example, the lifetime of the temporary object created by casting `y` to 
 
 
 
-## 8. Placeholder type specifiers (the *auto* keyword)
+## 8. Placeholder Type Specifier (the *auto* keyword)
 
-Another mechanism introduced in C++11 is *placeholder type specifiers*, i.e. the `auto` keyword.
+Another mechanism introduced in C++11 is the *placeholder type specifier* - the `auto` keyword.
 
 The `auto` keyword may (sometimes) used in variable / function declarations instead of an explicit type specifier in order to automatically deduce the type from the variable initializer / function return value.
 
 Using `auto` where applicable is generally considered a recommended practice for reason of usability and robustness (it reduces the chance of typos for example), performance (no conversions are guaranteed when using it) and other reasons.
 
-You can also notify the compiler you want to use `auto` but only if a reference / pointer type can be deduced by declaring `auto&` / `auto*` and/or a `const` type with `const auto`.
+You can force it to be reference / pointer and/or const by declaring with `auto&` / `auto*` and/or `const auto`.
 
 Example:
 
@@ -320,57 +296,33 @@ for (const auto& item: *list)
     item.doSomething();
 ```
 
-
-
-> Note: in general, an `auto` type specifier can almost always be replaced by an explicit type specifier (but some very esoteric scenarios do exist where this is not the case).
+> Note: the `auto` type specifier can *almost always* be replaced by an explicit type specifier (except in some very esoteric scenarios).
 
 
 
-## 9. Smart pointers
+## 9. Smart Pointers
 
-In modern C++ programming, the Standard Library includes *smart pointers*. These are class templates that provide a limited garbage-collection facility of automatic destruction of objects when they are no longer used, with little to no overhead over built-in pointers.
+In modern C++ programming, the Standard Library includes *smart pointers*. These are class templates that  contain a pointer and provide a limited garbage collecting facility, *with little to no overhead* over built-in pointers, by automatically deleting the pointer when it is no longer needed.
 
 There are currently 3 types of smart pointers:
 
-1. Unique pointer
-2. Shared pointer
-3. Weak pointer
+1. Shared pointers
+2. Unique pointers
+3. Weak pointers
 
 
 
-### 9.1. Unique pointers
+### 9.1. Shared Pointers
 
-A *unique pointer* allows exactly one owner of the underlying pointer. It can be moved to a new owner, but not copied or shared.
+A *shared pointer* is a smart pointer that  designed for scenarios in which more than one owner might need to manage the lifetime of an object.  It uses a *reference count control block* to designate when the pointer can be deleted. 
 
-> Note: *unique pointer* replaces the older (now deprecated) *auto pointer*.
+Whenever a new object is created from the shared pointer (as a result of it being copied, passed by value or assigned) the reference is incremented. When any of these objects gets destroyed the reference count is decremented. When the reference count reaches zero, the underlying pointer and the control block are deleted.
 
-Example:
-
-```c++
-auto up1 = std::make_unique<MyClass>(); // using default constructor
-auto up2 = std::make_unique<MyClass>(1, 2); // using constructor with 2 int arguments
-
-up2 = up1;
-```
-
-The expression `up2 = up1` has two consequences:
-
-1. The current pointer `up2` stores will be deleted.
-2. The pointer `up1` stores will be transferred to the variable `up2` (resetting `up1` to an empty state).
-
-
-
-### 9.2. Shared pointers
-
-A *shared pointer* is a smart pointer that  designed for scenarios in which more than one owner might need to manage the lifetime of an object.  
-
-A *shared pointer* uses a a reference count control block to designate when the pointer can be deleted. Whenever a new object is created from the shared pointer (as a result of it being copied, passed by value or assigned) the reference is incremented. When any of these objects gets destroyed the reference count is decremented. When the reference count reaches zero, the underlying pointer and the control block are deleted.
-
-Example:
+##### Example
 
 ```c++
-auto sp1 = std::make_shared<MyClass>(); // using default constructor
-auto sp2 = std::make_unique<MyClass>(1, 2); // using constructor with 2 int arguments
+auto sp1 = std::shared_ptr<MyClass>(new MyClass());
+auto sp2 = std::shared_ptr<MyClass>(new MyClass(1, 2));
 
 sp2 = sp1;
 ```
@@ -382,13 +334,35 @@ The expression `sp2 = sp1` will also have 2 consequences:
 
 
 
-### 9.3. Weak pointers
+### 9.2. Unique Pointers
+
+A *unique pointer* allows exactly one owner of the underlying pointer. It can be moved to a new owner, but not copied or shared.
+
+> Note: *unique pointers* replaces the older (now deprecated) *auto pointers*.
+
+##### Example
+
+```c++
+auto up1 = std::unique_ptr<MyClass>(new MyClass());
+auto up2 = std::unique_ptr<MyClass>(new MyClass(1, 2));
+
+up2 = up1;
+```
+
+The expression `up2 = up1` has two consequences:
+
+1. The current pointer `up2` stores will be deleted.
+2. The pointer `up1` stores will be transferred to the variable `up2` (resetting `up1` to an empty state).
+
+
+
+### 9.3. Weak Pointers
 
 This type of pointers are used in conjunction with *shared pointers*. They are intended for situations when we need access to shared pointer without increasing the reference count and the state of the pointer might have been changed elsewhere (i.e. the reference count reached zero and it was deleted). A common scenario for this is when implementing a memory cache.
 
 You can query the state of the shared pointer by using the weak pointer's `expired()` method. If you want to access the resource itself you must create a shared pointer from the weak pointer by using the `lock()` method.
 
-Example:
+##### Example
 
 ```c++
 auto sp1 = std::make_shared<MyClass>();
@@ -402,6 +376,32 @@ if (sp2 == false)
 	std::cout << "object expired";
 else
     // you can use sp2 to access the resource
+```
+
+
+
+### 9.4. Creation of Smart Pointers
+
+It is better (for reasons that are beyond the scope of this lesson) to use `std:make_shared` and `std::make_unique` to create a smart pointer. These functions call the constructor that matches their argument list to create the object.
+
+##### Example
+
+Instead of the following code:
+
+```c++
+auto sp1 = std::shared_ptr<MyClass>(new MyClass());
+auto sp2 = std::shared_ptr<MyClass>(new MyClass(1, 2));
+auto up1 = std::unique_ptr<MyClass>(new MyClass());
+auto up2 = std::unique_ptr<MyClass>(new MyClass(1, 2));
+```
+
+Do this:
+
+```c++
+auto sp1 = std::make_shared<MyClass>(); // calls the default constructor
+auto sp2 = std::make_shared<MyClass>(1, 2); // calls a constructor with 2 arguments
+auto up1 = std::make_unique<MyClass>(); // calls the default constructor
+auto up2 = std::make_unique<MyClass>(1, 2); // calls a constructor with 2 arguments
 ```
 
 
@@ -424,15 +424,13 @@ A *derived class* inherits the members of a *base class*. The access modifier of
 
 
 
-### 10.1 Constructors in derived classes
+### 10.1 Constructors in Derived Classes
 
 When a derived class is initialized (using a constructor), the constructor of the base class is called first of all - either explicitly (as in the example below) or implicitly, in which case the default constructor is called. 
 
 Compilation will fail if no constructor is explicitly called and the base class has no default constructor or the default constructor is declared *private*.
 
-
-
-Example:
+##### Example
 
 ```c++
 class Person
@@ -460,11 +458,11 @@ void Student::doHomework()
 
 
 
-### 10.2 Virtual functions
+### 10.2 Virtual Functions
 
 As mentioned earlier, there is an "**is-a**" relationship between a derived class and it's base class, it therefore makes perfect sense that a reference or pointer to the base class can be used with an object of the derived class.
 
-Example:
+##### Example
 
 ```c++
 void DriveToSchool(Person &person) 
@@ -483,7 +481,7 @@ The solution for this is a *virtual function*. A virtual function is a method in
 
 When *overriding* a virtual function we use the `override` keyword in the method declaration (there is no need to repeat the `virtual` keyword though since it is implied by the `override` keyword).
 
-Example:
+##### Example
 
 ```c++
 class Person
@@ -501,9 +499,7 @@ public:
 };
 ```
 
-
-
-**Rules for virtual functions:**
+##### Rules of virtual functions
 
 1. Virtual functions cannot be static.
 2. The prototype of a virtual function must be the same in the base and derived classes.
@@ -512,11 +508,11 @@ public:
 
 
 
-#### 10.2.1 The virtual destructor
+#### 10.2.1 The Virtual Destructor
 
 Virtual destructors are particularly important  because if an object of a derived class is deleted using a pointer of a base class the result is undefined and almost always a bug. To address this, destructors should always be declared as virtual if a class is inherited from (as a guideline, any time you have a virtual function in a class, you should immediately add a virtual destructor - even if it does nothing).
 
-Example:
+##### Example
 
 ```c++
 class MyClass
@@ -529,13 +525,13 @@ public:
 
 
 
-#### 10.2.2 Pure virtual functions and abstract classes
+#### 10.2.2 Pure Virtual Functions and Abstract Classes
 
 A *virtual function* can be declared as *pure virtual* by appending `= 0` in the function declaration. In which case it is not defined (implemented) at the class where it is declared and it is not possible to create an instance (a variable) of this class. 
 
 An instance of a class can only be created if all virtual functions are implemented either by the derived class or by an ancestor (i.e. the base class or the base class's base class, etc.). A class that cannot be instantiated due to this reason is called an *abstract class* (it is similar to a Java *interface* or *abstract class*) .
 
-Example:
+##### Example
 
 ```c++
 class MyClass
@@ -547,7 +543,7 @@ public:
 
 
 
-## 11. C++ namespaces
+## 11. C++ Namespaces
 
 A *namespace* is a declarative region that provides an artificial scope to identifiers (type names, variables, functions, classes, etc.) declared within it. It is somewhat similar to Java packages although it is not derived from the directory structure but is declared explicitly.
 
@@ -555,7 +551,7 @@ A *namespace* is a declarative region that provides an artificial scope to ident
 
 A *namespace* is declared using the `namespace` keyword and must be declared in the *global scope* or within other namespaces. To access identifiers that is within a namespace from outside the namespace, you must use the *scope resolution operator* (::) or with the `using` keyword.
 
-Example:
+##### Example
 
 ```c++
 namespace mine
