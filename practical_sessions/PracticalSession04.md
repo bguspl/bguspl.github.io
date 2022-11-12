@@ -225,7 +225,9 @@ Again, we assign `nullptr` to `other.first` and `other.last` since `other` does 
 
 
 
-## 7. Temporary Object Lifetime Extension
+## 7. Temporary Object Lifetime Extension (advanced<sup>†</sup>)
+
+<sup>†</sup> This is an advanced topic. It is not mandatory for this course.
 
 References to variables can be also be declared as any other variables. When a reference to a temporary object is declared, the temporary object's lifetime is extended to the reference's lifetime (making the temporary object "not so temporary"...).
 
@@ -290,9 +292,10 @@ You can force it to be reference / pointer and/or const by declaring with `auto&
 Example:
 
 ```c++
-auto list = new std::vector<MyClass>{};
+std::vector<MyClass> list1; // list1 is a vector
+auto list2 = new std::vector<MyClass>{}; // list2 is a pointer to a vector
 
-for (const auto& item: *list)
+for (const auto& item: list1) // item is a const reference to MyClass
     item.doSomething();
 ```
 
@@ -356,7 +359,9 @@ The expression `up2 = up1` has two consequences:
 
 
 
-### 9.3. Weak Pointers
+### 9.3. Weak Pointers (advanced<sup>†</sup>)
+
+<sup>†</sup> This is an advanced topic. It is not mandatory for this course.
 
 This type of pointers are used in conjunction with *shared pointers*. They are intended for situations when we need access to shared pointer without increasing the reference count and the state of the pointer might have been changed elsewhere (i.e. the reference count reached zero and it was deleted). A common scenario for this is when implementing a memory cache.
 
