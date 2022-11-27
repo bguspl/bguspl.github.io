@@ -367,7 +367,7 @@ class Relay{
    }
 }
 ```
-More examples and details about immutable objects can be found [here](http://java.sun.com/docs/books/tutorial/essential/concurrency/imstrat.html)
+More examples and details about immutable objects can be found [here](http://java.sun.com/docs/books/tutorial/essential/concurrency/imstrat.html).
 
 #### **Stateless methods**
 
