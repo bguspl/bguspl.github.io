@@ -34,7 +34,7 @@ class Even {
       return counter;
    }
  
-   int setCounter(int count) {
+   void setCounter(int count) {
       counter = count;
    }
  
