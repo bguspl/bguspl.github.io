@@ -685,6 +685,70 @@ class Semaphore {
 }
 ```
 
+Usage:
+
+```Java
+class Even {
+
+   int val;
+   Semaphore sem;
+
+   Even(int val)  throws Exception {
+        if (val % 2 != 0)
+            throw new Exception(…);
+        this.val = val;
+        this.sem = new Semaphore(1);
+   }
+   public int get() { 
+        sem.acquire();
+        int ret = val;
+        sem.release();
+        return ret;
+     }
+   public void next() {
+        sem.acquire();
+        val++;
+        val++;
+        sem.release();
+    }
+}
+```
+
+The following version implements fairness:
+
+```Java
+class FairSemaphore {
+      List<Thread> waitingForLockThreads;
+
+      Semaphore(int permits) { this.permits = permits; this.free = permits; 
+              waitingForLockThreads = new LinkedList<Thread>();
+      }
+
+     public synchronized void acquire()  {   // implementation of lock
+             waitingForLockThreads.add(Thread.currentThread());
+             while (free <= 0 || waitingForLockThreads.get(0) !=  Thread.currentThread())
+                  wait();
+             free--;
+             waitingForLockThreads.remove(0);
+             if (free > 0)
+                notifyAll();
+     }
+
+     public synchronized boolean tryAcquire()  {   
+             if (free <= 0 || waitingForLockThreads.size() > 0)
+                  return false;
+             free--;
+             return true;
+     }
+
+    public synchronized void release() {  // implementation of unlock
+             if (free < permits)
+                   free++;
+             notifyAll();
+     }
+}
+```
+
 ### **Readers/Writers Example**
 
 The readers/writers problem is about allowing several readers and writers to access a shared resource under different policies. Different policies (variants of the problem) exist. In our example, several readers can access the resource together (to read it), but only one writer can access the resource at any given time. So for example, Readers will wait if any writer is pending (new data is about to be added, so wait for it first). Only one writer at a time can access the shared resource, and only if no readers are currently reading from it.
