@@ -720,21 +720,6 @@ public abstract class RW {
   protected int waitingReaders_ = 0; // threads not yet in read_
   protected int waitingWriters_ = 0; // same for write_
  
-  protected abstract void read_(); // implement in subclasses
-  protected abstract void write_(); 
- 
-  public void read()  {
-    beforeRead(); 
-    read_(); 
-    afterRead();
-  }
- 
-  public void write() { 
-    beforeWrite(); 
-    write_();
-    afterWrite();
-  }
- 
   protected boolean allowReader() {
     return waitingWriters_ == 0 && activeWriters_ == 0;
   }
@@ -743,7 +728,7 @@ public abstract class RW {
     return activeReaders_ == 0 && activeWriters_ == 0;
   }
  
-  protected synchronized void beforeRead() {
+  public synchronized void readLock() {
     ++waitingReaders_;
     while (!allowReader())
       try { wait(); } catch (InterruptedException ex) {}
@@ -751,12 +736,12 @@ public abstract class RW {
     ++activeReaders_;
   }
  
-  protected synchronized void afterRead()  { 
+  public synchronized void readUnlock()  { 
     --activeReaders_;
     notifyAll();  // Will unblock any pending writer
   }
  
-  protected synchronized void beforeWrite() {
+  public synchronized void writeLock() {
     ++waitingWriters_;
     while (!allowWriter()) 
       try { wait(); } catch (InterruptedException ex) {}
@@ -764,7 +749,7 @@ public abstract class RW {
     ++activeWriters_;
   }
  
-  protected synchronized void afterWrite() { 
+  protected synchronized void writeUnlock() { 
     --activeWriters_;
     notifyAll(); // Will unblock waiting writers and waiting readers
   }
@@ -772,6 +757,36 @@ public abstract class RW {
 ```
 
 Note this code handles only the locking while the actual access to the resource is done in a subclass. Also note that the policy of the sharing is determined in two simple methods: allowReader() and allowWriter(). This interface nicely encapsulates our concurrency policy in re-usable code.
+
+Usage:
+
+```Java
+class Even {
+
+   int val;
+   ReaderWriter rw;
+
+   Even(int val)  throws Exception {
+        if (val % 2 != 0)
+            throw new Exception(…);
+        this.val = val;
+        this.rw = new ReaderWriter();
+   }
+   public int get() { 
+        rw.readLock ();
+        int ret = val;
+        rw.readUnlock ();
+        return ret;
+     }
+   public void next() {
+        rw.writeLock();
+        val++;
+        val++;
+        rw.writeUnlock();
+    }
+}
+```
+
 
 ## **Atomic Instructions**
 
