@@ -70,7 +70,7 @@ When you use the browser, it will send a DNS query (or use the cache) in order t
 
 ### Internet Servers and Clients
 
-All of the machines on the Internet are either servers or clients (or both). The machines that provide services to other machines are servers. And the machines that are used to connect to those services are clients. A server has a static IP address that does not change very often. A home machine that is dialing up through a modem typically has a dynamic IP address - A session-unique IP address assigned by the [Internet Service\_Provider (ISP)](https://en.wikipedia.org/wiki/Internet_service_provider) (usually assigned by a server using [Dynamic Host Configuration Protocol (DHCP)](https://en.wikipedia.org/wiki/Dynamic_Host_Configuration_Protocol) every time you dial in (could be different the next time you dial in).
+All of the machines on the Internet are either servers or clients (or both). The machines that provide services to other machines are servers. And the machines that are used to connect to those services are clients. A server has a static IP address that does not change very often. A home machine that is dialing up through a modem typically has a dynamic IP address - A session-unique IP address assigned by the [Internet Service Provider (ISP)](https://en.wikipedia.org/wiki/Internet_service_provider) (usually assigned by a server using [Dynamic Host Configuration Protocol (DHCP)](https://en.wikipedia.org/wiki/Dynamic_Host_Configuration_Protocol) every time you dial in (could be different the next time you dial in).
 
 
 ### Ports
@@ -84,10 +84,10 @@ Port numbers can run from 0 to 65353. Port numbers from 0 to 1023 are reserved f
 ### Network console tools
 
 - [Ipconfig](https://en.wikipedia.org/wiki/Ipconfig) (Microsoft Windows console application) – displays all current TCP/IP network configuration values. 
-- [ifconfig](http://en.wikipedia.org/wiki/Ifconfig|ifconfig) (Unix-like console application) - configure, control, and query TCP/IP network interface parameters. 
-- [ping](http://en.wikipedia.org/wiki/Ping|ping) (Unix-like & Windows) - utility used to test whether a particular host is reachable across an Internet Protocol (IP) network and to measure the round-trip time for packets sent from the local host to a destination computer.
+- [ifconfig](http://en.wikipedia.org/wiki/Ifconfig) (Unix-like console application) - configure, control, and query TCP/IP network interface parameters. 
+- [ping](http://en.wikipedia.org/wiki/Ping) (Unix-like & Windows) - utility used to test whether a particular host is reachable across an Internet Protocol (IP) network and to measure the round-trip time for packets sent from the local host to a destination computer.
 - [Telnet client](http://en.wikipedia.org/wiki/Telnet) (Unix-like & Windows) - Telnet is a network protocol used to provide a bidirectional interactive communications facility. Typically, telnet provides access to a command-line interface on a remote host via a virtual terminal connection. Putty can be used on recent Windows-es which don't have telnet. 
-- [cURL](http://en.wikipedia.org/wiki/CURL|cURL) is a computer software project providing a library and command-line tool for transferring data using various protocols. 
+- [cURL](http://en.wikipedia.org/wiki/CURL) is a computer software project providing a library and command-line tool for transferring data using various protocols. 
 - [nslookup](https://en.wikipedia.org/wiki/Nslookup) (Unix-like & Windows) - command-line tool for querying the DNS to obtain the mapping between domain name and IP address, or other DNS records.
   
 
@@ -302,10 +302,10 @@ public class LPClient {
 
 ### 2. Encoding and Decoding
 
-Different computers, run time environment languages, and compilers can use different symbols representation. If we want to communicate we need uniform coding for the symbols. Since we are transferring objects larger than a single byte (integers, chars, strings) over streams of bytes, we need to encode them. Even for Strings: Should we run on one side
+Different computers, run time environment languages, and compilers can use different symbols representation. If we want to communicate we need uniform coding for the symbols. Since we are transferring objects larger than a single byte (integers, chars, strings) over streams of bytes, we need to encode them. Even for Strings: Should we run on one side \
   `java -Dfile.encoding=US-ASCII LPServer 4500`
 
-and on another  
+and on another  \
   `java LPClient localhost 4500 (assuming default UTF-8)`
 
 any text which has characters not included in the similar 127 first characters in the encodings is not transferred correctly (e.g. Hebrew). We can notice other problems using UTF-16 and UTF-32 (for example line endings are no longer recognized as message ends since they have different numerical values).
@@ -316,17 +316,16 @@ We can also see that Unicode strings have different lengths when represented in 
   
 ```java
 import org.junit.*;
-
 import static org.junit.Assert.*;
 
 public class TestEncodings {
-
-    @Test public void testAll() throws Exception {
-         String  s = "dד\\( \\Delta \\)"; //MATHEMATICAL BOLD CAPITAL DELTA 1D6AB
-         assertEquals(4, s.length()); //length of a UTF-32 string in UTF-16
-         assertEquals(3, s.codePointCount(0, s.length())); //length by codepoints (actual letters)
-         assertEquals(7, s.getBytes("UTF-8").length); //length in bytes (based on given encoding UTF-8)
-    }
+  @Test 
+  public void testAll() throws Exception {
+    String  s = "dד\\( \\Delta \\)"; //MATHEMATICAL BOLD CAPITAL DELTA 1D6AB
+    assertEquals(4, s.length()); //length of a UTF-32 string in UTF-16
+    assertEquals(3, s.codePointCount(0, s.length())); //length by codepoints (actual letters)
+    assertEquals(7, s.getBytes("UTF-8").length); //length in bytes (based on given encoding UTF-8)
+  }
 }   
 
 ```
@@ -558,7 +557,7 @@ class EchoProtocol implements ServerProtocol {
 ```java
 class ProtocolServer {
 
-    private BufferedReader in;
+    private BufferedReader in;
     private PrintWriter out;
     ServerSocket echoServerSocket;
     Socket clientSocket;
@@ -704,4 +703,4 @@ public class Http {
 *   [Java work on sockets](http://www.javaworld.com/javaworld/jw-12-1996/jw-12-sockets.html)  
 *   [A guide to java sockets](https://www.baeldung.com/a-guide-to-java-sockets)
 *   [TCP/IP Protocol Architecture](http://docstore.mik.ua/orelly/networking/tcpip/ch01_03.htm)  
-*   [Firewall](http://en.wikipedia.org/wiki/Firewall|Firewall) (Explanation for what to look out if you test with multiple computers and get no connection)
+*   [Firewall](http://en.wikipedia.org/wiki/Firewall) (Explanation for what to look out if you test with multiple computers and get no connection)
