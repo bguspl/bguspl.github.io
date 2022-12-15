@@ -303,12 +303,10 @@ public class LPClient {
 ### 2. Encoding and Decoding
 
 Different computers, run time environment languages, and compilers can use different symbols representation. If we want to communicate we need uniform coding for the symbols. Since we are transferring objects larger than a single byte (integers, chars, strings) over streams of bytes, we need to encode them. Even for Strings: Should we run on one side
-
-    `java -Dfile.encoding=US-ASCII LPServer 4500`
+  `java -Dfile.encoding=US-ASCII LPServer 4500`
 
 and on another  
-
-       `java LPClient localhost 4500 (assuming default UTF-8)`
+  `java LPClient localhost 4500 (assuming default UTF-8)`
 
 any text which has characters not included in the similar 127 first characters in the encodings is not transferred correctly (e.g. Hebrew). We can notice other problems using UTF-16 and UTF-32 (for example line endings are no longer recognized as message ends since they have different numerical values).
 
@@ -331,8 +329,7 @@ public class TestEncodings {
     }
 }   
 
-``` 
-
+```
 
 In the next example, the client and the server communicate using the "UTF-8" format. You will learn more about Encoding in the lectures. This time, the server sends the client back the message it received using UTF-8. We create the readers and writers with the encoding specified as follows:
 
