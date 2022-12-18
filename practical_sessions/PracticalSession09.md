@@ -182,56 +182,39 @@ import java.io.*;
 import java.net.*;
 
 class LPServer {
-
-    public static void main(String[] args) throws IOException
-    {
-        ServerSocket lpServerSocket = null;
-
-        // Get port
-        int port = Integer.decode(args[0]);
-
-        // Listen on port
-        try {
-            lpServerSocket = new ServerSocket(port);
-        } catch (IOException e) {
-            System.out.println("Couldn't listen on port " + port);
+    public static void main(String[] args) {
+        // Check the number of command-line arguments
+        if (args.length != 1) {
+            System.err.println("Usage: java LPServer port_number");
             System.exit(1);
         }
+    
+        int portNumber = Integer.parseInt(args[0]); // Server port number
+    
+        // Create a server socket to listen for incoming connections
+        try (ServerSocket serverSocket = new ServerSocket(portNumber);
+             Socket clientSocket = serverSocket.accept();                                                        // Accept the first incoming connection
+             BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()))) {     // Create a BufferedReader to read messages from the client
 
-        System.out.println("Listening...");
+            // Read and print messages from the client in a loop
+            String message;
+            while ((message = in.readLine()) != null) {
+                // If the client sends "bye", exit the loop
+                if (message.equals("bye"))
+                {
+                    System.out.println("Client has requested to end the session.");
+                    break;  
+                }
 
-        // Waiting for a client connection
-        Socket lpClientSocket = null;
-        try {
-            lpClientSocket = lpServerSocket.accept();
-        } catch (IOException e) {
-            System.out.println("Failed to accept...");
-            System.exit(1);
-        }
-
-        System.out.println("Accepted connection from client!");
-        System.out.println("The client is from: " + lpClientSocket.getInetAddress() + ":" + lpClientSocket.getPort());
-
-        // Read messages from client
-        BufferedReader in = new BufferedReader(new InputStreamReader(lpClientSocket.getInputStream()));
-        String msg;
-
-        while ((msg = in.readLine()) != null)
-        {
-            System.out.println("Received from client: " + msg);
-            if (msg.equals("bye"))
-            {
-                System.out.println("Client sent a terminating message");
-                break;
+                // Print the message on the line printer
+                System.out.println("Message from client: " + message);
             }
+    
+        } catch (IOException e) {
+            System.err.println("I/O error: " + e.getMessage());
+            System.exit(1);
         }
-
-        System.out.println("Client disconnected - bye bye...");
-
-        lpServerSocket.close();
-        lpClientSocket.close();
-        in.close();
-    }
+      }
 }
 ```
 
@@ -244,56 +227,39 @@ import java.io.*;
 import java.net.*;
 
 public class LPClient {
-    public static void main(String[] args) throws IOException
-    {
-        Socket clientSocket = null; // the connection socket
-        PrintWriter out = null;
-
-        // Get host and port
-        String host = args[0];
-        int port = Integer.decode(args[1]);
-
-        System.out.println("Connecting to " + host + ":" + port);
-
-        // Trying to connect to a socket and initialize an output stream
-        try {
-            clientSocket = new Socket(host, port); // host and port
-            out = new PrintWriter(clientSocket.getOutputStream(), true);
-        } catch (UnknownHostException e) {
-            System.out.println("Unknown host: " + host);
-            System.exit(1);
-        } catch (IOException e) {
-            System.out.println("Couldn't get I/O to " + host + " connection");
+    public static void main(String[] args) {
+        // Check the number of command-line arguments
+        if (args.length != 2) {
+            System.err.println("Usage: java LPClient hostname port_number");
             System.exit(1);
         }
 
-        System.out.println("Connected to server!");
+        String serverHostname = args[0]; // Server hostname
+        int portNumber = Integer.parseInt(args[1]); // Server port number
 
-        String msg;
-        BufferedReader userIn = new BufferedReader(new InputStreamReader(System.in));
-        BufferedReader in = null;
-        // Initialize an input stream
-        try {
-            in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream(),"UTF-8"));
-        } catch (IOException e) {
-            System.out.println("Couldn't get input to " + host + " connection");
-            System.exit(1);
-        }
-        while ((msg = userIn.readLine())!= null)
-        {
-            out.println(msg);
-            if(msg.indexOf("bye") >= 0){
-                break;
+        // Create a socket to connect to the server using try-with-resources
+        try (Socket socket = new Socket(serverHostname, portNumber);
+             PrintWriter out = new PrintWriter(socket.getOutputStream(), true); // abstraction for sending data to the server (output stream)
+             BufferedReader in = new BufferedReader(new InputStreamReader(System.in))) {  // abstraction for reading data from the user (System input stream)
+        
+            // Read lines from System.in in a loop
+            String line;
+            while ((line = in.readLine()) != null) {
+                // Send the line to the server
+                out.println(line);
+                System.out.println("Message sent to server: " + line);
+
+                // If the user enters "bye", exit the loop
+                if (line.equals("bye"))
+                    break;
             }
-            System.out.println(in.readLine());
+        } catch (UnknownHostException e) {
+            System.err.println("Unknown host: " + serverHostname);
+            System.exit(1);
+        } catch (IOException e) {
+            System.err.println("I/O error: " + e.getMessage());
+            System.exit(1);
         }
-
-        System.out.println("Exiting...");
-
-        // Close all I/O
-        out.close();
-        userIn.close();
-        clientSocket.close();
     }
 }
 ```
@@ -321,7 +287,7 @@ import static org.junit.Assert.*;
 public class TestEncodings {
   @Test 
   public void testAll() throws Exception {
-    String  s = "dד\\( \\Delta \\)"; //MATHEMATICAL BOLD CAPITAL DELTA 1D6AB
+    String  s = "dדΔ"; //MATHEMATICAL BOLD CAPITAL DELTA 1D6AB
     assertEquals(4, s.length()); //length of a UTF-32 string in UTF-16
     assertEquals(3, s.codePointCount(0, s.length())); //length by codepoints (actual letters)
     assertEquals(7, s.getBytes("UTF-8").length); //length in bytes (based on given encoding UTF-8)
@@ -354,100 +320,84 @@ import java.net.*;
 
 class EchoServer {
 
-  private BufferedReader in;
-  private PrintWriter out;
-  ServerSocket echoServerSocket;
-  Socket clientSocket;
-  int listenPort;
+	private BufferedReader in;
+	private PrintWriter out;
+	ServerSocket echoServerSocket;
+	Socket clientSocket;
+	int listenPort;
 
-  public EchoServer(int port) {
-    in = null;
-    out = null;
-    echoServerSocket = null;
-    clientSocket = null;
-    listenPort = port;
-  }
+	public EchoServer(int port) {
+		in = null;
+		out = null;
+		echoServerSocket = null;
+		clientSocket = null;
+		listenPort = port;
+	}
 
-  // Starts listening
-  public void initialize() throws IOException {
-    // Listen
-    echoServerSocket = new ServerSocket(listenPort);
-    System.out.println("Listening...");
+	// Starts listening
+	public void initialize() throws IOException {
+		// Listen
+		echoServerSocket = new ServerSocket(listenPort);
+		System.out.println("Listening...");
 
-    // Accept connection
-    clientSocket = echoServerSocket.accept();
-    System.out.println("Accepted connection from client!");
-    System.out.println(
-      "The client is from: " +
-      clientSocket.getInetAddress() +
-      ":" +
-      clientSocket.getPort()
-    );
+		// Accept connection
+		clientSocket = echoServerSocket.accept();
+		System.out.println("Accepted connection from client!");
+		System.out.println("The client is from: " + clientSocket.getInetAddress() + ":" + clientSocket.getPort());
 
-    // Initialize I/O
-    in =
-      new BufferedReader(
-        new InputStreamReader(clientSocket.getInputStream(), "UTF-8")
-      );
-    out =
-      new PrintWriter(
-        new OutputStreamWriter(clientSocket.getOutputStream(), "UTF-8"),
-        true
-      );
-    System.out.println("I/O initialized");
-  }
+		// Initialize I/O
+		in = new BufferedReader(
+				new InputStreamReader(clientSocket.getInputStream(), "UTF-8"));
+		out = new PrintWriter(
+				new OutputStreamWriter(clientSocket.getOutputStream(), "UTF-8"),
+				true);
+		System.out.println("I/O initialized");
+	}
 
-  public void process() throws IOException {
-    String msg;
+	public void process() throws IOException {
+		String msg;
 
-    while ((msg = in.readLine()) != null) {
-      System.out.println("Received \"" + msg + "\" from client");
+		while ((msg = in.readLine()) != null) {
+			System.out.println("Received \"" + msg + "\" from client");
+			out.println(msg);
+		}
+	}
 
-      if (msg.equals("bye")) {
-        out.println("Ok, bye bye...");
-        break;
-      } else {
-        out.print(msg + "\n");
-        out.flush();
-      }
-    }
-  }
+	// Closes the connection
 
-  // Closes the connection
+	public void close() throws IOException {
+		in.close();
+		out.close();
+		clientSocket.close();
+		echoServerSocket.close();
+	}
 
-  public void close() throws IOException {
-    in.close();
-    out.close();
-    clientSocket.close();
-    echoServerSocket.close();
-  }
+	public static void main(String[] args) throws IOException {
+		// Get port int
 
-  public static void main(String[] args) throws IOException {
-    // Get port int
+		int port = Integer.decode(args[0]).intValue();
+		EchoServer echoServer = new EchoServer(port);
 
-    int port = Integer.decode(args[0]).intValue();
-    EchoServer echoServer = new EchoServer(port);
+		// Listen on port
+		try {
+			echoServer.initialize();
+		} catch (IOException e) {
+			System.out.println("Failed to initialize on port " + port);
+			System.exit(1);
+		}
 
-    // Listen on port
-    try {
-      echoServer.initialize();
-    } catch (IOException e) {
-      System.out.println("Failed to initialize on port " + port);
-      System.exit(1);
-    }
+		// Process messages from client
+		try {
+			echoServer.process();
+		} catch (IOException e) {
+			System.out.println("Exception in processing");
+			echoServer.close();
+			System.exit(1);
+		}
 
-    // Process messages from client
-    try {
-      echoServer.process();
-    } catch (IOException e) {
-      System.out.println("Exception in processing");
-      echoServer.close();
-      System.exit(1);
-    }
-
-    System.out.println("Client disconnected - bye bye...");
-    echoServer.close();
-  }
+		System.out.println("Client disconnected - bye bye...");
+		echoServer.close();
+	}
 }
 ```
 
@@ -459,59 +409,36 @@ import java.io.*;
 import java.net.*;
 
 public class EchoClient {
+	public static void main(String[] args) {
+		// Check the number of command-line arguments
+		if (args.length != 2) {
+			System.err.println("Usage: java EchoClient hostname port_number");
+			System.exit(1);
+		}
 
-  public static void main(String[] args) throws IOException {
-    Socket clientSocket = null;
-    // the connection socket PrintWriter out = null;
-    BufferedReader in = null;
-    // Get host and port String host = args[0];
-    String host = args[0];
-    int port = Integer.decode(args[1]).intValue();
-    System.out.println("Connecting to " + host + ":" + port);
-    
-    PrintWriter out = null;
-    // Trying to connect to a socket and initialize an output stream
-    try {
-      clientSocket = new Socket(host, port);
-      // host and port
-      out =
-        new PrintWriter(
-          new OutputStreamWriter(clientSocket.getOutputStream(), "UTF-8"),
-          true
-        );
-    } catch (UnknownHostException e) {
-      System.out.println("Unknown host: " + host);
-      System.exit(1);
-    } catch (IOException e) {
-      System.out.println("Couldn't get output to " + host + " connection");
-      System.exit(1);
-    }
-    // Initialize an input stream
-    try {
-      in =
-        new BufferedReader(
-          new InputStreamReader(clientSocket.getInputStream(), "UTF-8")
-        );
-    } catch (IOException e) {
-      System.out.println("Couldn't get input to " + host + " connection");
-      System.exit(1);
-    }
-    System.out.println("Connected to server!");
-    String msg;
-    BufferedReader userIn = new BufferedReader(
-      new InputStreamReader(System.in)
-    );
-    while ((msg = userIn.readLine()) != null) {
-      out.println(msg);
-      System.out.println(in.readLine());
-    }
-    System.out.println("Exiting...");
-    // Close all I/O
-    out.close();
-    in.close();
-    userIn.close();
-    clientSocket.close();
-  }
+		String serverHostname = args[0]; // Server hostname
+		int portNumber = Integer.parseInt(args[1]); // Server port number
+
+		// Create a socket to connect to the server using try-with-resources
+		try (Socket socket = new Socket(serverHostname, portNumber);
+				PrintWriter out = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8"), true);
+				BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+				BufferedReader userIn = new BufferedReader(new InputStreamReader(System.in))) {
+
+			String line;
+			while ((line = userIn.readLine()) != null) {
+				out.println(line);
+				System.out.println(in.readLine());
+			}
+		} catch (UnknownHostException e) {
+			System.err.println("Unknown host: " + serverHostname);
+			System.exit(1);
+		} catch (IOException e) {
+			System.err.println("I/O error: " + e.getMessage());
+			System.exit(1);
+		}
+	}
+
 }
 ```
   
@@ -528,30 +455,28 @@ interface ServerProtocol {
 ```
 
 ```java
-class EchoProtocol implements ServerProtocol {
+public class EchoProtocol implements ServerProtocol {
 
-        private int counter;
+    private int counter;
 
-        public EchoProtocol()
-        {
-            counter = 0;
-        }
-
-        public String processMessage(String msg)
-        {
-            counter++;
-
-            if (isEnd(msg))
-                return new String("Ok, bye bye...");
-            else
-                return new String(counter + " Received \"" + msg + "\" from client");
-        }
-
-        public boolean isEnd(String msg)
-        {
-            return msg.equals("bye");
-        }
+    public EchoProtocol() {
+        counter = 0;
     }
+
+    public String processMessage(String msg) {
+        counter++;
+
+        System.out.println(counter + ". Received \"" + msg + "\" from client");
+        if (isEnd(msg))
+            return new String("Ok, bye bye...");
+        else
+            return msg;
+    }
+
+    public boolean isEnd(String msg) {
+        return msg.equals("bye");
+    }
+}
 ```
 
 ```java
@@ -564,8 +489,7 @@ class ProtocolServer {
     int listenPort;
     ServerProtocol protocol;
 
-    public ProtocolServer(int port, ServerProtocol p)
-    {
+    public ProtocolServer(int port, ServerProtocol p) {
         in = null;
         out = null;
         echoServerSocket = null;
@@ -575,8 +499,7 @@ class ProtocolServer {
     }
 
     // Starts listening
-    public void initialize() throws IOException
-    {
+    public void initialize() throws IOException {
         // Listen
         echoServerSocket = new ServerSocket(listenPort);
 
@@ -595,39 +518,28 @@ class ProtocolServer {
         System.out.println("I/O initialized");
     }
 
-    public void process() throws IOException
-    {
+    public void process() throws IOException {
         String msg;
 
-        while ((msg = in.readLine()) != null)
-        {
-            System.out.println("Received \"" + msg + "\" from client");
-
+        while ((msg = in.readLine()) != null) {
             String response = protocol.processMessage(msg);
-            if (response != null)
-            {
+            if (response != null) 
                 out.println(response);
-            }
 
             if (protocol.isEnd(msg))
-            {
                 break;
-            }
-
         }
     }
 
     // Closes the connection
-    public void close() throws IOException
-    {
+    public void close() throws IOException {
         in.close();
         out.close();
         clientSocket.close();
         echoServerSocket.close();
     }
 
-    public static void main(String[] args) throws IOException
-    {
+    public static void main(String[] args) throws IOException {
         // Get port
         int port = Integer.decode(args[0]).intValue();
 
@@ -671,19 +583,10 @@ public class Http {
   public static void main(String[] args) throws Exception {
     String host = args[0];
 
-    try (
-      Socket lp = new Socket(host, 80);
-      PrintWriter out = new PrintWriter(
-        new OutputStreamWriter(lp.getOutputStream(), "UTF-8"),
-        true
-      );
-      BufferedReader in = new BufferedReader(
-        new InputStreamReader(lp.getInputStream(), "UTF-8")
-      )
-    ) {
+    try (Socket lp = new Socket(host, 80);
+         PrintWriter out = new PrintWriter(new OutputStreamWriter(lp.getOutputStream(), "UTF-8"), true);
+         BufferedReader in = new BufferedReader(new InputStreamReader(lp.getInputStream(), "UTF-8"))) {
       out.print("GET / HTTP/1.0\r\n" + "Host: " + host + "\r\n" + "\r\n");
-
-      out.flush();
 
       String msg = in.readLine();
       while (msg != null) {
