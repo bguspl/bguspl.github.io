@@ -58,7 +58,6 @@ public:
         for (int i= 0; i < 100; i++){
            std::cout << i << ") Task " << _id << " is working" << std::endl;
         }
-        std::this_thread::yield(); //Gives up the remainder of the current thread's time slice, to allow other threads to run.
     }
 };
 
@@ -133,7 +132,7 @@ A simple solution to this problem is allocating a thread for each client the ser
 ### General diagram
 
 Here is a general diagram describing the server-side code structure:
-[](../images/tpcDiagram.jpeg)
+![](../images/tpcDiagram.jpeg)
 
 We will see the code for these components below. We emphasize that all these components and code reside in the server-side!
 
@@ -219,10 +218,10 @@ public abstract class BaseServer<T> implements Closeable {
 
 ### BlockingConnectionHandler Class
 
-The BlockingConnectionHandler is a runnable whose task is to handle a single connection. \
-In order to receive and respond to messages, it uses a MessageEncoderDecoder and a MessagingProtocol. The first separates incoming bytes into complete messages while the second processes complete messages and produces responses. Responses are then encoded via the MessageEncoderDecoder before writing them to the socket.
+The `BlockingConnectionHandler` is a runnable whose task is to handle a single connection. \
+In order to receive and respond to messages, it uses a `MessageEncoderDecoder` and a `MessagingProtocol`. The first separates incoming bytes into complete messages while the second processes complete messages and produces responses. Responses are then encoded via the `MessageEncoderDecoder` before writing them to the socket.
 
-After the BlockingConnectionHandler code we'll present an example of a MessageEncoderDecoder and a MessagingProtocol for the Echo protocol.
+After the `BlockingConnectionHandler` code we'll present an example of a `MessageEncoderDecoder` and a `MessagingProtocol` for the Echo protocol.
 
 ```java
 public class BlockingConnectionHandler<T> implements Runnable, Closeable {
@@ -304,7 +303,7 @@ public interface MessagingProtocol<T> {
 }
 ```
 
-Note that we allow the protocol to use message any type of message (the type argument T). This means that the operation of Serialization and Deserialization (encode/decode complex parameters to/from Strings) will be performed by the MessageEncoderDecoder - which yield a good separation of concerns.
+Note that we allow the protocol to use message any type of message (the type argument T). This means that the operation of Serialization and Deserialization (encode/decode complex parameters to/from Strings) will be performed by the `MessageEncoderDecoder` - which yield a good separation of concerns.
 
 ### Echo Protocol
 
@@ -519,7 +518,7 @@ You can't read or write more than the limit of the buffer. You can't increase th
 
 Here is a diagram of the structure:
 
-[](../images/bufferDiagram.PNG)
+![](../images/bufferDiagram.PNG)
 
 A read operation reads a specified number of bytes from the current position, and updates the position marker to point to the yet unread bytes. Similarly, a write operation writes some bytes from the current position, and then advances the position.
 
