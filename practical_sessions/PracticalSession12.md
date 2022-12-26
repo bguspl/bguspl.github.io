@@ -75,8 +75,10 @@ The first is used to define tables, including their layout, fields, what type ea
 *   **Record** - a row from the table. This represents a single entry in a table.  
     A record from that table:
     
-    | 4   | Dan | Mon 11:15-13:15 |
+    |  |  |  |
     | --- | --- | --- |
+    | 4   | Dan | Mon 11:15-13:15 |
+    
     
       
     
