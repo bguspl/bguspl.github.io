@@ -53,7 +53,7 @@ The first is used to define tables, including their layout, fields, what type ea
 
 ### Definitions
 
-*   **Table** - A table in the database, it holds only one kind of records. In the following example each record (row) is comprised of (int, string, string).  
+*   **Table**Â - A table in the database, it holds only one kind of records. In the following example each record (row) is comprised of (int, string, string).  
     
     TEACHING_ASSISTANTS table:
     | ID  | Name | Office hours |
@@ -71,7 +71,7 @@ The first is used to define tables, including their layout, fields, what type ea
     
       
     
-*   **Record** - a row from the table. This represents a single entry in a table.  
+*   **Record**Â - a row from the table. This represents a single entry in a table.  
     A record from that table:
     
     |  |  |  |
@@ -80,12 +80,12 @@ The first is used to define tables, including their layout, fields, what type ea
     
       
     
-*   **Primary key** - A field that is unique in a table.  
-    The field **id** is the primary key in this example.  
+*   **Primary key**Â - A field that is unique in a table.  
+    The fieldÂ **id**Â is the primary key in this example.  
       
     
-*   **Foreign key** - A "pointer" to another a record in another table. This will allow us to define relations between tables.  
-    In the following table, the field **TA_ID** is a foreign key, pointing at records in the TEACHING_ASSISTANTS table:  
+*   **Foreign key**Â - A "pointer" to another a record in another table. This will allow us to define relations between tables.  
+    In the following table, the fieldÂ **TA_ID**Â is a foreign key, pointing at records in the TEACHING_ASSISTANTS table:  
     
     | TA_ID | GroupNum | Location | Time |
     | --- | --- | --- | --- |
@@ -137,9 +137,9 @@ A primary key is used to uniquely identify each row in a table. It can either be
     primary key (id))
     ```
 
-    The part `primary key (id)` defines the field **id** to be unique in the whole table. Meaning if we have one field where **id = 5** then no other record in that table can have the value 5 in the **id** field.
+    The partÂ `primary key (id)`Â defines the fieldÂ **id**Â to be unique in the whole table. Meaning if we have one field whereÂ **id = 5**Â then no other record in that table can have the value 5 in theÂ **id**Â field.
     
-*   Try inserting the same record **twice** to 'address' table. Can this succeed? What do you expect?
+*   Try inserting the same recordÂ **twice**Â to 'address' table. Can this succeed? What do you expect?
 
 ##### Foreign Key
 
@@ -343,11 +343,11 @@ ON ta.ID = ps.TA_ID
 *   Python is dynamic which means that the types are checked only at runtime. But Python is also strongly typed, just like Java. You can only execute operations that are supported by the target type.  
     
 
-Note that this means that variable names do **not** have a type in Python, their values do.
+Note that this means that variable names doÂ **not**Â have a type in Python, their values do.
 
 ### Coding Python
 
-Being an interpreted language, there are two ways to code Python: using Python's REPL (Read-Eval-Print-Loop), or using files. The REPL is used for "exploratory coding", when we just want to check how something works without the hassle of creating a new file, etc. For example, run `python3` in the labs:
+Being an interpreted language, there are two ways to code Python: using Python's REPL (Read-Eval-Print-Loop), or using files. The REPL is used for "exploratory coding", when we just want to check how something works without the hassle of creating a new file, etc. For example, runÂ `python3`Â in the labs:
 
 ```bash
 ~> python3                                                    
@@ -363,26 +363,26 @@ Hello, Python!
 ~>
 ```
 
-Python source files use the ".py" extension and are called "modules." With a Python module `hello.py`, the easiest way to run it is with the shell command `python3 hello.py Morad` which calls the Python interpreter to execute the code in `hello.py`, passing it the command line argument "Morad", Command line arguments will reside in the `argv` structure of the standard module `sys`:
+Python source files use the ".py" extension and are called "modules." With a Python moduleÂ `hello.py`, the easiest way to run it is with the shell commandÂ `python3 hello.py Morad`Â which calls the Python interpreter to execute the code inÂ `hello.py`, passing it the command line argument "Morad", Command line arguments will reside in theÂ `argv`Â structure of the standard moduleÂ `sys`:
 
 ```python
-# This is a comment.
-# Import sys module
-import sys
-# Gather our code in a main() function
-def main():
-    print('Hello,', sys.argv[1])
-    # Command line args are in sys.argv[1], sys.argv[2] ...
-    # sys.argv[0] is the script name itself and can be ignored
- # Standard boilerplate to call the main() function to begin
- # the program.
- if __name__ == '__main__':
-     main()
+#Â ThisÂ isÂ aÂ comment.
+#Â ImportÂ sysÂ module
+importÂ sys
+#Â GatherÂ ourÂ codeÂ inÂ aÂ main()Â function
+defÂ main():
+Â Â Â Â print('Hello,',Â sys.argv[1])
+Â Â Â Â #Â CommandÂ lineÂ argsÂ areÂ inÂ sys.argv[1],Â sys.argv[2]Â ...
+Â Â Â Â #Â sys.argv[0]Â isÂ theÂ scriptÂ nameÂ itselfÂ andÂ canÂ beÂ ignored
+ #Â StandardÂ boilerplateÂ toÂ callÂ theÂ main()Â functionÂ toÂ begin
+ #Â theÂ program.
+ ifÂ __name__Â ==Â '__main__':
+ Â Â Â Â main()
 ```
 
 #### Special variables
 
-Notice the part `if __name__ == '__main__': main()`. Remember that we said that Python is a 'scripting' language. If we omit this part, then Python will execute the code line by line **in a top-bottom manner**. But since we want a definitive start point, we can use `__name__` and compare it to `'__main__'`. Before executing the code, Python will define a few special variables. For example, if the Python interpreter is running that module (the source file) as the main program, it sets the special `__name__` variable to have a value `"__main__"`. If this file is being imported from another module, `__name__` will be set to the module's name.
+Notice the partÂ `if __name__ == '__main__': main()`. Remember that we said that Python is a 'scripting' language. If we omit this part, then Python will execute the code line by lineÂ **in a top-bottom manner**. But since we want a definitive start point, we can useÂ `__name__`Â and compare it toÂ `'__main__'`. Before executing the code, Python will define a few special variables. For example, if the Python interpreter is running that module (the source file) as the main program, it sets the specialÂ `__name__`Â variable to have a valueÂ `"__main__"`. If this file is being imported from another module,Â `__name__`Â will be set to the module's name.
 
 #### Python indentation
 
@@ -393,103 +393,103 @@ One Python feature is that the whitespace indentation of a piece of code affects
 String literals can be enclosed by either double or single quotes, although single quotes are more commonly used:
 
 ```python
-myStr = 'hello.'
-mySecondStr = "hello."
+myStrÂ =Â 'hello.'
+mySecondStrÂ =Â "hello."
 ```
 
 Python strings are "immutable" - they cannot be changed after they are created. For example:
 
 ```python
-str1 = 'hello'
-str2 = str1 + ' world'
+str1Â =Â 'hello'
+str2Â =Â str1Â +Â 'Â world'
 ```
 
-In the above code, the expression `str2 = str1 + ' world'` takes the two strings `str1` and `' world'` and builds a new string out of them. We can use the `print` function to print to the screen. We can also use the `str(_)` function to convert non-string variables to string:
+In the above code, the expressionÂ `str2 = str1 + ' world'`Â takes the two stringsÂ `str1`Â andÂ `' world'`Â and builds a new string out of them. We can use theÂ `print`Â function to print to the screen. We can also use theÂ `str(_)`Â function to convert non-string variables to string:
 
 ```python
-s = 'hello'
-print(s[1])          # e
-print(len(s))        # 5
-print(s + ' there')  # hello there
-pi = 3.14
-text = 'The value of pi is ' + str(pi)
-print(text)          # The value of pi is 3.14
+sÂ =Â 'hello'
+print(s[1])Â Â Â Â Â Â Â Â Â Â #Â e
+print(len(s))Â Â Â Â Â Â Â Â #Â 5
+print(sÂ +Â 'Â there')Â Â #Â helloÂ there
+piÂ =Â 3.14
+textÂ =Â 'TheÂ valueÂ ofÂ piÂ isÂ 'Â +Â str(pi)
+print(text)Â Â Â Â Â Â Â Â Â Â #Â TheÂ valueÂ ofÂ piÂ isÂ 3.14
 ```
 
 There are alot of helpful string methods:
 
-*   `s.lower()` – returns the lowercase version of a string
-*   `s.upper()` – returns the upper version of a string
-*   `s.strip()` – returns a string with the whitespaces removed from the start to the end
-*   `s.replace('old', 'new')` – returns a **new** string where all occurrences of 'old' have been replaced by 'new'
-*   `s.split('delim')` – returns a **list** of substrings separated by the given delimter.  
-    For example: `'aaa,bbb,ccc'.split(',')` gives `['aaa', 'bbb', 'ccc'].`
+*   `s.lower()`Â â€“ returns the lowercase version of a string
+*   `s.upper()`Â â€“ returns the upper version of a string
+*   `s.strip()`Â â€“ returns a string with the whitespaces removed from the start to the end
+*   `s.replace('old', 'new')`Â â€“ returns aÂ **new**Â string where all occurrences of 'old' have been replaced by 'new'
+*   `s.split('delim')`Â â€“ returns aÂ **list**Â of substrings separated by the given delimter.  
+    For example:Â `'aaa,bbb,ccc'.split(',')`Â givesÂ `['aaa', 'bbb', 'ccc'].`
 
   
-Python also has a `printf()`\-like facility to put together a string: The `%` operator.
+Python also has aÂ `printf()`\-like facility to put together a string: TheÂ `%`Â operator.
 
 ```python
-text = "SPL %d is the most awesome course ever. %s and I take it this year!" % (181, 'Mary')
+textÂ =Â "SPLÂ %dÂ isÂ theÂ mostÂ awesomeÂ courseÂ ever.Â %sÂ andÂ IÂ takeÂ itÂ thisÂ year!"Â %Â (181,Â 'Mary')
 ```
 
 #### 'If' statement
 
 ```python
-if x >= 0.5 and y >= 0.5:
-  print('All above half')
-elif x >= 0.5 or y >= 0.5:
-  print('One of them is above half.')
+ifÂ xÂ >=Â 0.5Â andÂ yÂ >=Â 0.5:
+Â Â print('AllÂ aboveÂ half')
+elifÂ xÂ >=Â 0.5Â orÂ yÂ >=Â 0.5:
+Â Â print('OneÂ ofÂ themÂ isÂ aboveÂ half.')
 else:
-  print('None of them is above half.')
+Â Â print('NoneÂ ofÂ themÂ isÂ aboveÂ half.')
 ```
 
-Notice the `:` at the end of the `if, elif, else` lines. `elif` is basically `else if` in Java. Notice also the operators `or` and `and` – these are the logical operators in Python.
+Notice theÂ `:`Â at the end of theÂ `if, elif, else`Â lines.Â `elif`Â is basicallyÂ `else if`Â in Java. Notice also the operatorsÂ `or`Â andÂ `and`Â â€“ these are the logical operators in Python.
 
 #### Python Lists
 
-Python has lists. Lists are written within square brackets `[]`. Lists work similarly to strings - use the `len()` function and square brackets `[]` to access data. As in Java, the first element is at index `0`.
+Python has lists. Lists are written within square bracketsÂ `[]`. Lists work similarly to strings - use theÂ `len()`Â function and square bracketsÂ `[]`Â to access data. As in Java, the first element is at indexÂ `0`.
 
 ```python
-cars = ['Ford', 'Honda', 551]
-print(cars[0])   # Ford
-print(cars[1])   # Honda
-print(cars[2])   # 551
-print(len(cars)) # 3
+carsÂ =Â ['Ford',Â 'Honda',Â 551]
+print(cars[0])Â Â Â #Â Ford
+print(cars[1])Â Â Â #Â Honda
+print(cars[2])Â Â Â #Â 551
+print(len(cars))Â #Â 3
 ```
 
 Yes. you can mix types in a list in Python. But that is not recommended for your own type-safety.
 
 #### List methods
 
-*   `list.append(elem)` - adds a single element to the end of the list. Does **not** return the new list, just modifies the original
-*   `list.insert(index, elem)` - inserts the element at the given index, shifting elements to the right
-*   `list.remove(elem)` - searches for the first instance of the given element and removes it
-*   `list.extend(list2)` - adds the elements in list2 to the end of the list. You can also use `+=` on a list for the same effect
-*   `list.sort()` - sorts the list in place (does not return it)
-*   `list.pop(index)` - removes the returns the element at the given index
+*   `list.append(elem)`Â - adds a single element to the end of the list. DoesÂ **not**Â return the new list, just modifies the original
+*   `list.insert(index, elem)`Â - inserts the element at the given index, shifting elements to the right
+*   `list.remove(elem)`Â - searches for the first instance of the given element and removes it
+*   `list.extend(list2)`Â - adds the elements in list2 to the end of the list. You can also useÂ `+=`Â on a list for the same effect
+*   `list.sort()`Â - sorts the list in place (does not return it)
+*   `list.pop(index)`Â - removes the returns the element at the given index
 
 #### For, in, while, if in
 
-There are no loops of the syntax `for (i=0;i<....;....)` in Python.
+There are no loops of the syntaxÂ `for (i=0;i<....;....)`Â in Python.
 
 ```python
-for car in cars:
-  print(car)
+forÂ carÂ inÂ cars:
+Â Â print(car)
 ```
 
 This is how we run on the elements of a list. Alternatively:
 
 ```python
-i = 0
-while i < len(cars):
-  print(cars[i])
-  i += 1
+iÂ =Â 0
+whileÂ iÂ <Â len(cars):
+Â Â print(cars[i])
+Â Â iÂ +=Â 1
 ```
-Or, we can create an iterator over a range of numbers using `range(start, end)` (from `start` until `end`, excluding `end`):
+Or, we can create an iterator over a range of numbers usingÂ `range(start, end)`Â (fromÂ `start`Â untilÂ `end`, excludingÂ `end`):
 
 ```python
-for i in range(0, len(cars)):
-  print(cars[i])
+forÂ iÂ inÂ range(0,Â len(cars)):
+Â Â print(cars[i])
 ```
 In all cases, the output will be:
 
@@ -499,47 +499,47 @@ Honda
 551
 ```
 
-Notice that Python does not have the support for the syntax `i++`. Only the `i = i + someNumber` or `i += someNumber` syntax is accepted.  
+Notice that Python does not have the support for the syntaxÂ `i++`. Only theÂ `i = i + someNumber`Â orÂ `i += someNumber`Â syntax is accepted.  
 This is how you check if an element is a member of a list:
 
 ```python
-if 'Ford' in cars:
-  print('Yay!')
+ifÂ 'Ford'Â inÂ cars:
+Â Â print('Yay!')
 ```
 #### List and String slicing
 
-In Python, lists and strings support slicing: it is a useful way to refer to _sub-parts_ of sequences.  
-`s[x:y]` is the elements of `s` starting at **index** `x` until index `y` **EXCLUDING** element at index `y`.  
-If `x` is omitted, then it assumes you want the elements starting from the first element until index `y` exclusive.  
-If `y` is omitted, then it assumes you want the elements from index `x` until the end of s.  
+In Python, lists and strings support slicing: it is a useful way to refer toÂ _sub-parts_Â of sequences.  
+`s[x:y]`Â is the elements ofÂ `s`Â starting atÂ **index**Â `x`Â until indexÂ `y`Â **EXCLUDING**Â element at indexÂ `y`.  
+IfÂ `x`Â is omitted, then it assumes you want the elements starting from the first element until indexÂ `y`Â exclusive.  
+IfÂ `y`Â is omitted, then it assumes you want the elements from indexÂ `x`Â until the end of s.  
 The example is given on strings, but the same applies to lists:
 
 ```python
-s = "Morad"
-str1 = s[1:4]   # str1 = "ora"
-str2 = s[1:]    # str2 = "orad"
-str3 = s[:]     # str3 = "Morad"
-str4 = s[1:100] # str4 = "orad" - an index that is too big is truncated down to the string length
+sÂ =Â "Morad"
+str1Â =Â s[1:4]Â Â Â #Â str1Â =Â "ora"
+str2Â =Â s[1:]Â Â Â Â #Â str2Â =Â "orad"
+str3Â =Â s[:]Â Â Â Â Â #Â str3Â =Â "Morad"
+str4Â =Â s[1:100] #Â str4Â =Â "orad"Â -Â anÂ indexÂ thatÂ isÂ tooÂ bigÂ isÂ truncatedÂ downÂ toÂ theÂ stringÂ length
 ```
 
-Python also supports negative indexes in slicing. If the string is `s = "Morad"`, then `s[-1]` is `d`, `s[-2]` is `a`, etc. An index `-n` means "the `n`\-th to last element".
+Python also supports negative indexes in slicing. If the string isÂ `s = "Morad"`, thenÂ `s[-1]`Â isÂ `d`,Â `s[-2]`Â isÂ `a`, etc. An indexÂ `-n`Â means "theÂ `n`\-th to last element".
 
 #### Handling standard user input
 
 Here is an echo example, that exits whenever we type exit
 
 ```python
-def main():
-    while True:
-        print("Input: ")
-        inputline = input()  # read a line from the user
-        if inputline == 'exit':
-            return
-        else:
-            outline = inputline + ".." + inputline[-2:] + ".." + inputline[-2:]
-            print("Got echo: %s" % (outline,))
- if __name__ == '__main__':
-     main()
+defÂ main():
+Â Â Â Â whileÂ True:
+Â Â Â Â Â Â Â Â print("Input:Â ")
+Â Â Â Â Â Â Â Â inputlineÂ =Â input()Â Â #Â readÂ aÂ lineÂ fromÂ theÂ user
+Â Â Â Â Â Â Â Â ifÂ inputlineÂ ==Â 'exit':
+Â Â Â Â Â Â Â Â Â Â Â Â return
+Â Â Â Â Â Â Â Â else:
+Â Â Â Â Â Â Â Â Â Â Â Â outlineÂ =Â inputlineÂ +Â ".."Â +Â inputline[-2:]Â +Â ".."Â +Â inputline[-2:]
+Â Â Â Â Â Â Â Â Â Â Â Â print("GotÂ echo:Â %s"Â %Â (outline,))
+ ifÂ __name__Â ==Â '__main__':
+ Â Â Â Â main()
 ```
 
 Output example:
@@ -556,44 +556,44 @@ exit
 
 #### File operations
 
-We can open a file given the filename using `open(filename)`. Then we can run on each line easily. Here is a short example that opens a file given in the command-line arguments:
+We can open a file given the filename usingÂ `open(filename)`. Then we can run on each line easily. Here is a short example that opens a file given in the command-line arguments:
 
 
 ```python
-import sys
-def main(args):
-    inputfilename = args[1]
-    with open(inputfilename) as inputfile:
-        for line in inputfile:
-            print(line)
-if __name__ == '__main__':
-     main(sys.argv)
+importÂ sys
+defÂ main(args):
+Â Â Â Â inputfilenameÂ =Â args[1]
+Â Â Â Â withÂ open(inputfilename)Â asÂ inputfile:
+Â Â Â Â Â Â Â Â forÂ lineÂ inÂ inputfile:
+Â Â Â Â Â Â Â Â Â Â Â Â print(line)
+ifÂ __name__Â ==Â '__main__':
+ Â Â Â Â main(sys.argv)
 ```
 
-The `with` keyword states that Python should automatically close the resources for us (ie, the filestream) when:
+TheÂ `with`Â keyword states that Python should automatically close the resources for us (ie, the filestream) when:
 
 1.  An exception occurs
 2.  The scope ends. In this case, the scope is the whole program run.
 
   
-It is very similar to the `try-with-resources` concept of Java.  
+It is very similar to theÂ `try-with-resources`Â concept of Java.  
 
 A useful method that checks whether a file exists is:
 
 ```python
-import os
+importÂ os
 os.path.isfile(filename)
 ```
 
 #### Tuples and Dicts
 
 Tuples and Dicts are very strong structures in Python which we are interested in.  
-Read about tuples here: [https://www.tutorialspoint.com/python/python_tuples.htm](https://www.tutorialspoint.com/python/python_tuples.htm)  
-Read about dicts here: [https://www.tutorialspoint.com/python/python_dictionary.htm](https://www.tutorialspoint.com/python/python_dictionary.htm)  
+Read about tuples here:Â [https://www.tutorialspoint.com/python/python_tuples.htm](https://www.tutorialspoint.com/python/python_tuples.htm)  
+Read about dicts here:Â [https://www.tutorialspoint.com/python/python_dictionary.htm](https://www.tutorialspoint.com/python/python_dictionary.htm)  
 
 ## Basic SQLite
 
-SQLite is a library that provides a lightweight disk-based database that doesn't require a separate server process and allows accessing the database using a nonstandard variant of the SQL query language. There exists a module called `sqlite3` that provides an SQLite interface for python.
+SQLite is a library that provides a lightweight disk-based database that doesn't require a separate server process and allows accessing the database using a nonstandard variant of the SQL query language. There exists a module calledÂ `sqlite3`Â that provides an SQLite interface for python.
 
 ### Connection and access
 
@@ -601,45 +601,45 @@ To use the module we must first create a connection to the database.
 If the given database name does not exist, it will be created.
 
 ```python
-import sqlite3 
-dbcon = sqlite3.connect('example.db')
+importÂ sqlite3Â 
+dbconÂ =Â sqlite3.connect('example.db')
 ```
 
-Once we have a connection, we would like to execute commands. In order to be able to do so, we must create a `cursor` object.  
-A `cursor` object is an object that lets you _traverse_ records in a database. Cursors facilitate subsequent processing in conjunction with the traversal, such as retrieval, addition and removal of database records.
+Once we have a connection, we would like to execute commands. In order to be able to do so, we must create aÂ `cursor`Â object.  
+AÂ `cursor`Â object is an object that lets youÂ _traverse_Â records in a database. Cursors facilitate subsequent processing in conjunction with the traversal, such as retrieval, addition and removal of database records.
 
 ```python
-import sqlite3
-dbcon = sqlite3.connect('example.db')
-with dbcon:
-    cursor = dbcon.cursor()
+importÂ sqlite3
+dbconÂ =Â sqlite3.connect('example.db')
+withÂ dbcon:
+Â Â Â Â cursorÂ =Â dbcon.cursor()
 ```
 
 ### Executing commands
 
-Now that we have a `cursor`, we can execute SQL commands:
+Now that we have aÂ `cursor`, we can execute SQL commands:
 
 ```python
-import sqlite3
-dbcon = sqlite3.connect('example.db')
-with dbcon:
-    cursor = dbcon.cursor()
-    cursor.execute("CREATE TABLE Students(ID INTEGER PRIMARY KEY, NAME TEXT NOT NULL)") # create table students
-    cursor.execute("INSERT INTO Students VALUES(?,?)", (1, 'Morad')) # add entry 'id = 1, name = Morad' into the table.
-    cursor.execute("INSERT INTO Students VALUES(?,?)", (2, 'Harry Potter'))
+importÂ sqlite3
+dbconÂ =Â sqlite3.connect('example.db')
+withÂ dbcon:
+Â Â Â Â cursorÂ =Â dbcon.cursor()
+Â Â Â Â cursor.execute("CREATEÂ TABLEÂ Students(IDÂ INTEGERÂ PRIMARYÂ KEY,Â NAMEÂ TEXTÂ NOTÂ NULL)")Â #Â createÂ tableÂ students
+ Â Â Â cursor.execute("INSERTÂ INTOÂ StudentsÂ VALUES(?,?)",Â (1,Â 'Morad'))Â #Â addÂ entryÂ 'idÂ =Â 1,Â nameÂ =Â Morad'Â intoÂ theÂ table.
+ Â Â Â cursor.execute("INSERTÂ INTOÂ StudentsÂ VALUES(?,?)",Â (2,Â 'HarryÂ Potter'))
 ```
 
-Notice that `(1, 'Morad',)` is a Python tuple. Note the syntax of `?`; these are fields that are replaced one by one using the given tuple.
+Notice thatÂ `(1, 'Morad',)`Â is a Python tuple. Note the syntax ofÂ `?`; these are fields that are replaced one by one using the given tuple.
 
 ### Queries with results
 
 
-As we have seen, some SQL queries yield result(s), like the `SELECT` query. These can be `fetched` from the cursor after executing the query.  
+As we have seen, some SQL queries yield result(s), like theÂ `SELECT`Â query. These can beÂ `fetched`Â from the cursor after executing the query.  
 Cursors have two methods that interest us regarding this:
 
 `cursor.fetchone()`
 
-fetches one of the results of the query in the form of a tuple, or `None` if none is available
+fetches one of the results of the query in the form of a tuple, orÂ `None`Â if none is available
 
 `cursor.fetchall()`
 
@@ -649,32 +649,32 @@ fetches all of the results of the query, returning a list of tuples
 Let's see this by example:
 
 ```python
-import sqlite3
-import os
-databaseexisted = os.path.isfile('example.db')
-dbcon = sqlite3.connect('example.db')
-with dbcon:
-    cursor = dbcon.cursor()
-     if not databaseexisted: # First time creating the database. Create the tables
-         cursor.execute("CREATE TABLE Students(ID INTEGER PRIMARY KEY, NAME TEXT NOT NULL)") # create table students
-         cursor.execute("INSERT INTO Students VALUES(?,?)", (1, 'Morad',)) # add entry 'id = 1, name = Morad' into the table.
-         cursor.execute("INSERT INTO Students VALUES(?,?)", (2, 'Harry Potter',))
-     # let's get all students and print their entries
-     cursor.execute("SELECT * FROM Students");
-     studentslist = cursor.fetchall()
-     print("All students as list:")
-     print(studentslist)
-     print("All students one by one:")
-     for student in studentslist:
-         print("Student name: " + str(student))
-     # let's get the name of the student of id 1
-     cursor.execute("SELECT NAME FROM Students WHERE ID=(?)", (1,))
-     studentwithid1 = cursor.fetchone()
-     print("Student with id 1: " + str(studentwithid1))
-     # let's get the name of the student of id 5
-     cursor.execute("SELECT NAME FROM Students WHERE ID=(?)", (5,))
-     studentwithid5 = cursor.fetchone()
-     print("Student with id 5: " + str(studentwithid5))
+importÂ sqlite3
+importÂ os
+databaseexistedÂ =Â os.path.isfile('example.db')
+dbconÂ =Â sqlite3.connect('example.db')
+withÂ dbcon:
+Â Â Â Â cursorÂ =Â dbcon.cursor()
+ Â Â Â Â ifÂ notÂ databaseexisted:Â #Â FirstÂ timeÂ creatingÂ theÂ database.Â CreateÂ theÂ tables
+ Â Â Â Â Â Â Â Â cursor.execute("CREATEÂ TABLEÂ Students(IDÂ INTEGERÂ PRIMARYÂ KEY,Â NAMEÂ TEXTÂ NOTÂ NULL)")Â #Â createÂ tableÂ students
+ Â Â Â Â Â Â Â Â cursor.execute("INSERTÂ INTOÂ StudentsÂ VALUES(?,?)",Â (1,Â 'Morad',))Â #Â addÂ entryÂ 'idÂ =Â 1,Â nameÂ =Â Morad'Â intoÂ theÂ table.
+ Â Â Â Â Â Â Â Â cursor.execute("INSERTÂ INTOÂ StudentsÂ VALUES(?,?)",Â (2,Â 'HarryÂ Potter',))
+ Â Â Â Â #Â let'sÂ getÂ allÂ studentsÂ andÂ printÂ theirÂ entries
+ Â Â Â Â cursor.execute("SELECTÂ *Â FROMÂ Students");
+ Â Â Â Â studentslistÂ =Â cursor.fetchall()
+ Â Â Â Â print("AllÂ studentsÂ asÂ list:")
+ Â Â Â Â print(studentslist)
+ Â Â Â Â print("AllÂ studentsÂ oneÂ byÂ one:")
+ Â Â Â Â forÂ studentÂ inÂ studentslist:
+ Â Â Â Â Â Â Â Â print("StudentÂ name:Â "Â +Â str(student))
+ Â Â Â Â #Â let'sÂ getÂ theÂ nameÂ ofÂ theÂ studentÂ ofÂ idÂ 1
+ Â Â Â Â cursor.execute("SELECTÂ NAMEÂ FROMÂ StudentsÂ WHEREÂ ID=(?)",Â (1,))
+ Â Â Â Â studentwithid1Â =Â cursor.fetchone()
+ Â Â Â Â print("StudentÂ withÂ idÂ 1:Â "Â +Â str(studentwithid1))
+ Â Â Â Â #Â let'sÂ getÂ theÂ nameÂ ofÂ theÂ studentÂ ofÂ idÂ 5
+ Â Â Â Â cursor.execute("SELECTÂ NAMEÂ FROMÂ StudentsÂ WHEREÂ ID=(?)",Â (5,))
+ Â Â Â Â studentwithid5Â =Â cursor.fetchone()
+ Â Â Â Â print("StudentÂ withÂ idÂ 5:Â "Â +Â str(studentwithid5))
 ```
 
 Note the commas in (1,) and (5,) to make them a single element tuple, e.g. (1) would be evaluated as 1.
@@ -693,6 +693,6 @@ Student with id 5: None
 
 Notes:
 
-1.  In order not to try to create the tables and put the entries each time, we checked if the file existed. If it did, we know that we have created the database, the tables, and entered the data in the past, so we don't need to do that again. This was achieved using `os.path.isfile`
-2.  Note how the last example gave us `None` because no student exists with id `5`
-3.  Why are we so sure that we should use `fetchone` and not `fetchall` in the second and third calls to the db? Because we select rows by the field `ID` which is a primary key, so we are sure it is unique, so **at most** one row exists with such an ID.
+1.  In order not to try to create the tables and put the entries each time, we checked if the file existed. If it did, we know that we have created the database, the tables, and entered the data in the past, so we don't need to do that again. This was achieved usingÂ `os.path.isfile`
+2.  Note how the last example gave usÂ `None`Â because no student exists with idÂ `5`
+3.  Why are we so sure that we should useÂ `fetchone`Â and notÂ `fetchall`Â in the second and third calls to the db? Because we select rows by the fieldÂ `ID`Â which is a primary key, so we are sure it is unique, soÂ **at most**Â one row exists with such an ID.

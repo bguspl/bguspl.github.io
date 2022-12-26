@@ -44,20 +44,20 @@ DTOs are passed to and from the persistence layer. When passed from the persiste
 The DTO naming convention is that a DTO named 'Abc' represents a table named 'abcs'. we will use this convention in the future to map a DTO object to the table it represents.
 
 ```python
-# Data Transfer Objects:
-class Student:
-    def __init__(self, id, name):
-        self.id = id
-        self.name = name
-class Assignment:
-    def __init__(self, num, expected_output):
-         self.num = num
-         self.expected_output = expected_output
- class Grade:
-     def __init__(self, student_id, assignment_num, grade):
-         self.student_id = student_id
-         self.assignment_num = assignment_num
-         self.grade = grade
+#Â DataÂ TransferÂ Objects:
+classÂ Student:
+Â Â Â Â defÂ __init__(self,Â id,Â name):
+Â Â Â Â Â Â Â Â self.idÂ =Â id
+Â Â Â Â Â Â Â Â self.nameÂ =Â name
+classÂ Assignment:
+Â Â Â Â defÂ __init__(self,Â num,Â expected_output):
+ Â Â Â Â Â Â Â Â self.numÂ =Â num
+ Â Â Â Â Â Â Â Â self.expected_outputÂ =Â expected_output
+ classÂ Grade:
+ Â Â Â Â defÂ __init__(self,Â student_id,Â assignment_num,Â grade):
+ Â Â Â Â Â Â Â Â self.student_idÂ =Â student_id
+ Â Â Â Â Â Â Â Â self.assignment_numÂ =Â assignment_num
+ Â Â Â Â Â Â Â Â self.gradeÂ =Â grade
 ```
 
 ### DAO - Data Access Object
@@ -65,47 +65,47 @@ class Assignment:
 These objects contain methods for retrieving and storing DTOs, In most cases, each DAO is responsible for a single DTO.
 
 ```python
-# Data Access Objects:
-# All of these are meant to be singletons
-class _Students:
-    def __init__(self, conn):
-        self._conn = conn
-    def insert(self, student):
-        self._conn.execute("""
-               INSERT INTO students (id, name) VALUES (?, ?)
-            """, [student.id, student.name])
-     def find(self, student_id):
-         c = self._conn.cursor()
-         c.execute("""
-             SELECT id, name FROM students WHERE id = ?
-         """, [student_id])
-         return Student(*c.fetchone())
- class _Assignments:
-     def __init__(self, conn):
-         self._conn = conn
-     def insert(self, assignment):
-         self._conn.execute("""
-                 INSERT INTO assignments (num, expected_output) VALUES (?, ?)
-         """, [assignment.num, assignment.expected_output])
-     def find(self, num):
-         c = self._conn.cursor()
-         c.execute("""
-                 SELECT num,expected_output FROM assignments WHERE num = ?
-             """, [num])
-         return Assignment(*c.fetchone())
- class _Grades:
-     def __init__(self, conn):
-         self._conn = conn
-     def insert(self, grade):
-         self._conn.execute("""
-             INSERT INTO grades (student_id, assignment_num, grade) VALUES (?, ?, ?)
-         """, [grade.student_id, grade.assignment_num, grade.grade])
-     def find_all(self):
-         c = self._conn.cursor()
-         all = c.execute("""
-             SELECT student_id, assignment_num, grade FROM grades
-         """).fetchall()
-         return [Grade(*row) for row in all]
+#Â DataÂ AccessÂ Objects:
+#Â AllÂ ofÂ theseÂ areÂ meantÂ toÂ beÂ singletons
+classÂ _Students:
+Â Â Â Â defÂ __init__(self,Â conn):
+Â Â Â Â Â Â Â Â self._connÂ =Â conn
+Â Â Â Â defÂ insert(self,Â student):
+Â Â Â Â Â Â Â Â self._conn.execute("""
+Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â INSERTÂ INTOÂ studentsÂ (id,Â name)Â VALUESÂ (?,Â ?)
+ Â Â Â Â Â Â Â Â Â Â Â """,Â [student.id,Â student.name])
+ Â Â Â Â defÂ find(self,Â student_id):
+ Â Â Â Â Â Â Â Â cÂ =Â self._conn.cursor()
+ Â Â Â Â Â Â Â Â c.execute("""
+ Â Â Â Â Â Â Â Â Â Â Â Â SELECTÂ id,Â nameÂ FROMÂ studentsÂ WHEREÂ idÂ =Â ?
+ Â Â Â Â Â Â Â Â """,Â [student_id])
+ Â Â Â Â Â Â Â Â returnÂ Student(*c.fetchone())
+ classÂ _Assignments:
+ Â Â Â Â defÂ __init__(self,Â conn):
+ Â Â Â Â Â Â Â Â self._connÂ =Â conn
+ Â Â Â Â defÂ insert(self,Â assignment):
+ Â Â Â Â Â Â Â Â self._conn.execute("""
+ Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â INSERTÂ INTOÂ assignmentsÂ (num,Â expected_output)Â VALUESÂ (?,Â ?)
+ Â Â Â Â Â Â Â Â """,Â [assignment.num,Â assignment.expected_output])
+ Â Â Â Â defÂ find(self,Â num):
+ Â Â Â Â Â Â Â Â cÂ =Â self._conn.cursor()
+ Â Â Â Â Â Â Â Â c.execute("""
+ Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â SELECTÂ num,expected_outputÂ FROMÂ assignmentsÂ WHEREÂ numÂ =Â ?
+ Â Â Â Â Â Â Â Â Â Â Â Â """,Â [num])
+ Â Â Â Â Â Â Â Â returnÂ Assignment(*c.fetchone())
+ classÂ _Grades:
+ Â Â Â Â defÂ __init__(self,Â conn):
+ Â Â Â Â Â Â Â Â self._connÂ =Â conn
+ Â Â Â Â defÂ insert(self,Â grade):
+ Â Â Â Â Â Â Â Â self._conn.execute("""
+ Â Â Â Â Â Â Â Â Â Â Â Â INSERTÂ INTOÂ gradesÂ (student_id,Â assignment_num,Â grade)Â VALUESÂ (?,Â ?,Â ?)
+ Â Â Â Â Â Â Â Â """,Â [grade.student_id,Â grade.assignment_num,Â grade.grade])
+ Â Â Â Â defÂ find_all(self):
+ Â Â Â Â Â Â Â Â cÂ =Â self._conn.cursor()
+ Â Â Â Â Â Â Â Â allÂ =Â c.execute("""
+ Â Â Â Â Â Â Â Â Â Â Â Â SELECTÂ student_id,Â assignment_num,Â gradeÂ FROMÂ grades
+ Â Â Â Â Â Â Â Â """).fetchall()
+ Â Â Â Â Â Â Â Â returnÂ [Grade(*row)Â forÂ rowÂ inÂ all]
 ```
 
 ### Repository
@@ -118,44 +118,44 @@ In many cases, DTO and DAOs are not sufficient, since each DAO only knows how to
 which DAO should hold these methods? The answer is in the repository. the repository is similar to a DAO but it manages a group of related DTOs.
 
 ```python
-#The Repository
-class _Repository:
-    def __init__(self):
-        self._conn = sqlite3.connect('grades.db')
-        self.students = _Students(self._conn)
-        self.assignments = _Assignments(self._conn)
-        self.grades = _Grades(self._conn)
+#TheÂ Repository
+classÂ _Repository:
+Â Â Â Â defÂ __init__(self):
+Â Â Â Â Â Â Â Â self._connÂ =Â sqlite3.connect('grades.db')
+Â Â Â Â Â Â Â Â self.studentsÂ =Â _Students(self._conn)
+Â Â Â Â Â Â Â Â self.assignmentsÂ =Â _Assignments(self._conn)
+Â Â Â Â Â Â Â Â self.gradesÂ =Â _Grades(self._conn)
 
-    def _close(self):
-        self._conn.commit()
-        self._conn.close()
+Â Â Â Â defÂ _close(self):
+Â Â Â Â Â Â Â Â self._conn.commit()
+Â Â Â Â Â Â Â Â self._conn.close()
 
-   def create_tables(self):
-       _conn.executescript("""
-       CREATE TABLE students (
-           id      INT         PRIMARY KEY,
-           name    TEXT        NOT NULL
-       );
+Â Â Â defÂ create_tables(self):
+Â Â Â Â Â Â Â _conn.executescript("""
+Â Â Â Â Â Â Â CREATEÂ TABLEÂ studentsÂ (
+Â Â Â Â Â Â Â Â Â Â Â idÂ Â Â Â Â Â INTÂ Â Â Â Â Â Â Â Â PRIMARYÂ KEY,
+Â Â Â Â Â Â Â Â Â Â Â nameÂ Â Â Â TEXTÂ Â Â Â Â Â Â Â NOTÂ NULL
+Â Â Â Â Â Â Â );
 
-       CREATE TABLE assignments (
-           num                 INT     PRIMARY KEY,
-           expected_output     TEXT    NOT NULL
-       );
+Â Â Â Â Â Â Â CREATEÂ TABLEÂ assignmentsÂ (
+Â Â Â Â Â Â Â Â Â Â Â numÂ Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â INTÂ Â Â Â Â PRIMARYÂ KEY,
+Â Â Â Â Â Â Â Â Â Â Â expected_outputÂ Â Â Â Â TEXTÂ Â Â Â NOTÂ NULL
+Â Â Â Â Â Â Â );
 
-       CREATE TABLE grades (
-           student_id      INT     NOT NULL,
-           assignment_num  INT     NOT NULL,
-           grade           INT     NOT NULL,
+Â Â Â Â Â Â Â CREATEÂ TABLEÂ gradesÂ (
+Â Â Â Â Â Â Â Â Â Â Â student_idÂ Â Â Â Â Â INTÂ Â Â Â Â NOTÂ NULL,
+Â Â Â Â Â Â Â Â Â Â Â assignment_numÂ Â INTÂ Â Â Â Â NOTÂ NULL,
+Â Â Â Â Â Â Â Â Â Â Â gradeÂ Â Â Â Â Â Â Â Â Â Â INTÂ Â Â Â Â NOTÂ NULL,
 
-           FOREIGN KEY(student_id)     REFERENCES students(id),
-           FOREIGN KEY(assignment_num) REFERENCES assignments(num),
+Â Â Â Â Â Â Â Â Â Â Â FOREIGNÂ KEY(student_id)Â Â Â Â Â REFERENCESÂ students(id),
+Â Â Â Â Â Â Â Â Â Â Â FOREIGNÂ KEY(assignment_num)Â REFERENCESÂ assignments(num),
 
-           PRIMARY KEY (student_id, assignment_num)
-        );
-   """)
+Â Â Â Â Â Â Â Â Â Â Â PRIMARYÂ KEYÂ (student_id,Â assignment_num)
+Â Â Â Â Â Â Â Â );
+Â Â Â """)
  
-# the repository singleton
-repo = _Repository()
+#Â theÂ repositoryÂ singleton
+repoÂ =Â _Repository()
 atexit.register(repo._close)
 ```
 
@@ -164,31 +164,31 @@ atexit.register(repo._close)
 using the objects described above, our application logic implementation can be something like this:
 
 ```python
-from persistence import repo
+fromÂ persistenceÂ importÂ repo
 
-import os
-import imp
+importÂ os
+importÂ imp
 
-def grade(assignments_dir, assignment_num):
-    expected_output = repo.assignments.find(assignment_num).expected_output
+defÂ grade(assignments_dir,Â assignment_num):
+Â Â Â Â expected_outputÂ =Â repo.assignments.find(assignment_num).expected_output
 
-    for assignment in os.listdir(assignments_dir):
-         (student_id, ext) = os.path.splitext(assignment)
+Â Â Â Â forÂ assignmentÂ inÂ os.listdir(assignments_dir):
+ Â Â Â Â Â Â Â Â (student_id,Â ext)Â =Â os.path.splitext(assignment)
 
-         code = imp.load_source('test', assignments_dir + '/' + assignment)
+ Â Â Â Â Â Â Â Â codeÂ =Â imp.load_source('test',Â assignments_dirÂ +Â '/'Â +Â assignment)
 
-         student_grade = Grade(student_id, assignment_num, 0)
-         if code.run_assignment() == expected_output:
-             student_grade.grade = 100
+ Â Â Â Â Â Â Â Â student_gradeÂ =Â Grade(student_id,Â assignment_num,Â 0)
+ Â Â Â Â Â Â Â Â ifÂ code.run_assignment()Â ==Â expected_output:
+ Â Â Â Â Â Â Â Â Â Â Â Â student_grade.gradeÂ =Â 100
 
-        repo.grades.insert(student_grade)
+Â Â Â Â Â Â Â Â repo.grades.insert(student_grade)
 
-def print_grades():
-    print('grades:')
-    for grade in repo.grades.find_all():
-        student = repo.students.find(grade.student_id)
+defÂ print_grades():
+Â Â Â Â print('grades:')
+Â Â Â Â forÂ gradeÂ inÂ repo.grades.find_all():
+Â Â Â Â Â Â Â Â studentÂ =Â repo.students.find(grade.student_id)
 
-        print('grade of student {} on assignment {} is {}'.format(student.name, grade.assignment_num, grade.grade))
+Â Â Â Â Â Â Â Â print('gradeÂ ofÂ studentÂ {}Â onÂ assignmentÂ {}Â isÂ {}'.format(student.name,Â grade.assignment_num,Â grade.grade))
 ```
 
 ## Supporting additional features
@@ -199,46 +199,46 @@ def print_grades():
 looking at the method `print_grades` at the application logic implementation above, we can see that the method is inefficient. in order to find the name of the student to whom belongs the grade, the method goes over all the students one by one. this could have been prevented if we used a join query to match between the students grade and it's name. but where will we place such a query? the answer is obviously in the repository.
 
 ```python
-class StudentGradeWithName:
-    def __init__(self, name, assignment_num, grade):
-        self.name = name
-        self.assignment_num = assignment_num
-        self.grade = grade
+classÂ StudentGradeWithName:
+Â Â Â Â defÂ __init__(self,Â name,Â assignment_num,Â grade):
+Â Â Â Â Â Â Â Â self.nameÂ =Â name
+Â Â Â Â Â Â Â Â self.assignment_numÂ =Â assignment_num
+Â Â Â Â Â Â Â Â self.gradeÂ =Â grade
 
-#The Repository
-class _Repository:
-    def __init__(self):
-         # see code above...
+#TheÂ Repository
+classÂ _Repository:
+Â Â Â Â defÂ __init__(self):
+ Â Â Â Â Â Â Â Â #Â seeÂ codeÂ above...
 
-    def _close(self):
-        # see code above...
+Â Â Â Â defÂ _close(self):
+Â Â Â Â Â Â Â Â #Â seeÂ codeÂ above...
 
-    def create_tables(self):
-        # see code above...
+Â Â Â Â defÂ create_tables(self):
+Â Â Â Â Â Â Â Â #Â seeÂ codeÂ above...
 
-    def get_grades_with_names(self):
-        c = self._conn.cursor()
-        all = c.execute("""
-            SELECT students.name, grades.assignment_num, grades.grade 
-            FROM grades
-            JOIN students ON grades.student_id = students.student_id
-        """).fetchall()
+Â Â Â Â defÂ get_grades_with_names(self):
+Â Â Â Â Â Â Â Â cÂ =Â self._conn.cursor()
+Â Â Â Â Â Â Â Â allÂ =Â c.execute("""
+Â Â Â Â Â Â Â Â Â Â Â Â SELECTÂ students.name,Â grades.assignment_num,Â grades.gradeÂ 
+Â Â Â Â Â Â Â Â Â Â Â Â FROMÂ grades
+Â Â Â Â Â Â Â Â Â Â Â Â JOINÂ studentsÂ ONÂ grades.student_idÂ =Â students.student_id
+Â Â Â Â Â Â Â Â """).fetchall()
 
-        return [StudentGradeWithName(*row) for row in all]
+Â Â Â Â Â Â Â Â returnÂ [StudentGradeWithName(*row)Â forÂ rowÂ inÂ all]
 
 
-# the repository singleton
-repo = _Repository()
+#Â theÂ repositoryÂ singleton
+repoÂ =Â _Repository()
 atexit.register(repo._close)
 ```
 
 with that addition to the repository our `print_grades` function can simply be:
 
 ```python
-def print_grades():
-    print('grades:')
-    for studentGradeWithName in repo.get_grades_with_names():
-        print('grade of student {} on assignment {} is {}'.format(studentGradeWithName.name, studentGradeWithName.assignment_num, studentGradeWithName.grade))
+defÂ print_grades():
+Â Â Â Â print('grades:')
+Â Â Â Â forÂ studentGradeWithNameÂ inÂ repo.get_grades_with_names():
+Â Â Â Â Â Â Â Â print('gradeÂ ofÂ studentÂ {}Â onÂ assignmentÂ {}Â isÂ {}'.format(studentGradeWithName.name,Â studentGradeWithName.assignment_num,Â studentGradeWithName.grade))
 ```
 
 ### Update
@@ -246,20 +246,20 @@ def print_grades():
 Suppose we want our assignment tester to also support in appeals, we will need a method to update a student's assignment grade. The DAOs we have seen so far only supported 2 functions, insert and find. lets try and add support for the appeals in the _Grades class:
 
 ```python
-class _Grades:
-    def __init__(self, conn):
-        # see code above...
+classÂ _Grades:
+Â Â Â Â defÂ __init__(self,Â conn):
+Â Â Â Â Â Â Â Â #Â seeÂ codeÂ above...
 
-    def insert(self, grade):
-        # see code above...
+Â Â Â Â defÂ insert(self,Â grade):
+Â Â Â Â Â Â Â Â #Â seeÂ codeÂ above...
 
-    def find_all(self):
-        # see code above...
+Â Â Â Â defÂ find_all(self):
+Â Â Â Â Â Â Â Â #Â seeÂ codeÂ above...
 
-    def update(self, grade):
-        self._conn.execute("""
-               UPDATE grades SET grade=(?) WHERE student_id=(?) AND assignment_num=(?)
-           """, [grade.grade, grade.student_id, grade.assignment_num])
+Â Â Â Â defÂ update(self,Â grade):
+Â Â Â Â Â Â Â Â self._conn.execute("""
+Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â UPDATEÂ gradesÂ SETÂ grade=(?)Â WHEREÂ student_id=(?)Â ANDÂ assignment_num=(?)
+Â Â Â Â Â Â Â Â Â Â Â """,Â [grade.grade,Â grade.student_id,Â grade.assignment_num])
 ```
 
 now we have support for appeals, but what if we want to support additional update functions such as update student name (in case of a marriage :))? In class we have seen the ORM and generic DAO classes designed to implement generic DAO methods. lets first revise the ORM and then try and add an update method to the generic DAO class.
@@ -274,35 +274,35 @@ The ORM is a method for mapping between a certain DTO object and its related tab
 
   
 ```python
-#file dbtools.py
+#fileÂ dbtools.py
 
 
-import inspect
+importÂ inspect
 
 
-def orm(cursor, dto_type):
+defÂ orm(cursor,Â dto_type):
 
 
-    #the following line retrieve the argument names of the constructor
-    args = inspect.getargspec(dto_type.__init__).args
+Â Â Â Â #theÂ followingÂ lineÂ retrieveÂ theÂ argumentÂ namesÂ ofÂ theÂ constructor
+Â Â Â Â argsÂ =Â inspect.getargspec(dto_type.__init__).args
 
 
-     #the first argument of the constructor will be 'self', it does not correspond 
-     #to any database field, so we can ignore it.
-     args = args[1:]  
+ Â Â Â Â #theÂ firstÂ argumentÂ ofÂ theÂ constructorÂ willÂ beÂ 'self',Â itÂ doesÂ notÂ correspondÂ 
+ Â Â Â Â #toÂ anyÂ databaseÂ field,Â soÂ weÂ canÂ ignoreÂ it.
+ Â Â Â Â argsÂ =Â args[1:]Â Â 
 
 
-     #gets the names of the columns returned in the cursor
-    col_names = [column[0] for column in cursor.description]
+ Â Â Â Â #getsÂ theÂ namesÂ ofÂ theÂ columnsÂ returnedÂ inÂ theÂ cursor
+Â Â Â Â col_namesÂ =Â [column[0]Â forÂ columnÂ inÂ cursor.description]
 
 
-    #map them into the position of the corresponding constructor argument
-    col_mapping = [col_names.index(arg) for arg in args]
-    return [row_map(row, col_mapping, dto_type) for row in cursor.fetchall()]
+Â Â Â Â #mapÂ themÂ intoÂ theÂ positionÂ ofÂ theÂ correspondingÂ constructorÂ argument
+Â Â Â Â col_mappingÂ =Â [col_names.index(arg)Â forÂ argÂ inÂ args]
+Â Â Â Â returnÂ [row_map(row,Â col_mapping,Â dto_type)Â forÂ rowÂ inÂ cursor.fetchall()]
 
-def row_map(row, col_mapping, dto_type):
-    ctor_args = [row[idx] for idx in col_mapping]
-    return dto_type(*ctor_args)
+defÂ row_map(row,Â col_mapping,Â dto_type):
+Â Â Â Â ctor_argsÂ =Â [row[idx]Â forÂ idxÂ inÂ col_mapping]
+Â Â Â Â returnÂ dto_type(*ctor_args)
 ```
 
 lets go over the code above line by line to make sure we understand it.
@@ -317,39 +317,39 @@ lets go over the code above line by line to make sure we understand it.
 using the ORM, we can construct a generic DAO:
 
 ```python
-class Dao:
-    def __init__(self, dto_type, conn):
-        self._conn = conn
-        self._dto_type = dto_type
+classÂ Dao:
+Â Â Â Â defÂ __init__(self,Â dto_type,Â conn):
+Â Â Â Â Â Â Â Â self._connÂ =Â conn
+Â Â Â Â Â Â Â Â self._dto_typeÂ =Â dto_type
 
-        #dto_type is a class, its __name__ field contains a string representing the name of the class.
-        self._table_name = dto_type.__name__.lower() + 's'
+Â Â Â Â Â Â Â Â #dto_typeÂ isÂ aÂ class,Â itsÂ __name__Â fieldÂ containsÂ aÂ stringÂ representingÂ theÂ nameÂ ofÂ theÂ class.
+Â Â Â Â Â Â Â Â self._table_nameÂ =Â dto_type.__name__.lower()Â +Â 's'
 
-    def insert(self, dto_instance):
-        ins_dict = vars(dto_instance)
+Â Â Â Â defÂ insert(self,Â dto_instance):
+Â Â Â Â Â Â Â Â ins_dictÂ =Â vars(dto_instance)
 
-        column_names = ','.join(ins_dict.keys())
-        params = ins_dict.values()
-        qmarks = ','.join(['?'] * len(ins_dict))
+Â Â Â Â Â Â Â Â column_namesÂ =Â ','.join(ins_dict.keys())
+Â Â Â Â Â Â Â Â paramsÂ =Â ins_dict.values()
+Â Â Â Â Â Â Â Â qmarksÂ =Â ','.join(['?']Â *Â len(ins_dict))
 
-        stmt = 'INSERT INTO {} ({}) VALUES ({})'.format(self._table_name, column_names, qmarks)
+Â Â Â Â Â Â Â Â stmtÂ =Â 'INSERTÂ INTOÂ {}Â ({})Â VALUESÂ ({})'.format(self._table_name,Â column_names,Â qmarks)
 
-        self._conn.execute(stmt, params)
+Â Â Â Â Â Â Â Â self._conn.execute(stmt,Â params)
 
-    def find_all(self):
-        c = self._conn.cursor()
-        c.execute('SELECT * FROM {}'.format(self._table_name))
-        return orm(c, self._dto_type)
+Â Â Â Â defÂ find_all(self):
+Â Â Â Â Â Â Â Â cÂ =Â self._conn.cursor()
+Â Â Â Â Â Â Â Â c.execute('SELECTÂ *Â FROMÂ {}'.format(self._table_name))
+Â Â Â Â Â Â Â Â returnÂ orm(c,Â self._dto_type)
 
-    def find(self, **keyvals):
-        column_names = keyvals.keys()
-        params = keyvals.values()
+Â Â Â Â defÂ find(self,Â **keyvals):
+Â Â Â Â Â Â Â Â column_namesÂ =Â keyvals.keys()
+Â Â Â Â Â Â Â Â paramsÂ =Â keyvals.values()
 
-        stmt = 'SELECT * FROM {} WHERE {}'.format(self._table_name, ' AND '.join([col + '\=?' for col in column_names]))
+Â Â Â Â Â Â Â Â stmtÂ =Â 'SELECTÂ *Â FROMÂ {}Â WHEREÂ {}'.format(self._table_name,Â 'Â ANDÂ '.join([colÂ +Â '\=?'Â forÂ colÂ inÂ column_names]))
 
-        c = self._conn.cursor()
-        c.execute(stmt, params)
-        return orm(c, self._dto_type)
+Â Â Â Â Â Â Â Â cÂ =Â self._conn.cursor()
+Â Â Â Â Â Â Â Â c.execute(stmt,Â params)
+Â Â Â Â Â Â Â Â returnÂ orm(c,Â self._dto_type)
 ```
 
 ### Generic delete
@@ -357,27 +357,27 @@ class Dao:
 Now after we have learned about the ORM and generic DAO, we can add more generic methods. before we try to add a generic update, lets start with something simpler and add a generic delete. notice that the SQL delete command has a structure similar to that used in our find method. so adding delete will be just a minor modification to our find method that instead of returning the DTO objects using the ORM, it will simply execute the delete.
 
 ```python
-class Dao:
-    def __init__(self, dto_type, conn):
-        # see code above...
+classÂ Dao:
+Â Â Â Â defÂ __init__(self,Â dto_type,Â conn):
+Â Â Â Â Â Â Â Â #Â seeÂ codeÂ above...
 
-    def insert(self, dto_instance):
-        # see code above...
+Â Â Â Â defÂ insert(self,Â dto_instance):
+Â Â Â Â Â Â Â Â #Â seeÂ codeÂ above...
 
-    def find_all(self):
-        # see code above...
+Â Â Â Â defÂ find_all(self):
+Â Â Â Â Â Â Â Â #Â seeÂ codeÂ above...
 
-    def find(self, **keyvals):
-        # see code above...
+Â Â Â Â defÂ find(self,Â **keyvals):
+Â Â Â Â Â Â Â Â #Â seeÂ codeÂ above...
 
-    def delete(self, **keyvals):
-        column_names = keyvals.keys()
-        params = keyvals.values()
+Â Â Â Â defÂ delete(self,Â **keyvals):
+Â Â Â Â Â Â Â Â column_namesÂ =Â keyvals.keys()
+Â Â Â Â Â Â Â Â paramsÂ =Â keyvals.values()
 
-        stmt = 'DELETE FROM {} WHERE {}'.format(self._table_name, ' AND '.join([col + '\=?' for col in column_names]))
+Â Â Â Â Â Â Â Â stmtÂ =Â 'DELETEÂ FROMÂ {}Â WHEREÂ {}'.format(self._table_name,Â 'Â ANDÂ '.join([colÂ +Â '\=?'Â forÂ colÂ inÂ column_names]))
 
-        c = self._conn.cursor()
-        c.execute(stmt, params)
+Â Â Â Â Â Â Â Â cÂ =Â self._conn.cursor()
+Â Â Â Â Â Â Â Â c.execute(stmt,Â params)
 ```
 
 ### Generic Update
@@ -385,34 +385,34 @@ class Dao:
 After we have seen how to add generic delete, lets finally try and add our generic update. in order to add generic update, we must allow for both a number of set values and a complex where condition. that will require us to use two different dictionaries, one containing the set values, and the other the condition.
 
 ```python
-class Dao:
-    def __init__(self, dto_type, conn):
-        # see code above...
+classÂ Dao:
+Â Â Â Â defÂ __init__(self,Â dto_type,Â conn):
+Â Â Â Â Â Â Â Â #Â seeÂ codeÂ above...
 
-    def insert(self, dto_instance):
-        # see code above...
+Â Â Â Â defÂ insert(self,Â dto_instance):
+Â Â Â Â Â Â Â Â #Â seeÂ codeÂ above...
 
-    def find_all(self):
-        # see code above...
+Â Â Â Â defÂ find_all(self):
+Â Â Â Â Â Â Â Â #Â seeÂ codeÂ above...
 
-    def find(self, **keyvals):
-        # see code above...
+Â Â Â Â defÂ find(self,Â **keyvals):
+Â Â Â Â Â Â Â Â #Â seeÂ codeÂ above...
 
-    def delete(self, **keyvals):
-        # see code above...
+Â Â Â Â defÂ delete(self,Â **keyvals):
+Â Â Â Â Â Â Â Â #Â seeÂ codeÂ above...
 
-    def update(self, set_values, cond):
-        set_column_names = set_values.keys()
-        set_params = set_values.values()
+Â Â Â Â defÂ update(self,Â set_values,Â cond):
+Â Â Â Â Â Â Â Â set_column_namesÂ =Â set_values.keys()
+Â Â Â Â Â Â Â Â set_paramsÂ =Â set_values.values()
 
-        cond_column_names = cond.keys()
-        cond_params = cond.values()
+Â Â Â Â Â Â Â Â cond_column_namesÂ =Â cond.keys()
+Â Â Â Â Â Â Â Â cond_paramsÂ =Â cond.values()
 
-        params = set_params + cond_params
+Â Â Â Â Â Â Â Â paramsÂ =Â set_paramsÂ +Â cond_params
 
-        stmt = 'UPDATE {} SET ({}) WHERE ({})'.format(self._table_name,
-                                                      ', '.join([set + '\=?' for set in set_column_names]),
-                                                      ' AND '.join([cond + '\=?' for cond in cond_column_names]))
+Â Â Â Â Â Â Â Â stmtÂ =Â 'UPDATEÂ {}Â SETÂ ({})Â WHEREÂ ({})'.format(self._table_name,
+Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â ',Â '.join([setÂ +Â '\=?'Â forÂ setÂ inÂ set_column_names]),
+Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â 'Â ANDÂ '.join([condÂ +Â '\=?'Â forÂ condÂ inÂ cond_column_names]))
 
-        self._conn.execute(stmt, params)
+Â Â Â Â Â Â Â Â self._conn.execute(stmt,Â params)
 ```
