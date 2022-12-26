@@ -56,6 +56,7 @@ The first is used to define tables, including their layout, fields, what type ea
 *   **Table** - A table in the database, it holds only one kind of records. In the following example each record (row) is comprised of (int, string, string).  
     
     TEACHING_ASSISTANTS table:
+    
     | ID  | Name | Office hours |
     | --- | --- | --- |
     | 1   | Majeed | Sun 10:00-12:00 |
