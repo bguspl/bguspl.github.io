@@ -148,12 +148,11 @@ Each socket produced by a new connection is handed over to a `BlockingConnection
 Note the `close()` function required by the Closeable interface - its implementation allows the BaseServer class to be auto-closed in a try-with-resource statement.
 
 ```java
-public abstract class BaseServer<T> implements Closeable {
+public abstract class BaseServer<T> {
 
     private final int port;
     private final Supplier<MessagingProtocol<T>> protocolFactory;
     private final Supplier<MessageEncoderDecoder<T>> encdecFactory;
-    private ServerSocket sock;
 
     public BaseServer(
             int port,
@@ -163,14 +162,11 @@ public abstract class BaseServer<T> implements Closeable {
         this.port = port;
         this.protocolFactory = protocolFactory;
         this.encdecFactory = encdecFactory;
-        this.sock = null;
     }
 
     public void serve() {
 
         try (ServerSocket serverSock = new ServerSocket(port)) {
-
-            this.sock = serverSock; //just to be able to close
 
             while (!Thread.currentThread().isInterrupted()) {
 
@@ -187,12 +183,6 @@ public abstract class BaseServer<T> implements Closeable {
         }
 
         System.out.println("server closed!!!");
-    }
-
-    @Override
-    public void close() throws IOException {
-        if (sock != null)
-            sock.close();
     }
 
     protected abstract void execute(BlockingConnectionHandler<T>  handler);
