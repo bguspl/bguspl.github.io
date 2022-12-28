@@ -49,15 +49,17 @@ class Student:
     def __init__(self, id, name):
         self.id = id
         self.name = name
+        
 class Assignment:
     def __init__(self, num, expected_output):
          self.num = num
          self.expected_output = expected_output
- class Grade:
-     def __init__(self, student_id, assignment_num, grade):
-         self.student_id = student_id
-         self.assignment_num = assignment_num
-         self.grade = grade
+         
+class Grade:
+    def __init__(self, student_id, assignment_num, grade):
+        self.student_id = student_id
+        self.assignment_num = assignment_num
+        self.grade = grade
 ```
 
 ### DAO - Data Access Object
@@ -164,22 +166,24 @@ atexit.register(repo._close)
 using the objects described above, our application logic implementation can be something like this:
 
 ```python
-from persistence import repo
+from persistence import *
 
-import os
-import imp
+import os, sys
+import importlib
 
 def grade(assignments_dir, assignment_num):
     expected_output = repo.assignments.find(assignment_num).expected_output
-
+    sys.path.append('assignments')
     for assignment in os.listdir(assignments_dir):
-         (student_id, ext) = os.path.splitext(assignment)
+        (student_id, ext) = os.path.splitext(assignment)
 
-         code = imp.load_source('test', assignments_dir + '/' + assignment)
+        if not ext == ".py":
+            continue
+        code = importlib.import_module(student_id)
 
-         student_grade = Grade(student_id, assignment_num, 0)
-         if code.run_assignment() == expected_output:
-             student_grade.grade = 100
+        student_grade = Grade(student_id, assignment_num, 0)
+        if code.run_assignment() == expected_output:
+            student_grade.grade = 100
 
         repo.grades.insert(student_grade)
 
