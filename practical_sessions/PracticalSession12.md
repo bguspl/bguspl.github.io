@@ -25,6 +25,7 @@
       - [Handling standard user input](#handling-standard-user-input)
       - [File operations](#file-operations)
       - [Tuples and Dicts](#tuples-and-dicts)
+      - [Type hints](#type-hints)
   - [Basic SQLite](#basic-sqlite)
     - [Connection and access](#connection-and-access)
     - [Executing commands](#executing-commands)
@@ -591,7 +592,31 @@ os.path.isfile(filename)
 
 Tuples and Dicts are very strong structures in Python which we are interested in.  
 Read about tuples here: [https://www.tutorialspoint.com/python/python_tuples.htm](https://www.tutorialspoint.com/python/python_tuples.htm)  
-Read about dicts here: [https://www.tutorialspoint.com/python/python_dictionary.htm](https://www.tutorialspoint.com/python/python_dictionary.htm)  
+Read about dicts here: [https://www.tutorialspoint.com/python/python_dictionary.htm](https://www.tutorialspoint.com/python/python_dictionary.htm)
+
+#### Type hints
+
+Type hints are a way to specify the expected type of a value within the code. They are not enforced at runtime, but they can be used by static type checkers, IDEs, and other tools to improve code readability, catch bugs early, and provide other benefits.
+
+Type hints are written in a special syntax, using type annotations and type comments, which are usually placed immediately before the variable or expression being hinted. For example:
+
+```python
+def greet(name: str) -> str:
+    return f"Hello, {name}!"
+
+x: int = 1
+y: float = 2.3
+z: list[str] = ["a", "b", "c"]
+
+def to_complex(real: float, imag: float) -> complex:
+    return complex(real, imag) #constructor of complex
+```
+
+In these examples, `str`, `int`, `float`, `List`, and `complex` are all built-in or user-defined types, and the `->` symbol is used to specify the return type of a function.
+
+Type hints can be used to hint the types of variables, arguments, returns, class attributes, and more. They can also be used to hint the types of generic variables and values, using type variables and type aliases.
+
+Type hints are a relatively new feature in Python, introduced in version 3.5. They are optional and not enforced by the interpreter, but many tools and libraries make use of them to provide static analysis, type checking, and other functionality.
 
 ## Basic SQLite
 
