@@ -46,8 +46,8 @@ SQL is the standard way to interact with relational databases. It will allow us 
 
 SQL consists of two parts:
 
-*   Data Definition Language
-*   Data Manipulation Language
+*   Data Definition Language (DDL)
+*   Data Manipulation Language (DML)
 
   
 The first is used to define tables, including their layout, fields, what type each field has, what foreign keys they have. The second is used to insert/update/delete data. All data inserted with DML has to be 100% consistent with the former decisions of the DDL.
@@ -105,7 +105,7 @@ The Data Definition Language (DDL) is used to create and destroy databases and d
 
 ##### Create table
 
-Creates a tables in memory:
+Creates a table:
 
 *   Syntax
     
@@ -300,7 +300,15 @@ FROM TEACHING_ASSISTANTS as ta
 JOIN PRACTICAL_SESSIONS as ps
 ON ta.ID = ps.TA_ID
 ```
-  
+
+| Name | GroupNum | Location | Time |
+| --- | --- | --- | --- |
+| Majeed | 23  | 90-239 | Sun 12-14 |
+| Matan | 13  | 90-141 | Wed 14-16 |
+| Dan | 22  | 72-123 | Thu 12-14 |
+| Morad | 12  | 28-103 | Sun 18-20 |
+| Morad | 11  | 90-234 | Sun 14-16 |
+
 The ON operation lets us choose what is the connection between the two tables we would like to connect on.  
 Multiple attributes can be compared by using the AND / OR keyword between comparisons.  
 \* The AS keyword can be used to give a temporary name to a table or selected attribute.  
@@ -317,12 +325,9 @@ FROM TEACHING_ASSISTANTS as ta
 LEFT JOIN PRACTICAL_SESSIONS as ps
 ON ta.ID = ps.TA_ID
 ```
-  
-
 | Name | GroupNum | Location | Time |
 | --- | --- | --- | --- |
 | Majeed | 23  | 90-239 | Sun 12-14 |
-| Ben | NULL | NULL | NULL |
 | Matan | 13  | 90-141 | Wed 14-16 |
 | Dan | 22  | 72-123 | Thu 12-14 |
 | Hagit | NULL | NULL | NULL |
@@ -332,6 +337,7 @@ ON ta.ID = ps.TA_ID
 | Morad | 12  | 28-103 | Sun 18-20 |
 | Morad | 11  | 90-234 | Sun 14-16 |
 | Yair | NULL | NULL | NULL |
+
 
 ## Basic Python
 
@@ -346,7 +352,7 @@ ON ta.ID = ps.TA_ID
 *   Python is dynamic which means that the types are checked only at runtime. But Python is also strongly typed, just like Java. You can only execute operations that are supported by the target type.  
     
 
-Note that this means that variable names do **not** have a type in Python, their values do.
+Note that this means that variable names do not have to have a type in Python, their values do.
 
 ### Coding Python
 
