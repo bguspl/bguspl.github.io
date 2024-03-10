@@ -325,6 +325,7 @@ FROM TEACHING_ASSISTANTS as ta
 LEFT JOIN PRACTICAL_SESSIONS as ps
 ON ta.ID = ps.TA_ID
 ```
+
 | Name | GroupNum | Location | Time |
 | --- | --- | --- | --- |
 | Majeed | 23  | 90-239 | Sun 12-14 |
