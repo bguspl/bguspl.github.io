@@ -9,6 +9,7 @@
         - [Foreign Key](#foreign-key)
       - [Data Manipulation Language](#data-manipulation-language)
         - [Insert / Delete / Update](#insert--delete--update)
+      - [Data Query Language](#data-query-language)
         - [Simple Select](#simple-select)
         - [Join operation](#join-operation)
   - [Basic Python](#basic-python)
@@ -253,6 +254,7 @@ The Data Manipulation Language (DML) is used to retrieve, insert and modify data
     WHERE GroupNum = 13
     ```
     
+#### Data Query Language
 
 ##### Simple Select
 
