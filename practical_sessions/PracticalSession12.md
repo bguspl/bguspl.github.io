@@ -42,15 +42,32 @@ We would like to have a system that stores data that will allow us to:
 3.  Define relations between different "files".
 
   
-SQL is the standard way to interact with relational databases. It will allow us to interact with a wide variety of relational database management systems (RDBMS) that solve those issues (like MySQL, PostgreSQL, Microsoft SQL Server, and more).  
+SQL is the standard way to interact with relational databases. It allows us to work with a wide variety of relational database management systems (RDBMS) such as MySQL, PostgreSQL, Microsoft SQL Server, and more.
 
-SQL consists of two parts:
+SQL is typically divided into five parts, each focusing on a different aspect of database interaction:
 
-*   Data Definition Language (DDL)
-*   Data Manipulation Language (DML)
+1. **Data Definition Language (DDL)**
+   - Used to define and modify the structure of database objects (e.g., tables, indexes, schemas).
+   - Example statements include: `CREATE`, `ALTER`, `DROP`, `TRUNCATE`, and `RENAME`.
 
-  
-The first is used to define tables, including their layout, fields, what type each field has, what foreign keys they have. The second is used to insert/update/delete data. All data inserted with DML has to be 100% consistent with the former decisions of the DDL.
+2. **Data Query Language (DQL)**
+   - Primarily used to query and retrieve data from the database.
+   - The main statement here is: `SELECT`.
+
+3. **Data Manipulation Language (DML)**
+   - Used to insert, update, and delete data in tables.
+   - Common statements include: `INSERT`, `UPDATE`, `DELETE`, and `MERGE`.
+
+4. **Data Control Language (DCL)**
+   - Used to control access and permissions within the database.
+   - Common statements include: `GRANT` and `REVOKE`.
+
+5. **Transaction Control Language (TCL)**
+   - Used to manage database transactions (groups of operations).
+   - Typical statements include: `COMMIT`, `ROLLBACK`, and `SAVEPOINT`.
+
+**DDL** decisions (e.g., table layout, field types, foreign keys) must be carefully planned because **DML** operations (like inserting or updating data) must conform to the structure and rules defined by DDL. Meanwhile, **DQL** (via `SELECT`) lets you retrieve data based on various conditions, and **DCL** controls who has permission to access or modify that data. Finally, **TCL** ensures that these operations remain consistent and can be committed or rolled back as needed.
+
 
 ### Definitions
 
